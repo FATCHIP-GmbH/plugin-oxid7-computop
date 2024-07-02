@@ -1,0 +1,24 @@
+{% extends "order_overview.html.twig" %}
+
+{% block admin_order_overview_checkout %}
+    {{ parent() }}
+
+    {% if oViewConf.isFatchipComputopOrder(edit.oxorder__oxpaymenttype.value) %}
+        <tr>
+            <td class="edittext"><b>{{ translate({ ident: "FATCHIP_COMPUTOP_REMARK", suffix: "COLON" }) }}</b></td>
+            <td class="edittext">{{ edit.oxorder__fatchip_computop_remark.value }} {{ edit.oxorder__oxcurrency.value }}<br></td>
+        </tr>
+        <tr>
+            <td>
+                <form name="makecharge" id="makecharge" action="{{oViewConf.getSelfLink()|raw}}" >
+                    {{oViewConf.getHiddenSid()|raw}}
+                    <input type="text" name="captureAmount" value="0" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
+                    <input type="button" name="captureButton" value="{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE" }) }}" onclick="document.makecharge.submit()" />
+                    <input type="hidden" name="oxid" value="{{oxid}}">
+                    <input type="hidden" name="cl" value="order_overview">
+                    <input type="hidden" name="fnc" value="makeCharge">
+                </form>
+            </td>
+        </tr>
+    {% endif %}
+{% endblock %}

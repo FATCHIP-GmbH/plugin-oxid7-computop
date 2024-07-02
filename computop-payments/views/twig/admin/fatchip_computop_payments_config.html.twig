@@ -1,0 +1,55 @@
+{% include "headitem.html.twig" with {title: "fatchip_computop"} %}
+
+<div id="content" class="fatchip-computop-config">
+    <h1>{{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT" }) }}</h1>
+    <div class="alert alert-{% if Errors.fatchip_computop_error %}danger{% else %}success{% endif %}" role="alert">
+        {% if Errors.fatchip_computop_error %}
+            {{ translate({ ident: "FATCHIP_COMPUTOP_ERR_CONF_INVALID" }) }}:
+            {% for key, oEr in Errors.fatchip_computop_error %}
+                <p>{{ oEr.getOxMessage() }}</p>
+            {% endfor %}
+        {% else %}
+            {{ translate({ ident: "FATCHIP_COMPUTOP_CONF_VALID" }) }}
+        {% endif %}
+    </div>
+
+    <form action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+        {{ oViewConf.getHiddenSid()|raw }}
+        <input type="hidden" name="cl" value="{{ oViewConf.getActiveClassName() }}">
+        <input type="hidden" name="fnc" value="save">
+
+        {% for item,value in config %}
+            {% if value.type == 'text' %}
+            <div class="form-group">
+                <label for="{{ value.name }}">{{ value.label }}</label>
+                    <div class="controls">
+                        <input type="text" class="form-control" name="conf[{{ value.name }}]" value="{{ value.current_value }}" id="{{ value.name }}">
+                        <span class="help-block">{{ value.description }}</span>
+                    </div>
+            </div>
+            {% elseif value.type == 'select' %}
+                <div class="form-group">
+                    <label for="{{ value.name }}">{{ value.label }}</label>
+                    <div class="controls">
+                        <select name="conf[{{ value.name }}]" id="{{ value.name }}" class="form-control">
+                            {% for option,optionvalues in value.store %}
+                            <option value="{{ optionvalues.0.0  }}"  {% if value.current_value == optionvalues.0.0 %}selected{% endif %}>
+                                {{ optionvalues.0.0  }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <span class="help-block">{{ value.description }}</span>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="form-group">
+            <button type="submit" name="saveButton" class="btn btn-default bottom-space">Speichern</button>
+        </div>
+        <div class="form-group">
+            <button type="submit" name="idealButton" class="btn btn-default bottom-space">Update Ideal Issuers</button>
+        </div>
+    </form>
+</div>
+{% include "bottomitem.html.twig" %}

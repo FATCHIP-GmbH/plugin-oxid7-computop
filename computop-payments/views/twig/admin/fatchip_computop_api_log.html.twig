@@ -1,0 +1,37 @@
+{% include "headitem.html.twig" with {title: "fatchip_computop_apilog"} %}
+
+<form action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+        {{ oViewConf.getHiddenSid()|raw }}
+        <input type="hidden" name="cl" value="{{ oViewConf.getActiveClassName() }}">
+        <input type="hidden" name="fnc" value="search">
+
+        <table  id="table"
+                data-toggle="table"
+                data-url="{{ oViewConf.getSelfLink()|raw }}&cl=fatchip_computop_ajaxapilog"
+                data-search="true"
+                data-show-refresh="true"
+                data-show-toggle="true"
+                data-show-columns="true"
+                data-height="460"
+            >
+            <thead>
+            <tr>
+                <th data-field="id">ID</th>
+                <th data-field="request">Request</th>
+                <th data-field="response">Response</th>
+                <th data-field="creation_date">Date</th>
+                <th data-toggle="tooltip" data-formatter="requestDetailsFormatter" data-field="requestArray">RequestDetails</th>
+                <th data-toggle="tooltip" data-formatter="responseDetailsFormatter" data-field="responseArray">ResponseDetails</th>
+            </tr>
+            </thead>
+        </table>
+    </form>
+</div>
+
+<script>
+    function queryParams(params) {
+        params.sort = 8
+        return params
+    }
+</script>
+{% include "bottomitem.html.twig" %}

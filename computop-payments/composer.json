@@ -1,0 +1,40 @@
+{
+    "name": "fatchip-gmbh/computop-payments",
+    "description": "Computop payments module for OXID",
+    "type": "oxideshop-module",
+    "keywords": ["oxid", "modules", "computop"],
+    "license": "proprietary",
+    "support": {
+        "source": "https://github.com/FATCHIP-GmbH/plugin-oxid7-computop",
+        "issues": "https://www.fatchip.de"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "conflicts": {
+        "oxid-esales/oxideshop-ce": "< 7.0"
+    },
+    "archive": {
+        "exclude": ["/resources"]
+    },
+    "extra": {
+        "oxideshop": {
+            "blacklist-filter": [
+                "resources/**/*",
+                "resources/**/*."
+            ],
+            "target-directory": "fatchip-gmbh/computop_payments"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Fatchip\\ComputopPayments\\": "src/",
+            "Fatchip\\CTPayment\\" : "lib/CTPayment"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "oxid-esales/oxideshop-unified-namespace-generator": true,
+            "oxid-esales/oxideshop-composer-plugin": true
+        }
+    }
+}
