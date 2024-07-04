@@ -1,0 +1,29 @@
+{% set fatchipComputopConfig = oViewConf.getFatchipComputopConfig() %}
+{% set sToken = oViewConf.getSessionChallengeToken() %}
+{% set aPayload = oViewConf.getPayload() %}
+<div class="amazonpay-button {{ buttonclass }} nonexpress" id="{{ buttonId }}"></div>
+<script src="https://static-eu.payments-amazon.com/checkout.js"></script>
+{% capture assign = "fatchip_computop_amazonpay_script_amazonbutton" %}
+    console.log('Button Captured');
+    console.log('ButtonID:' + {{ buttonId }});
+    console.log('vars:');
+    console.log('merchantId:' + '{{ fatchipComputopConfig.merchantID }}');
+    console.log('publicKeyId:' + '{{ fatchipComputopConfig.amazonpayPubKeyId }}');
+    console.log('ledgerCurrency:' + 'EUR');
+    console.log('checkoutLanguage:' + 'DE_de');
+
+    if (typeof {{ buttonId }}_is_rendered === "undefined" || {{ buttonId }}_is_rendered !== true) {
+        var fatchipComputopAmazonPayButton = amazon.Pay.renderButton('#{{ buttonId }}', {
+            merchantId: '{{ fatchipComputopConfig.merchantID }}',
+            publicKeyId : '{{ fatchipComputopConfig.amazonpayPubKeyId }}',
+            ledgerCurrency: '{{ oViewConf.getLedgerCurrency() }}',
+            checkoutLanguage: '{{ oViewConf.getCheckoutLanguage() }}',
+            productType: 'PayAndShip',
+            placement: 'Checkout'
+        });
+        FatchipComputopAmazonPayButtonComponent.init(fatchipComputopAmazonPayButton, '{{ aPayload|raw }}', '{{ oViewConf.signature|raw }}');
+        // FatchipComputopAmazonPayCheckoutAGBComponent.init();
+    {{ buttonId }}_is_rendered = true;
+    }
+{% endcapture %}
+{{ script({ add: fatchip_computop_amazonpay_script_amazonbutton, dynamic: __oxid_include_dynamic }) }}

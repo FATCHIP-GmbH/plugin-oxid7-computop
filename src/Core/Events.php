@@ -67,7 +67,7 @@ class Events
     }
 
     /**
-     * Add order attributes
+     * Add payment methods
      */
     protected static function updateFatchipComputopOrderAttributes()
     {
@@ -92,7 +92,7 @@ class Events
     }
 
     /**
-     * Add payment methods and descriptions
+     * Add payment methods
      */
     protected static function addFatchipComputopPaymentMethods()
     {
@@ -107,8 +107,7 @@ class Events
     }
 
     /**
-     * @param string $paymentId
-     * @param string[] $paymentDescription
+     * @param string[][] $paymentDescription
      *
      * @throws Exception
      */
@@ -274,6 +273,7 @@ class Events
      */
     public static function onDeactivate()
     {
+        $test = 1;
     }
 
     /**

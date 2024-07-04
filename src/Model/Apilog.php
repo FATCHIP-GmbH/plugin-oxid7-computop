@@ -18,7 +18,6 @@
  *
  * @category   Payment
  * @package    fatchip-gmbh/computop_payments
- * @subpackage Models_FatchipComputopApilog
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2024 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License

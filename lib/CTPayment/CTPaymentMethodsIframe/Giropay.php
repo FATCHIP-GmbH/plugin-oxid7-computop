@@ -120,15 +120,6 @@ class Giropay extends CTPaymentMethodIframe
     }
 
     /**
-     * returns the paymentURL
-     * @return string
-     */
-    public function getHTTPGetURL()
-    {
-        return 'https://www.computop-paygate.com/giropay.aspx';
-    }
-
-    /**
      * @ignore <description>
      * @param string $AccBank
      */

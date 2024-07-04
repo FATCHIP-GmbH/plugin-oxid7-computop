@@ -1,0 +1,10 @@
+{% extends "widget/minibasket/minibasket.html.twig" %}
+
+{% block minibasket_top_functions %}
+    {{ parent() }}
+    <div>Stefan APex was here</div>
+    {# if oViewConf.PaypalActive() #}
+        {% include "@fatchip_computop_payments/fatchip_computop/minibasket_top_functions" %}
+    <div>After include minibasket_functions</div>
+    {# endif #}
+{% endblock %}

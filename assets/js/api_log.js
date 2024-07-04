@@ -9,6 +9,7 @@ $(function () {
 
 $('body')
     .on('mousedown', '.popover', function(e) {
+        console.log("clicked inside popover")
         e.preventDefault()
     });
 

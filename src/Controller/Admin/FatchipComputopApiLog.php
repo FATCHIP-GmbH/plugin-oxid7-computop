@@ -18,7 +18,6 @@
  *
  * @category   Payment
  * @package    fatchip-gmbh/computop_payments
- * @subpackage Admin_FatchipComputopApilog
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2024 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -50,6 +49,7 @@ class FatchipComputopApiLog extends AdminController
      */
     public function render()
     {
+        // TODO add Paging
         $offset = Registry::getRequest()->getRequestEscapedParameter('offset');
         $limit = Registry::getRequest()->getRequestEscapedParameter('limit');
         $APILogEntries = $this->getAPILogs($offset, $limit);

@@ -246,7 +246,6 @@ class CTPaymentService extends Encryption
             'REDIRECT',
             $response
         );
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -255,13 +254,14 @@ class CTPaymentService extends Encryption
             $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
                 . 'index.php?cl=order&fnc=execute&action=result&stoken='
                 . Registry::getSession()->getSessionChallengeToken();
-                // $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute';
                 break;
             case CTEnumStatus::FAILED:
                 $this->fatchipComputopSession->setVariable('FatchipComputopErrorCode', $response->getCode());
                 $this->fatchipComputopSession->setVariable('FatchipComputopErrorMessage', $response->getDescription());
                 $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
                 $returnUrl = $sShopUrl . 'index.php?cl=payment';
+
+                Registry::getSession()->deleteVariable('sess_challenge');
                 break;
         }
         Registry::getUtils()->redirect($returnUrl, false, 301);

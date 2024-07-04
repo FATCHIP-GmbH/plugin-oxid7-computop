@@ -1,0 +1,146 @@
+.btn-fatchip_computop{
+    background-color: #00395a !important;
+    border-color: #FFFFFF;
+    color: #ffffff  !important;
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-bottom: 15px;  
+}
+
+.btn-fatchip_computop-fixed {
+    width: 400px;
+}
+
+.fatchip_computop-menu-container{
+    margin-top:15px;
+}
+.fatchip_computop-menu-container > li{
+    margin-bottom:20px;
+    border-radius:3px;
+}
+.fatchip_computop-menu-container > li > a {
+    background-color:#00395a;
+    border-radius:3px;
+    color:#fff;
+}
+.fatchip_computop-menu-container > li > a:hover,
+.fatchip_computop-menu-container > li > a:focus{
+    background-color:#eee;
+    color:#00395a;
+}
+.fatchip_computop-menu-container > li > a[aria-expanded="true"]{
+    border-bottom-left-radius:0px;
+    border-bottom-right-radius:0px;
+}
+.fatchip_computop-menu-container > li > a .glyphicon.glyphicon-chevron-right{
+    float:right;
+    color:#fff;
+}
+.fatchip_computop-menu-container > li > a .glyphicon.glyphicon-chevron-down{
+    float:right;
+    color:#fff;
+    display:none;
+}
+.fatchip_computop-menu-container > li > a.open-menu .glyphicon.glyphicon-chevron-right{
+    display:none;
+}
+.fatchip_computop-menu-container > li > a.open-menu .glyphicon.glyphicon-chevron-down{
+    display:inline-block;
+}
+.fatchip_computop-menu-container > li a .glyphicon.glyphicon-arrow-right {
+    font-size:11px;
+    margin-right:10px;
+    color:inherit;
+}
+.fatchip_computop-menu-container > li > ul{
+    border:1px solid #00395a;
+    padding-bottom:2px;
+    border-bottom-left-radius:3px;
+    border-bottom-right-radius:3px;
+}
+.fatchip_computop-menu-container > li > ul a{
+    background-color:#fff;
+}
+.fatchip_computop-menu-container > li > ul a.open-menu{
+    background-color:#eee;
+}
+.fatchip_computop-menu-container > li > ul a .glyphicon.glyphicon-chevron-right{
+    float:right;
+    color:#00395a;
+}
+.fatchip_computop-menu-container > li > ul a .glyphicon.glyphicon-chevron-down{
+    float:right;
+    color:#00395a;
+    display:none;
+}
+.fatchip_computop-menu-container > li > ul a.open-menu .glyphicon.glyphicon-chevron-right{
+    display:none;
+}
+.fatchip_computop-menu-container > li > ul a.open-menu .glyphicon.glyphicon-chevron-down{
+    display:inline-block;
+}
+.fatchip_computop-menu-container > li ul li a.fatchip_computop-submenu{
+    padding-left:45px;
+    background-color:#fff;
+}
+
+.fatchip_computop-submenu {
+    background-color: #00395a;
+    border-color: #FFFFFF;
+}
+
+#fatchip_computop-settings-level{
+    margin-bottom:0px;
+}
+#fatchip_computop-settings-level .caret{
+    margin-left:5px;
+}
+#fatchip_computop-settings-level:hover{
+    border-color:#00395a;
+}
+.btn-fatchip_computop,
+.btn-fatchip_computop:hover,
+.btn-fatchip_computop:active{
+    border: none;
+}
+
+.form-horizontal .control-label.text-left{
+    text-align: left;
+}
+
+#data{
+    font-size: 12px;
+    color: #FFFFFF;
+    background-color: #000000;        
+    margin-top: 15px;
+    width: 640px;
+    height: 300px;
+}
+.glyphicon{
+    margin-right: 10px;
+}
+
+.popover{
+    max-width: 400px;
+    white-space: pre-wrap
+
+    
+}
+
+.popover-title {
+    color: #FFFFFF;
+    background-color: #00395a;
+    font-size: 14px;
+}
+.popover-content {
+   font-size: 12px;
+   white-space: pre-wrap;
+   word-wrap: break-word;      /* IE */    
+
+}

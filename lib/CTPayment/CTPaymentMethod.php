@@ -1,6 +1,4 @@
-<?php /** @noinspection MissingService */
-/** @noinspection PhpUnused */
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+<?php
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -25,6 +23,7 @@
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
+
 namespace Fatchip\CTPayment;
 
 use Exception;

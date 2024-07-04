@@ -148,6 +148,7 @@ class PaypalStandard extends CTPaymentMethodIframe
         $this->setUrlSuccess($urlSuccess);
         $this->setUrlFailure($urlFailure);
         $this->setUrlNotify($urlNotify);
+        //TODO: Check if this should always be order
         $this->setTxType('Order');
         $this->setCapture('MANUAL');
     }

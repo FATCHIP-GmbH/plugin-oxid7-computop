@@ -66,6 +66,7 @@ class FatchipComputopConfig extends AdminController
             CTPaymentConfigForms::formAmazonSelectElements, CTPaymentConfigForms::formBonitaetElements,
             CTPaymentConfigForms::formBonitaetSelectElements, CTPaymentConfigForms::formKlarnaTextElements,
             $configArr);
+        $test = array_replace_recursive($configArr, CTPaymentConfigForms::formGeneralSelectElements );
         $this->addTplParam('config', $merged);
 
         $thisTemplate = parent::render();
@@ -176,6 +177,7 @@ class FatchipComputopConfig extends AdminController
      */
     public function checkHealth($config)
     {
+        $test = $this->apiTest($config->toArray());
         if (
             !$config->getMerchantID() ||
             !$config->getBlowfishPassword() ||

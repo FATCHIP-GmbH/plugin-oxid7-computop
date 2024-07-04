@@ -162,7 +162,6 @@ class Ideal extends CTPaymentMethodIframe
             // $this->Custom = 'session=' . Shopware()->Session()->get('sessionId');
         // } else {
             $this->Custom = '';
-        // }
     }
 
 }

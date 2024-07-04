@@ -18,7 +18,6 @@
  *
  * @category   Payment
  * @package    fatchip-gmbh/computop_payments
- * @subpackage Models_FatchipComputopApilog
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2024 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -35,7 +34,7 @@ use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 
 /**
- *  used for API Log
+ * handles amazon checkout ajax calls
  */
 class FatchipComputopAjaxApiLog extends AdminController
 {
@@ -60,6 +59,8 @@ class FatchipComputopAjaxApiLog extends AdminController
 
     protected function getAPILogs($offset, $limit)
     {
+        // $reflection = new \ReflectionClass(CTPaymentConfigForms::class);
+        // $config = $reflection->getConstants();
         $container = ContainerFactory::getInstance()->getContainer();
         $queryBuilderFactory = $container->get(QueryBuilderFactoryInterface::class);
 
@@ -69,6 +70,11 @@ class FatchipComputopAjaxApiLog extends AdminController
             ->select('*')
             ->from(Constants::APILOG_TABLE)
             ->where('1');
+//            ->andWhere('oxblockname = :name')
+//            ->setParameters([
+//                'shopId'    => $shopId,
+//                'name'      => $name,
+//            ]);
 
         $APILogEntries = $queryBuilder->execute();
         $apiLogs = $APILogEntries->fetchAll();

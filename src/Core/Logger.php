@@ -18,9 +18,9 @@
  *
  * @category   Payment
  * @package    fatchip-gmbh/computop_payments
- * @subpackage Admin_FatchipComputopApilog
+ * @subpackage Admin_FatchipComputopConfig
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2024 Computop
+ * @copyright  2024 Computop UpdateIdealIssuers
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
@@ -28,7 +28,7 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Exception;
-use Fatchip\ComputopPayments\Model\FatchipComputopApilog;
+use Fatchip\ComputopPayments\Model\Apilog;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonoLogLogger;
@@ -58,7 +58,7 @@ class Logger extends AbstractLogger
 
     public function logRequestResponse($requestParams, $paymentName, $requestType, $response)
     {
-        $logMessage = new FatchipComputopApiLog();
+        $logMessage = new Apilog();
         $logMessage->setPaymentName($paymentName);
         $logMessage->setCreationDate(date('Y-m-d H-i-s'));
         $logMessage->setRequest($requestType);

@@ -18,7 +18,6 @@
  *
  * @category   Payment
  * @package    fatchip-gmbh/computop_payments
- * @subpackage Admin_FatchipComputopApilog
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2024 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -27,6 +26,8 @@
 
 namespace Fatchip\ComputopPayments\Controller\Admin;
 
+use Exception;
+use Fatchip\ComputopPayments\Core\Config;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use Fatchip\CTPayment\CTAPITestService;
 
@@ -39,7 +40,7 @@ class FatchipComputopApiTest extends AdminController
 
     public function __construct()
     {
-        $config = new \Fatchip\ComputopPayments\Core\Config();
+        $config = new Config();
         $this->config = $config->toArray();
         parent::__construct();
     }

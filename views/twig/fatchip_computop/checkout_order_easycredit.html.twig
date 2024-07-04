@@ -1,0 +1,47 @@
+<h2 class="h4 card-header card-title card-header-edit d-flex justify-content-between align-items-center">
+    {{ translate({ ident: "FATCHIP_COMPUTOP_EASYCREDIT_INFORMATION" }) }}
+</h2>
+
+<div class="card-body">
+    <table class="table table-striped">
+        <tr>
+            <td width="40%">Kaufbetrag:</td>
+            <td width="40%">{{ FatchipComputopEasyCreditInformation.bestellwert|number_format(2, ',','') }}</td>
+        </tr>
+        <tr>
+            <td width="40%">+ Zinsen:</td>
+            <td width="40%">{{ FatchipComputopEasyCreditInformation.anfallendeZinsen|number_format(2, ',','') }}</td>
+        </tr>
+        <tr>
+            <td width="40%"><b>= Gesamtbetrag:</b></td>
+            <td width="40%"><b>{{ FatchipComputopEasyCreditInformation.gesamtsumme|number_format(2, ',','') }}</b></td>
+        </tr>
+        <tr>
+            <td width="40%">Ihre monatliche Rate{/s}:</td>
+            <td width="40%">{{ FatchipComputopEasyCreditInformation.betragRate|number_format(2, ',','') }}</td>
+        </tr>
+        <tr>
+            <td width="40%">letzte Rate:</td>
+            <td width="40%">{{ FatchipComputopEasyCreditInformation.betragLetzteRate|number_format(2, ',','') }}</td>
+        </tr>
+        <tr>
+            <td width="40%">Sollzinssatz p.a. fest für die gesamte Laufzeit:</td>
+            <td width="40%">{{ FatchipComputopEasyCreditInformation.nominalzins|number_format(2, ',','') }}%</td>
+        </tr>
+        <tr>
+            <td width="40%">effektiver Jahreszins:</td>
+            <td width="40%">{{ FatchipComputopEasyCreditInformation.effektivzins|number_format(2, ',','') }}%</td>
+        </tr>
+        <tr>
+            <td width="40%" colspan="2">{{ FatchipComputopEasyCreditInformation.tilgungsplanText }}</td>
+        </tr>
+        <tr>
+            <td width="40%"><a href="{{ FatchipComputopEasyCreditInformation.urlVorvertraglicheInformationen }}">
+                    Vorvertragliche Informationen
+                </a>
+            </td>
+        </tr>
+    </table>
+
+</div>
+

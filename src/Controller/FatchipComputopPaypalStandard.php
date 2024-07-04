@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpUnused */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -19,50 +18,14 @@
  *
  * @category   Payment
  * @package    FatchipCTPayment
- * @subpackage CTPaymentMethods
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
-namespace Fatchip\CTPayment\CTPaymentMethods;
 
-use Fatchip\CTPayment\CTPaymentMethod;
+namespace Fatchip\ComputopPayments\Controller;
 
-/**
- * Class PaypalExpress
- * @package Fatchip\CTPayment\CTPaymentMethods
- */
-class PaypalExpress extends CTPaymentMethod
+class FatchipComputopPaypalStandard extends FatchipComputopPayments
 {
-    const paymentClass = 'PaypalExpress';
-
-    /**
-     * returns PaymentURL
-     * @return string
-     */
-    public function getCTPaymentURL()
-    {
-        return 'https://www.computop-paygate.com/paypalComplete.aspx';
-    }
-
-    /**
-     * @param $payID
-     * @param $transID
-     * @param $amount
-     * @param $currency
-     * @return array
-     */
-    public function getPaypalExpressCompleteParams($payID, $transID, $amount, $currency)
-    {
-        $params = [
-            'PayID' => $payID,
-            'MerchantID' => $this->merchantID,
-            'TransID' => $transID,
-            'Amount' => $amount,
-            'Currency' => $currency,
-        ];
-
-        return $params;
-    }
 }

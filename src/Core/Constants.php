@@ -45,7 +45,8 @@ class Constants
         'fatchip_computop_klarna',
         'fatchip_computop_giropay',
         'fatchip_computop_paypal_standard',
-        'fatchip_computop_easycredit'
+        'fatchip_computop_easycredit',
+        'fatchip_computop_twint'
     ];
 
     const amazonpayPaymentId = 'fatchip_computop_amazonpay';
