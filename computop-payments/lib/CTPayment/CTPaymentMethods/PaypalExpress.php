@@ -19,7 +19,7 @@
  *
  * @category   Payment
  * @package    FatchipCTPayment
- * @subpackage CTPaymentMethodsIframe
+ * @subpackage CTPaymentMethods
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -27,29 +27,42 @@
  */
 namespace Fatchip\CTPayment\CTPaymentMethods;
 
-use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethod;
 
 /**
- * Class LastschriftDirekt
- * @package Fatchip\CTPayment\CTPaymentMethodsIframe
+ * Class PaypalExpress
+ * @package Fatchip\CTPayment\CTPaymentMethods
  */
-class Giropay extends CTPaymentMethod
+class PaypalExpress extends CTPaymentMethod
 {
-    const paymentClass = 'Giropay';
-    /**
-     * 2. Zeile der Warenbeschreibung, die auf dem Kontoauszug erscheint (27 Zei-chen).
-     *
-     * @var string
-     */
-    protected $orderDesc2;
+    const paymentClass = 'PaypalExpress';
 
     /**
-     * returns the paymentURL
+     * returns PaymentURL
      * @return string
      */
     public function getCTPaymentURL()
     {
-        return 'https://www.computop-paygate.com/giropay.aspx';
+        return 'https://www.computop-paygate.com/paypalComplete.aspx';
+    }
+
+    /**
+     * @param $payID
+     * @param $transID
+     * @param $amount
+     * @param $currency
+     * @return array
+     */
+    public function getPaypalExpressCompleteParams($payID, $transID, $amount, $currency)
+    {
+        $params = [
+            'PayID' => $payID,
+            'MerchantID' => $this->merchantID,
+            'TransID' => $transID,
+            'Amount' => $amount,
+            'Currency' => $currency,
+        ];
+
+        return $params;
     }
 }
