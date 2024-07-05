@@ -4,7 +4,7 @@
 {% set sToken = oViewConf.getSessionChallengeToken() %}
 {% set aPayload = oViewConf.getPayload() %}
 #}
-<div>Stefan paypalbutton was here</div>
+
 <div class="paypal_button {{ buttonclass }} nonexpress" id="{{ buttonId }}"></div>
 {% capture assign = "fatchip_computop_script_paypalbutton" %}
     if (typeof {{ buttonId }}_is_rendered === "undefined" || {{ buttonId }}_is_rendered !== true) {
@@ -14,7 +14,6 @@ let mid = "fatchip_oxid7";
 let len = "607";
 let data = "c47fbb3496f7df4fa6a8d17741a50a4e5ab7890e583cc42051c316991575ac827a1d7d606cf8dd8f81f00dcd54f804411a4442553a36f3aa3967ff84cdb44c5f219324e39fe3df41a8859b24137747c22fec13d310eaa6d22625b83fa55cd74d8dbb94b38b68b1d455d27222c6bc4b25eb2cb63c03177813334315b41a3ecf20948fc1020fabd4b75ab7890e583cc420033a333a2168e2411456c7bdaddc06f65a9ce61286a1edcc0b473e24a93f87d4299d55f20e1aa2ea3b3bb8f83d64fbfb1407a128ab87373b1e82f30f651f2a2276ddd250761456c0a21d51d4d06295ddb7856b32299d018bffb813eb6a54b7f81fc32703979fb456f94a3f35a8c7133e2356e7871d9027b99f7849b60dd10417b529f12a6d2e673f2f066be8a1acfb2e72998c862633a41c91112ac8fc9cdaff521222cb03618b501fc32703979fb456f94a3f35a8c7133e2356e7871d9027b99f7849b60dd10417b529f12a6d2e673f2f066be8a1acfb2ebef66acd96807f485bc1f22b8138aa5b701127781c59db3810978045c379a1131151fd15d0088ab03828ea502dfd6da41eb76ce2ce5964a26748e360b16d4e3047ea05ed6e88e8ebd30583e4473dc0b6233e67bb94dfdced0ca07d0306168e0a1a464cd3a1ffa6e5f7d1c5e4a9cfd693ae6137e16a37075a24b85a001d64eefdf63736149a032108a5d801568c89e217502d3fbcf04ee4f30d0cacf50c6b1e72f681cf913bc40c760166c98bb270407a944826446309636fe65edbb271bca84724410322266489b59ab1123fa5969f2203874846dba82c0ea0e82a81f0f09ed864a05be6d02a0d6605d606245baec93628b8a0a5f0248d5e0bd8c59a36368239";
 let payid;
- alert('capture');
 
 if (len != '' && data != '') {
     // Set the request parameter MerchantID, Len and Data
