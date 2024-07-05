@@ -206,7 +206,7 @@ class Events
     protected static function createFatchipComputopApiLogTable()
     {
         $sql = '
-        
+
         CREATE TABLE IF NOT EXISTS `fatchip_computop_api_log` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `request` varchar(255) DEFAULT NULL,
@@ -233,7 +233,7 @@ class Events
     {
         $sql = '
             CREATE TABLE IF NOT EXISTS `fatchip_computop_ideal_issuers` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `oxid` char(32) NOT NULL,
                 `issuer_id` varchar(11) NOT NULL,
                 `name` varchar(128) NOT NULL,
                 `land` varchar(128) NOT NULL,

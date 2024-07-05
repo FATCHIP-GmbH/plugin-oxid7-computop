@@ -28,7 +28,9 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Model\IdealIssuers;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Core\Model\ListModel;
 
 /**
  * @mixin \OxidEsales\Eshop\Application\Controller\PaymentController
@@ -171,6 +173,23 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         }
 
         return $aReturn;
+    }
+
+    /**
+     * List for PaymentView
+     * @return array|false
+     */
+    public function getIdealIssuers() {
+        $oIdealIssuers = oxNew(IdealIssuers::class);
+        $sql = $oIdealIssuers->buildSelectString();
+        $oList = oxNew(ListModel::class);
+        $oList->init(IdealIssuers::class);
+        $oList->selectString($sql);
+        $oIssuerList = $oList->getArray();
+        if ($oIssuerList) {
+            return $oIssuerList;
+        }
+        return false;
     }
 
 }

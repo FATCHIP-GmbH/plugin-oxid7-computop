@@ -29,6 +29,7 @@ namespace Fatchip\CTPayment;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Exception\StandardException AS Exception;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
+use OxidEsales\Eshop\Core\Registry;
 
 /**
  * Class CTAPITestService.
@@ -255,7 +256,7 @@ class CTAPITestService extends Encryption
         foreach ($issuerList AS $issuer) {
             $data = explode(',', $issuer);
                 if (!empty($data[0])) {
-                $issuers[$i]['id'] = $i;
+                $issuers[$i]['oxid'] = Registry::getUtilsObject()->generateUId();
                 $issuers[$i]['issuer_id'] = $data[0];
                 $issuers[$i]['name'] = $data[1];
                 $issuers[$i]['land'] = $data[2];
@@ -270,9 +271,9 @@ class CTAPITestService extends Encryption
                 $issuer['land'] = 'NL';
             }
         $sql = '
-            INSERT INTO `fatchip_computop_ideal_issuers` (`id`, `issuer_id`, `name`, `land`) VALUES
-            ("' . $issuer['id'] . '", "' . $issuer['issuer_id'] . '", "' . $issuer['name']  . '", "' . $issuer['land'] . '")
-                                                                                                           
+            INSERT INTO `fatchip_computop_ideal_issuers` (`oxid`, `issuer_id`, `name`, `land`) VALUES
+            ("' . $issuer['oxid'] . '", "' . $issuer['issuer_id'] . '", "' . $issuer['name']  . '", "' . $issuer['land'] . '")
+
             ;';
 
             // replace netherland with NL
