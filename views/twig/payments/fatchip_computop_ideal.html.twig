@@ -1,14 +1,15 @@
 <div class="payment-option">
     {% set dynvalue = oView.getDynValue() %}
+    {% set config = oViewConf.getConfig() %}
     <div class="payment-option-form">
         <input class="form-check-input" id="payment_{{ sPaymentID }}" type="radio" name="paymentid"
                value="{{ sPaymentID }}"{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} checked{% endif %}>
         <label
                 for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
-
+        {% if oView.idealDirektOderUeberSofort()  == 'DIREKT' %}
         <div class="payment-option-info{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} activePayment{% endif %}">
             <select id="payment_{{ sPaymentID }}_1" name="dynvalue[fatchip_computop_ideal_bankname]" value="{{ dynvalue.fatchip_computop_ideal_bankname }}" required>
-            <option disabled="disabled" value="" selected="selected">Bankgruppe</option>
+                <option disabled="disabled" value="" selected="selected">Bankgruppe</option>
                 {% if oView.getIdealIssuers() is iterable %}
                     {% for issuer in oView.getIdealIssuers() %}
                         <option value="{{ issuer.fatchip_computop_ideal_issuers__issuer_id.value }}">{{ issuer.fatchip_computop_ideal_issuers__name.value }}</option>
@@ -28,7 +29,7 @@
                 {% endif %}
             {% endblock %}
         </div>
-
+        {% endif %}
     </div>
     {% if paymentmethod.getPrice() %}
         <div class="payment-option-price">

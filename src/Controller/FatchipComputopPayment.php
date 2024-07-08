@@ -28,12 +28,18 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
+use Fatchip\ComputopPayments\Service\ModuleSettings;
+use OxidEsales\Eshop\Application\Controller\PaymentController;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Core\Model\ListModel;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
+use Symfony\Component\String\UnicodeString;
 
 /**
- * @mixin \OxidEsales\Eshop\Application\Controller\PaymentController
+ * @mixin PaymentController
  */
 class FatchipComputopPayment extends FatchipComputopPayment_parent
 {
@@ -192,4 +198,13 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         return false;
     }
 
+    /**
+     * @return UnicodeString
+     */
+    public function idealDirektOderUeberSofort() {
+        /** @var ModuleSettings $moduleSettings */
+        $moduleSettingService = ContainerFacade::get(ModuleSettingServiceInterface::class);
+        return $moduleSettingService->getString('idealDirektOderUeberSofort', Constants::MODULE_ID);
+
+    }
 }
