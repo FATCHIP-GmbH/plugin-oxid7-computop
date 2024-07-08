@@ -1,54 +1,117 @@
 {% include "headitem.html.twig" with {title: "fatchip_computop"} %}
+{% set sModuleId = '@' ~ constant('\\Fatchip\\ComputopPayments\\Core\\Constants::MODULE_ID') %}
 
-<div id="content" class="fatchip-computop-config">
-    <h1>{{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT" }) }}</h1>
-    <div class="alert alert-{% if Errors.fatchip_computop_error %}danger{% else %}success{% endif %}" role="alert">
-        {% if Errors.fatchip_computop_error %}
-            {{ translate({ ident: "FATCHIP_COMPUTOP_ERR_CONF_INVALID" }) }}:
-            {% for key, oEr in Errors.fatchip_computop_error %}
-                <p>{{ oEr.getOxMessage()|raw }}</p>
-            {% endfor %}
-        {% else %}
-            {{ translate({ ident: "FATCHIP_COMPUTOP_CONF_VALID" }) }}
-        {% endif %}
+<div id="content" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT" }) }}</h1>
+
+            <div class="alert alert-{% if Errors.fatchip_computop_error %}danger{% else %}success{% endif %} mb-3" role="alert">
+                {% if Errors.fatchip_computop_error %}
+                    {{ translate({ ident: "FATCHIP_COMPUTOP_ERR_CONF_INVALID" }) }}:
+                    <ul class="list-unstyled">
+                        {% for key, oEr in Errors.fatchip_computop_error %}
+                            <li>{{ oEr.getOxMessage()|raw }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    {{ translate({ ident: "FATCHIP_COMPUTOP_CONF_VALID" }) }}
+                {% endif %}
+            </div>
+        </div>
     </div>
 
-    <form action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+    <form action="{{ oViewConf.getSelfLink()|raw }}" method="post" class="panel-group" id="accordion">
         {{ oViewConf.getHiddenSid()|raw }}
         <input type="hidden" name="cl" value="{{ oViewConf.getActiveClassName() }}">
         <input type="hidden" name="fnc" value="save">
 
-        {% for item,value in config %}
-            {% if value.type == 'text' %}
-            <div class="form-group">
-                <label for="{{ value.name }}">{{ value.label|raw }}</label>
-                    <div class="controls">
-                        <input type="text" class="form-control" name="conf[{{ value.name }}]" value="{{ value.current_value }}" id="{{ value.name }}">
-                        <span class="help-block">{{ value.description|raw }}</span>
-                    </div>
-            </div>
-            {% elseif value.type == 'select' %}
-                <div class="form-group">
-                    <label for="{{ value.name }}">{{ value.label|raw }}</label>
-                    <div class="controls">
-                        <select name="conf[{{ value.name }}]" id="{{ value.name }}" class="form-control">
-                            {% for option,optionvalues in value.store %}
-                            <option value="{{ optionvalues.0.0  }}"  {% if value.current_value == optionvalues.0.0 %}selected{% endif %}>
-                                {{ optionvalues.0.0|raw  }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                        <span class="help-block">{{ value.description|raw }}</span>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
+        {# General Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingGeneral',
+            'collapseId': 'collapseGeneral',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_GENERAL_SETTINGS" }),
+            'formFields': generalFormFields,
+            'currentBlock': 'general',
+            'expanded': true
+        } %}
 
-        <div class="form-group">
-            <button type="submit" name="saveButton" class="btn btn-default bottom-space">Speichern</button>
-        </div>
-        <div class="form-group">
-            <button type="submit" name="idealButton" class="btn btn-default bottom-space">Update Ideal Issuers</button>
+        {# Credit Card Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingCreditCard',
+            'collapseId': 'collapseCreditCard',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_CREDIT_CARD_SETTINGS" }),
+            'formFields': creditCardFormFields,
+            'currentBlock': 'creditcard'
+        } %}
+
+        {# iDEAL Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingIdeal',
+            'collapseId': 'collapseIdeal',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_IDEAL_SETTINGS" }),
+            'formFields': idealFormFields,
+            'currentBlock': 'ideal'
+        } %}
+
+        {# PayPal Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingPayPal',
+            'collapseId': 'collapsePayPal',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_PAYPAL_SETTINGS" }),
+            'formFields': payPalFormFields,
+            'currentBlock': 'paypal'
+        } %}
+
+        {# Direct Debit (Lastschrift) Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingLastschrift',
+            'collapseId': 'collapseLastschrift',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_DIRECT_DEBIT_SETTINGS" }),
+            'formFields': lastschriftFormFields,
+            'currentBlock': 'lastschrift'
+        } %}
+
+        {# Paydirekt Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingPaydirekt',
+            'collapseId': 'collapsePaydirekt',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_PAYDIREKT_SETTINGS" }),
+            'formFields': payDirektFormFields,
+            'currentBlock': 'paydirekt'
+        } %}
+
+        {# Amazon Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingAmazon',
+            'collapseId': 'collapseAmazon',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_AMAZON_SETTINGS" }),
+            'formFields': amazonFormFields,
+            'currentBlock': 'amazon'
+        } %}
+
+        {# Bonitaet Settings #}
+        {#  % include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingBonitaet',
+            'collapseId': 'collapseBonitaet',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_BONITAET_SETTINGS" }),
+            'formFields': bonitaetFormFields,
+            'currentBlock': 'bonitaet'
+        } % #}
+
+        {# Klarna Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingKlarna',
+            'collapseId': 'collapseKlarna',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_KLARNA_SETTINGS" }),
+            'formFields': klarnaFormFields,
+            'currentBlock': 'klarna'
+        } %}
+
+        <div class="form-group row mt-3">
+            <div class="col-md-12 text-center">
+                <button type="submit" name="saveButton" class="btn btn-primary">Speichern</button>
+            </div>
         </div>
     </form>
 </div>

@@ -1,0 +1,28 @@
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="{{ headingId }}">
+        <h4 class="panel-title">
+            <a class="{% if not expanded %}collapsed{% endif %}" data-toggle="collapse" data-parent="#accordion" href="#{{ collapseId }}" aria-expanded="{{ expanded ? 'true' : 'false' }}" aria-controls="{{ collapseId }}">
+                {{ title }}
+            </a>
+        </h4>
+    </div>
+    <div id="{{ collapseId }}" class="panel-collapse collapse {% if expanded %}in{% endif %}" role="tabpanel" aria-labelledby="{{ headingId }}">
+        <div class="panel-body">
+            {% for item, value in formFields %}
+                {% include sModuleId ~ "/admin/fatchip_computop_form_field.html.twig" with {'value': value, 'currentBlock': currentBlock} %}
+            {% endfor %}
+
+            {# Button for iDEAL Settings #}
+            {% if currentBlock == 'ideal' %}
+                <div class="form-group row mt-3">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" name="idealButton" class="btn btn-secondary ml-3">Update iDeal Banken</button>
+                        <button type="button" class="btn btn-sm btn-info" data-toggle="popover" data-trigger="focus" title="Hilfe" data-content="Die iDeal Issuers sind nur bei einer Direktanbindung nötig und werden automatisch beim Installieren des Plugins abgefragt. Hier können Sie bei Änderungen die Bankenliste aktualisieren.">
+                            <i class="fa fa-question-circle"></i> Hilfe
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

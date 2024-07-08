@@ -1,6 +1,7 @@
 {% extends "headitem.html.twig" %}
 
 {% block admin_headitem_inccss %}
+
     {% if title|lower == "fatchip_computop_apilog" %}
         <link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fatchip_computop_payments', 'css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fatchip_computop_payments', 'css/bootstrap-editable.css') }}" />
@@ -13,7 +14,20 @@
         {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/bootstrap-table-de-DE.min.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
         {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/bootstrap-table-editable.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
         {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/api_log.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
-    {% else %}
+    {% elseif title|lower == "fatchip_computop" %}
+        {{ sModuleId|lower }}
+        <link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fatchip_computop_payments', 'css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fatchip_computop_payments', 'css/bootstrap-editable.css') }}" />
+        <link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fatchip_computop_payments', 'css/bootstrap-table.css') }}" />
+        <link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fatchip_computop_payments', 'css/fatchip_computop.css') }}" />
+        {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/jquery.min.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+        {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/bootstrap.min.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+        {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/bootstrap-editable.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+        {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/bootstrap-table.min.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+        {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/bootstrap-table-de-DE.min.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+        {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/bootstrap-table-editable.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+        {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/config.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+        {% else %}
         {{ parent() }}
     {% endif %}
 {% endblock %}

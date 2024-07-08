@@ -39,7 +39,7 @@ class CTPaymentConfigForms
                 'value' => '',
                 'label' => 'MerchantID',
                 'required' => true,
-                'description' => '{s name="backend/FatchipCTPayment/merchantid_desc"}Ihre Merchant Id (Benutzername){/s}',
+                'description' => 'Ihre Merchant Id (Benutzername)',
             ],
             'mac' => [
                 'name' => 'mac',
@@ -738,10 +738,10 @@ class CTPaymentConfigForms
                 'label' => 'Klarna Konto',
                 'required' => false,
                 'description' => 'Das zu benutzende Klarna Konto. <br/><br/>
-    
+
             <b>Die verfügbaren Klarna-Zahlungsarten in Abhängigkeit von der Konfiguration bei Klarna </b><br/>
             Wenn <u>Klarna PayNow</u> aktiviert ist, dann können <u>Klarna Lastschrift</u> und <u>Klarna Sofort</u> nicht aktiviert werden<br/>
-    
+
             Wenn <u>Klarna Lastschrift</u> und/oder <u>Klarna Sofort</u> aktiv ist, dann kann <u>Klarna PayNow</u> nicht aktiviert werden',
             ],
         ];

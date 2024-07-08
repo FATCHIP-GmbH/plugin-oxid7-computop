@@ -58,17 +58,50 @@ class FatchipComputopConfig extends AdminController
     {
         $config = new Config();
         $configArr = $config->toArray(true);
-        $merged = array_merge_recursive(CTPaymentConfigForms::formGeneralTextElements, CTPaymentConfigForms::formGeneralSelectElements,
-            CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardTextElements,
-            CTPaymentConfigForms::formIdealSelectElements, CTPaymentConfigForms::formLastschriftSelectElements,
-            CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements,
-            CTPaymentConfigForms::formPayPalSelectElements, CTPaymentConfigForms::formAmazonTextElements,
-            CTPaymentConfigForms::formAmazonSelectElements, CTPaymentConfigForms::formBonitaetElements,
-            CTPaymentConfigForms::formBonitaetSelectElements, CTPaymentConfigForms::formKlarnaTextElements,
-            $configArr);
-        $test = array_replace_recursive($configArr, CTPaymentConfigForms::formGeneralSelectElements );
-        $this->addTplParam('config', $merged);
 
+        // Create separate form field arrays for each payment method
+        $generalFormFields = array_merge(CTPaymentConfigForms::formGeneralTextElements, CTPaymentConfigForms::formGeneralSelectElements);
+        $creditCardFormFields = array_merge(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardTextElements);
+        $idealFormFields = CTPaymentConfigForms::formIdealSelectElements;
+        $lastschriftFormFields = CTPaymentConfigForms::formLastschriftSelectElements;
+        $payDirektFormFields = array_merge(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements);
+        $payPalFormFields = CTPaymentConfigForms::formPayPalSelectElements;
+        $amazonFormFields = array_merge(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
+        $bonitaetFormFields = array_merge(CTPaymentConfigForms::formBonitaetElements, CTPaymentConfigForms::formBonitaetSelectElements);
+        $klarnaFormFields = CTPaymentConfigForms::formKlarnaTextElements;
+
+        $mergedFormFields = array_replace_recursive(
+            $generalFormFields,
+            $creditCardFormFields,
+            $idealFormFields,
+            $lastschriftFormFields,
+            $payDirektFormFields,
+            $payPalFormFields,
+            $amazonFormFields,
+            $bonitaetFormFields,
+            $klarnaFormFields,
+            $configArr
+        );
+
+        // Split the $merged array into two halves
+        $middleIndex = ceil(count($mergedFormFields) / 2);
+        $formFields = [
+            array_slice($mergedFormFields, 0, $middleIndex),
+            array_slice($mergedFormFields, $middleIndex)
+        ];
+
+        $this->addTplParam('mergedFormFields', $mergedFormFields);
+        $this->addTplParam('formFields', $formFields);
+        $this->addTplParam('generalFormFields', $generalFormFields);
+        $this->addTplParam('creditCardFormFields', $creditCardFormFields);
+        $this->addTplParam('idealFormFields', $idealFormFields);
+        $this->addTplParam('lastschriftFormFields', $lastschriftFormFields);
+        $this->addTplParam('payDirektFormFields', $payDirektFormFields);
+        $this->addTplParam('payPalFormFields', $payPalFormFields);
+        $this->addTplParam('amazonFormFields', $amazonFormFields);
+        $this->addTplParam('bonitaetFormFields', $bonitaetFormFields);
+        $this->addTplParam('klarnaFormFields', $klarnaFormFields);
+        $this->addTplParam('config', $mergedFormFields);
         $thisTemplate = parent::render();
 
         try {
