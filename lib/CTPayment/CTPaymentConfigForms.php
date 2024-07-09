@@ -124,10 +124,7 @@ class CTPaymentConfigForms
                             'fr_FR' => 'AES chiffrement',
                         ]],
                     ],
-                'description' => 'Art der verwendeten Verschlüsselung.<BR>
-                                  Blowfish Verschlüsselung wird vom Computop Support als Standard eingerichtet.<BR>
-                                  Sollte die Blowfish Verschlüsselung (bf-cbc) bei Ihrem Hoster nicht verfügbar sein, wenden Sie sich bitte an den Computop Support und lassen Sie AES aufschalten.<BR>
-                                  Wenn seitens Computop AES aktiviert wurde, stellen Sie auf AES um und führen den API Test durch.',
+                'description' => '<p>Art der verwendeten Verschlüsselung.</p><p>Blowfish Verschlüsselung wird vom Computop Support als Standard eingerichtet.</p><p>Sollte die Blowfish Verschlüsselung (bf-cbc) bei Ihrem Hoster nicht verfügbar sein, wenden Sie sich bitte an den Computop Support und lassen Sie AES aufschalten.</p><p>Wenn seitens Computop AES aktiviert wurde, stellen Sie auf AES um.</p>',
             ],
         ];
 
@@ -146,9 +143,7 @@ class CTPaymentConfigForms
                         ['SILENT', 'Silent Mode'],
                         ['PAYMENTPAGE', 'Payment Page'],
                     ],
-                'description' => '<b>IFrame</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in einem IFrame eingegeben<BR>
-                                  <b>Silent Mode</b>: Kreditkartendaten werden auf der Seite "Prüfen und Bestellen" eingegeben.<BR>
-                                  <b>Payment Page</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in einem blanken Fenster eingegeben<BR>'
+                'description' => '<p><b>IFrame</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in einem IFrame eingegeben<BR><b>Silent Mode</b>: Kreditkartendaten werden auf der Seite "Prüfen und Bestellen" eingegeben.<BR><b>Payment Page</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in einem blanken Fenster eingegeben<BR></p>'
             ],
             'creditCardTestMode' => [
                 'name' => 'creditCardTestMode',
@@ -254,8 +249,7 @@ class CTPaymentConfigForms
                             'fr_FR' => 'manuel',
                         ]],
                     ],
-                'description' => '<b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR>
-                                  <b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
+                'description' => '<p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
             ],
             'creditCardAcquirer' => [
                 'name' => 'creditCardAcquirer',
@@ -270,9 +264,7 @@ class CTPaymentConfigForms
                         ['CAPN', 'CAPN'],
                         ['Omnipay', 'Omnipay'],
                     ],
-                'description' => '<b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR>
-                                  <b>CAPN</b>: American Express<BR>
-                                  <b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare',
+                'description' => '<p><b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR><b>CAPN</b>: American Express<BR><b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare</p>',
             ],
             'creditCardAccVerify' => [
                 'name' => 'creditCardAccVerify',
@@ -294,9 +286,7 @@ class CTPaymentConfigForms
                             'fr_FR' => 'activé',
                         ]],
                     ],
-                'description' => 'Indikator für Anforderung einer Kontoverifizierung (alias Nullwert-Authorisierung). <BR>
-                                  Bei einer angeforderten Kontoverifizierung ist der übermittelte Betrag optional und <BR>
-                                  wird für die tatsächliche Zahlungstransaktion ignoriert (z.B. Autorisierung).',
+                'description' => '<p>Indikator für Anforderung einer Kontoverifizierung (alias Nullwert-Authorisierung). <BR>Bei einer angeforderten Kontoverifizierung ist der übermittelte Betrag optional und <BR>wird für die tatsächliche Zahlungstransaktion ignoriert (z.B. Autorisierung).',
             ],
             'creditCardSilentModeBrandDetection' => [
                 'name' => 'creditCardSilentModeBrandDetection',
@@ -406,8 +396,7 @@ class CTPaymentConfigForms
                             'fr_FR' => 'manuel',
                         ]],
                     ],
-                'description' => '<b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR>
-                            <b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
+                'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
             ],
             'lastschriftAnon' => [
                 'name' => 'lastschriftAnon',
@@ -471,8 +460,7 @@ class CTPaymentConfigForms
                             'fr_FR' => 'manuel',
                         ]],
                     ],
-                'description' => '<b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR>
-                                  <b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
+                'description' => '<p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
             ],
         ];
 
@@ -502,8 +490,7 @@ class CTPaymentConfigForms
                             'fr_FR' => 'manuel',
                         ]],
                     ],
-                'description' => 'bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br>
-                                  <b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b>',
+                'description' => '<p>Bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br><b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b></p>',
             ],
             'paypalSetOrderStatus' => [
                 'name' => 'paypalSetOrderStatus',
@@ -525,7 +512,7 @@ class CTPaymentConfigForms
                             'fr_FR' => 'on',
                         ]],
                     ],
-                'description' => 'Wenn diese Option An ist, dann wird der Bestellstatus bei Paypal Bestellungen,<br>bei denen der Capture fehlschlägt, auf "Klärung notwendig" gesetzt"  <br>',
+                'description' => '<p>Wenn diese Option An ist, dann wird der Bestellstatus bei Paypal Bestellungen,<br>bei denen der Capture fehlschlägt, auf "Klärung notwendig" gesetzt"  <br></p>',
             ],
         ];
 
