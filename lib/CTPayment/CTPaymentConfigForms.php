@@ -352,7 +352,7 @@ class CTPaymentConfigForms
                         ['DIREKT', 'iDEAL Direkt'],
                         ['PPRO', 'via PPRO'],
                     ],
-                'description' => 'Ideal Zahlungen können direkt über Ideal oder über PPRO abgewickelt werden',
+                'description' => 'Die iDeal Issuers sind nur bei einer Direktanbindung nötig und werden automatisch beim Installieren des Plugins abgefragt. Hier können Sie bei Änderungen die Bankenliste aktualisieren.',
             ],
         ];
 

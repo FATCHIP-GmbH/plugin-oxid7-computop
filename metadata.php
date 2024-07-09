@@ -103,7 +103,7 @@ $aModule = [
         ['name' => 'creditCardAccVerify', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'creditCardSilentModeBrandDetection', 'type' => 'string', 'value' => false, 'group' => null],
-        ['name' => 'creditCardTemplate', 'type' => 'str', 'value' => '', 'group' => null],
+        ['name' => 'creditCardTemplate', 'type' => 'str', 'value' => 'ct_responsive', 'group' => null],
         ['name' => 'idealDirektOderUeberSofort', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'lastschriftDienst', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'lastschriftCaption', 'type' => 'str', 'value' => '', 'group' => null],
