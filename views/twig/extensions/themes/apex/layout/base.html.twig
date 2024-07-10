@@ -3,8 +3,6 @@
 {% block base_js %}
     {{ parent() }}
     {# if oViewConf.isPaypalActive() #}
-        {# script({ include: "https://www.paypal.com/sdk/js?client-id=ARCsDK7xBFxa5pnGxk8qvB0STB07fyi_yHDRrb5al6gxahj73Pxg9X2l7onP9J2IN-LqcVJojys94FLK&merchant-id=YA9TB6DNRNNUW&currency=EUR&disable-funding=giropay,sofort,sepa,card&intent=capture", priority: 40, dynamic: __oxid_include_dynamic }) #}
-    {# script({ include: "https://www.paypal.com/sdk/js?client-id=test&merchant-id=YA9TB6DNRNNUW&debug=true&currency=EUR&disable-funding=giropay,sofort,sepa,card&intent=capture", priority: 40, dynamic: __oxid_include_dynamic }) #}
     {# endif #}
     {% if oViewConf.isFatchipComputopCreditcardActive() and oViewConf.isPaymentCheckoutStep()  %}
         {# script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/fatchipComputopCreditCard.js'), priority: 30, dynamic: __oxid_include_dynamic }) #}

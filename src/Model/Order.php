@@ -230,7 +230,6 @@ class Order extends Order_parent
                 || ($this->fatchipComputopPaymentId === 'fatchip_computop_lastschrift' && $this->fatchipComputopConfig['lastschriftCaption'] === 'AUTO')
                 || ($this->fatchipComputopPaymentId === 'fatchip_computop_paypal_standard' && $this->fatchipComputopConfig['paypalCaption'] === 'AUTO')
                 || ($this->fatchipComputopPaymentId === 'fatchip_computop_paypal_express' && $this->fatchipComputopConfig['paypalCaption'] === 'AUTO')
-                || ($this->fatchipComputopPaymentId === 'fatchip_computop_giropay' && $this->fatchipComputopConfig['payDirektCaption'] === 'AUTO')
                 || ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay' && $this->fatchipComputopConfig['amazonCaptureType'] === 'AUTO')
             ))
         ) {
@@ -730,12 +729,6 @@ class Order extends Order_parent
                         'Account' => $this->fatchipComputopConfig['klarnaaccount'],
                         'bdCountryCode' => $oxisoalpha2,
                     ];
-            case "fatchip_computop_giropay":
-                return [
-                    'AccBank' => $dynValue['fatchip_computop_giropay_bankname'],
-                    'AccOwner' => $dynValue['fatchip_computop_giropay_bank_account_holder'],
-                    'IBAN' => $dynValue['fatchip_computop_giropay_iban'],
-                ];
 
             case "fatchip_computop_easycredit":
                 return [

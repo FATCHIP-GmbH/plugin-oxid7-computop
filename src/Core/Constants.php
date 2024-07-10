@@ -43,7 +43,6 @@ class Constants
 
     const redirectPayments = [
         'fatchip_computop_klarna',
-        'fatchip_computop_giropay',
         'fatchip_computop_paypal_standard',
         'fatchip_computop_easycredit',
         'fatchip_computop_twint',
@@ -80,9 +79,6 @@ class Constants
         switch ($paymentId) {
             case "fatchip_computop_lastschrift":
                 return 'Lastschrift';
-
-            case "fatchip_computop_giropay":
-                return 'Giropay';
 
             case "fatchip_computop_paypal":
                 return 'Paypal';

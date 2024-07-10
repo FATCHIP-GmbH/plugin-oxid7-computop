@@ -6,7 +6,6 @@ use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiTest;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLog;
 use Fatchip\ComputopPayments\Controller\FatchipComputopEasycredit;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopUpdateIdealIssuers;
-use Fatchip\ComputopPayments\Controller\FatchipComputopGiropay;
 use Fatchip\ComputopPayments\Controller\FatchipComputopIdeal;
 use Fatchip\ComputopPayments\Controller\FatchipComputopKlarna;
 use Fatchip\ComputopPayments\Controller\FatchipComputopLastschrift;
@@ -76,7 +75,6 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'paypal_standard' => FatchipComputopPaypalStandard::class,
         Constants::GENERAL_PREFIX . 'klarna' => FatchipComputopKlarna::class,
         Constants::GENERAL_PREFIX . 'easycredit' => FatchipComputopEasycredit::class,
-        Constants::GENERAL_PREFIX . 'giropay' => FatchipComputopGiropay::class,
         Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
         Constants::GENERAL_PREFIX . 'ideal' => FatchipComputopIdeal::class,
         Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,

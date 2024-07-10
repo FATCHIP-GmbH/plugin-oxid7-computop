@@ -533,45 +533,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     }
 
     public
-    function giropayAction()
-    {
-        $payment = $this->getPaymentClassForGatewayAction();
-        $params = $payment->getRedirectUrlParams();
-        $oUser = $this->getUser();
-        $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
-
-        $payment->setAccBank($dynValue['fatchip_computop_giropay_bankname']);
-        $payment->setAccOwner($dynValue['fatchip_computop_giropay_bank_account_holder']);
-        $payment->setIBAN($dynValue['fatchip_computop_giropay_iban']);
-
-        //$this->session->offsetSet('fatchipCTRedirectParams', $params);
-
-        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
-            $sessionID = $this->fatchipComputopSession->getId();
-            $customerId = $oUser->getId();
-            $paymentName = $this->fatchipComputopPaymentClass;
-            $basketExport = var_export($this->fatchipComputopBasket, true);
-            $this->fatchipComputopLogger->log(
-                'DEBUG',
-                'Redirecting to ' . $payment->getHTTPGetURL($params),
-                [
-                    'payment' => $paymentName,
-                    'UserID' => $customerId,
-                    'basket' => $basket,
-                    'SessionID' => $sessionID,
-                    'parmas' => $params
-                ]
-            );
-        }
-        $requestParams = $payment->getRedirectUrlParams();
-
-        $response = $payment->prepareComputopRequest($requestParams, $payment->getCTPaymentURL(), $addTemplate);
-        // $response = $payment->callComputop($requestParams, $payment->getCTPaymentURL());
-        Registry::getUtils()->redirect($response, false, 301);
-        // Registry::getUtils()->redirect($paymentUrl, false);
-    }
-
-    public
     function iDealAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
@@ -1067,12 +1028,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     'ArticleList' => $aOrderlines,
                     'Account' => $this->fatchipComputopConfig['klarnaaccount'],
                     'bdCountryCode' => $oxisoalpha2,
-                ];
-            case "fatchip_computop_giropay":
-                return [
-                    'AccBank' => $dynValue['fatchip_computop_giropay_bankname'],
-                    'AccOwner' => $dynValue['fatchip_computop_giropay_bank_account_holder'],
-                    'IBAN' => $dynValue['fatchip_computop_giropay_iban'],
                 ];
 
             case "fatchip_computop_easycredit":

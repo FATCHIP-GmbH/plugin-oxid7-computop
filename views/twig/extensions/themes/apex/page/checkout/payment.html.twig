@@ -14,8 +14,6 @@
 
     {% if sPaymentID == 'fatchip_computop_lastschrift'  %}
         {% include "@fatchip_computop_payments/payments/fatchip_computop_debitnote" %}
-    {% elseif sPaymentID == 'fatchip_computop_giropay' %}
-        {% include "@fatchip_computop_payments/payments/fatchip_computop_giropay" %}
     {% elseif sPaymentID == 'fatchip_computop_ideal' %}
         {% include "@fatchip_computop_payments/payments/fatchip_computop_ideal" %}
     {% elseif sPaymentID == 'fatchip_computop_easycredit' %}
