@@ -46,7 +46,8 @@ class Constants
         'fatchip_computop_giropay',
         'fatchip_computop_paypal_standard',
         'fatchip_computop_easycredit',
-        'fatchip_computop_twint'
+        'fatchip_computop_twint',
+        'fatchip_computop_ideal'
     ];
 
     const amazonpayPaymentId = 'fatchip_computop_amazonpay';
@@ -79,43 +80,33 @@ class Constants
         switch ($paymentId) {
             case "fatchip_computop_lastschrift":
                 return 'Lastschrift';
-                break;
 
             case "fatchip_computop_giropay":
                 return 'Giropay';
-                break;
 
             case "fatchip_computop_paypal":
                 return 'Paypal';
-                break;
 
             case "fatchip_computop_paypal_standard":
                 return 'PaypalStandard';
-                break;
 
             case "fatchip_computop_amazonpay":
                 return 'Amazonpay';
-                break;
 
             case "fatchip_computop_creditcard":
                 return 'CreditCard';
-                break;
 
             case "fatchip_computop_easycredit":
                 return 'EasyCredit';
-                break;
 
             case "fatchip_computop_ideal":
                 return 'Ideal';
-                break;
 
             case "fatchip_computop_twint":
                 return 'Twint';
-                break;
 
             case "fatchip_computop_klarna":
                 return 'KlarnaPayments';
-                break;
         }
     }
 }

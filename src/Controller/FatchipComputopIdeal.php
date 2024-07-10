@@ -29,6 +29,6 @@ namespace Fatchip\ComputopPayments\Controller;
 
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 
-class FatchipComputopIdeal extends FrontendController
+class FatchipComputopIdeal extends FatchipComputopPayments
 {
 }
