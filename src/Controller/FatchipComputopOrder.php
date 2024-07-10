@@ -186,8 +186,23 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             // if order is validated and finalized complete Order on thankyou
             if ($ret === 'thankyou') {
                 $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
-                $order->Ordernumber($response);
-                $order->updateOrderAttributes($response);
+                $orderOxId = $response->getSessionId();
+                $order = oxNew(Order::class);
+                $oUser = $this->getUser();
+                if ($order->load($orderOxId)) {
+                    /** @var \Fatchip\ComputopPayments\Model\Order $order */
+                    if (empty($order->getFieldData('oxordernr'))) {
+                        $orderNumber = $order->getFieldData('oxordernr');
+                    } else {
+                        $orderNumber = $order->getFieldData('oxordernr');
+                    }
+
+                    $order->customizeOrdernumber($response);
+                    $order->updateOrderAttributes($response);
+                    $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+                    $order->autocapture($oUser, false);
+                    // $this->updateRefNrWithComputop($order, $this->paymentClass);
+                }
             }
         }
 

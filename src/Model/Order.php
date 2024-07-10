@@ -214,7 +214,7 @@ class Order extends Order_parent
      * @param $force
      *
      */
-    protected function autoCapture($oUser, $force = false)
+    public function autoCapture($oUser, $force = false)
     {
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal') {
             $this->fatchipComputopLogger->log(
@@ -749,8 +749,10 @@ class Order extends Order_parent
                     'Account' => '',
                 ];
 
-            case "FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID":
-                break;
+            case "fatchip_computop_ideal":
+                return [
+                    'issuerID' => $dynValue['fatchip_computop_ideal_bankname'],
+                ];
         }
         return [];
     }
