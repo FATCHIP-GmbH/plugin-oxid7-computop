@@ -41,16 +41,6 @@ class CTPaymentMethods
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],
             [
-                'name' => 'fatchip_computop_giropay',
-                'shortname' => 'giropay',
-                'description' => 'Computop Giropay',
-                'action' => 'FatchipCTIdeal',
-                'template' => 'fatchip_computopideal.tpl',
-                'additionalDescription' => '',
-                'className' => 'Ideal',
-                //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
-            ],
-            [
                 'name' => 'fatchip_computop_twint',
                 'shortname' => 'Twint',
                 'description' => 'Computop Twint',
