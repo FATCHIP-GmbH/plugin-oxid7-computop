@@ -244,7 +244,6 @@ class CTResponse
      */
     protected $sdEmail;
     /**
-     * Eindeutige Identifikation des Vorgangs und aller dazugehörigen Transaktionen bei paydirekt.
      * Diese ID ist vorhanden, sobald sich ein Kunde auf der Checkout-Seite eingeloggt hat.
      *
      * @var string

@@ -104,7 +104,6 @@ class Config
 
     protected $crifmethod = null;
 
-    protected $klarnaaction = null;
 
     protected $klarnaaccount = null;
 
@@ -481,16 +480,6 @@ class Config
         return $value;
     }
 
-    /**
-     * @param null $lastschriftAnon
-     */
-    public function setLastschriftAnon($lastschriftAnon): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('klarnaaction', $lastschriftAnon, FatchipComputopModule::MODULE_ID);
-    }
 
     /**
      * @return null
@@ -699,30 +688,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('crifmethod', $crifmethod, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getKlarnaaction()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('klarnaaction', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $klarnaaction
-     */
-    public function setKlarnaaction($klarnaaction): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('klarnaaction', $klarnaaction, FatchipComputopModule::MODULE_ID);
     }
 
     /**
