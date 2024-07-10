@@ -190,7 +190,7 @@ class CTResponse
      */
     protected $Mdtseqtype;
     /**
-     * Eindeutige ID des Vorgangs bei paydirekt
+     * Eindeutige ID des Vorgangs
      *
      * @var string
      */

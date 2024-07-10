@@ -72,15 +72,6 @@
             'currentBlock': 'lastschrift'
         } %}
 
-        {# Paydirekt Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingPaydirekt',
-            'collapseId': 'collapsePaydirekt',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_PAYDIREKT_SETTINGS" }),
-            'formFields': payDirektFormFields,
-            'currentBlock': 'paydirekt'
-        } %}
-
         {# Amazon Settings #}
         {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
             'headingId': 'headingAmazon',

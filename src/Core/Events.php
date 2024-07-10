@@ -237,7 +237,7 @@ class Events
                 `issuer_id` varchar(11) NOT NULL,
                 `name` varchar(128) NOT NULL,
                 `land` varchar(128) NOT NULL,
-                PRIMARY KEY (`id`)
+                PRIMARY KEY (`oxid`)
             ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
         ';
 

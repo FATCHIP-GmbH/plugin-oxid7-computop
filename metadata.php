@@ -107,8 +107,6 @@ $aModule = [
         ['name' => 'lastschriftCaption', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'lastschriftAnon', 'type' => 'string', 'value' => false, 'group' => null],
-        ['name' => 'payDirektShopApiKey', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'payDirektCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalSetOrderStatus', 'type' => 'str', 'value' => '', 'group' => null],
 

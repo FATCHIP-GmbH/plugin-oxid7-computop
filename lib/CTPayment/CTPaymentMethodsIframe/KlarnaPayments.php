@@ -41,7 +41,7 @@ class KlarnaPayments extends CTPaymentMethodIframe
     const paymentClass = 'KlarnaPayments';
 
     /**
-     * Paydirekt constructor
+     * Klarna constructor
      * @param array $config
      * @param CTOrder|null $order
      * @param null|string $urlSuccess

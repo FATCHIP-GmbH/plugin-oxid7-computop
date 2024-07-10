@@ -77,10 +77,6 @@ class Config
 
     protected $lastschriftAnon = null;
 
-    protected $payDirektShopApiKey = null;
-
-    protected $payDirektCaption = null;
-
     protected $paypalCaption = null;
 
     protected $paypalSetOrderStatus = null;
@@ -495,54 +491,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('klarnaaction', $lastschriftAnon, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getPayDirektShopApiKey()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('payDirektShopApiKey', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $payDirektShopApiKey
-     */
-    public function setPayDirektShopApiKey($payDirektShopApiKey): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('payDirektShopApiKey', $payDirektShopApiKey, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getPayDirektCaption()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('payDirektCaption', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $payDirektCaption
-     */
-    public function setPayDirektCaption($payDirektCaption): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('payDirektCaption', $payDirektCaption, FatchipComputopModule::MODULE_ID);
     }
 
     /**

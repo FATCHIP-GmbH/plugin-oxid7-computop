@@ -64,7 +64,6 @@ class FatchipComputopConfig extends AdminController
         $creditCardFormFields = array_merge(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardTextElements);
         $idealFormFields = CTPaymentConfigForms::formIdealSelectElements;
         $lastschriftFormFields = CTPaymentConfigForms::formLastschriftSelectElements;
-        $payDirektFormFields = array_merge(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements);
         $payPalFormFields = CTPaymentConfigForms::formPayPalSelectElements;
         $amazonFormFields = array_merge(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
         $bonitaetFormFields = array_merge(CTPaymentConfigForms::formBonitaetElements, CTPaymentConfigForms::formBonitaetSelectElements);
@@ -75,7 +74,6 @@ class FatchipComputopConfig extends AdminController
             $creditCardFormFields,
             $idealFormFields,
             $lastschriftFormFields,
-            $payDirektFormFields,
             $payPalFormFields,
             $amazonFormFields,
             $bonitaetFormFields,
@@ -96,7 +94,6 @@ class FatchipComputopConfig extends AdminController
         $this->addTplParam('creditCardFormFields', $creditCardFormFields);
         $this->addTplParam('idealFormFields', $idealFormFields);
         $this->addTplParam('lastschriftFormFields', $lastschriftFormFields);
-        $this->addTplParam('payDirektFormFields', $payDirektFormFields);
         $this->addTplParam('payPalFormFields', $payPalFormFields);
         $this->addTplParam('amazonFormFields', $amazonFormFields);
         $this->addTplParam('bonitaetFormFields', $bonitaetFormFields);

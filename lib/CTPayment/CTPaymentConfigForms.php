@@ -380,46 +380,6 @@ class CTPaymentConfigForms
         [
         ];
 
-    const formPayDirektTextElements =
-        [
-            'payDirektShopApiKey' => [
-                'name' => 'payDirektShopApiKey',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Paydirekt - Shop Api Key',
-                'required' => false,
-                'description' => 'Ihr Paydirekt Api Schlüssel',
-            ],
-        ];
-
-    const formPayDirektSelectElements =
-        [
-            'payDirektCaption' => [
-                'name' => 'payDirektCaption',
-                'type' => 'select',
-                'value' => 'AUTO',
-                'label' => 'Paydirekt - Capture Modus',
-                'required' => false,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['AUTO', [
-                            'de_DE' => 'Automatisch',
-                            'en_GB' => 'automatic',
-                        ]],
-                        ['MANUAL', [
-                            'de_DE' => 'Manuell',
-                            'en_GB' => 'manual',
-                        ]],
-                    ],
-                'description' => '<p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
-            ],
-        ];
-
-    const formPayDirektNumberElements =
-        [
-        ];
-
     const formPayPalSelectElements =
         [
             'paypalCaption' => [
@@ -749,10 +709,6 @@ class CTPaymentConfigForms
                 'lastschriftAnon' => [
                     'label' => 'Iban anonymisieren',
                     'description' => 'Stellt im Checkout und im Mein Konto Bereich die Iban anonymisiert dar',
-                ],
-                'payDirektShopApiKey' => [
-                    'label' => 'Paydirekt - Shop Api Key',
-                    'description' => 'Ihr Paydirekt Api Schlüssel',
                 ],
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
