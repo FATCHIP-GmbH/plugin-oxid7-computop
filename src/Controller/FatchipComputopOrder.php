@@ -94,7 +94,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_klarna') {
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
-//            $this->klarnaAction();
         }
 
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {

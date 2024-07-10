@@ -606,14 +606,6 @@ class CTPaymentConfigForms
 
     const formKlarnaTextElements =
         [
-            'klarnaaction' => [
-                'name' => 'klarnaaction',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Klarna Aktionscode',
-                'required' => false,
-                'description' => 'Der Wert ist von Laufzeiten und Monatsraten abhängig, die Sie mit Klarna vereinbart haben. Dieser Wert kann per Subshop unterschiedlich sein.',
-            ],
             'klarnaaccount' => [
                 'name' => 'klarnaaccount',
                 'type' => 'text',
@@ -761,10 +753,6 @@ class CTPaymentConfigForms
                                   "Computop Risikoampel IST <Farbe>"<BR>und<BR>
                                   "Computop Risikoampel IST NICHT <Farbe>"<BR>',
                 ],
-                'klarnaaction' => [
-                    'label' => 'Klarna Aktionscode',
-                    'description' => 'Der Wert ist von Laufzeiten und Monatsraten abhängig, die Sie mit Klarna vereinbart haben. Dieser Wert kann per Subshop unterschiedlich sein.',
-                ],
                 'klarnaaccount' => [
                     'label' => 'Klarna Konto',
                     'description' => '<p>Das zu benutzende Klarna Konto.</p>',
@@ -911,10 +899,6 @@ class CTPaymentConfigForms
                                   Create your own rules in "Riskmanagement" with the conditions <BR>
                                   "Computop Traffic light IS <Color>"<BR>and<BR>
                                   "Computop Traffic light IST NOT <Color>"<BR>',
-                ],
-                'klarnaaction' => [
-                    'label' => 'Klarna action code',
-                    'description' => 'This value depends on durations and monthly rates term you arranged with Klarna. This value can be different for each subshop.',
                 ],
                 'klarnaaccount' => [
                     'label' => 'Klarna Account',
