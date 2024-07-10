@@ -79,7 +79,6 @@ class Config
 
     protected $paypalCaption = null;
 
-    protected $paypalSetOrderStatus = null;
 
     protected $amazonpayPrivKey = null;
 
@@ -516,31 +515,6 @@ class Config
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('paypalCaption', $paypalCaption, FatchipComputopModule::MODULE_ID);
     }
-
-    /**
-     * @return null
-     */
-    public function getPaypalSetOrderStatus()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('paypalSetOrderStatus', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $paypalSetOrderStatus
-     */
-    public function setPaypalSetOrderStatus($paypalSetOrderStatus): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('paypalSetOrderStatus', $paypalSetOrderStatus, FatchipComputopModule::MODULE_ID);
-    }
-
 
     /**
      * @return null

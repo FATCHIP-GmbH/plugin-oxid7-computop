@@ -694,10 +694,6 @@ class CTPaymentConfigForms
                     'label' => 'Paypal - Capture Modus',
                     'description' => '<p>Bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br><b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b></p>',
                 ],
-                'paypalSetOrderStatus' => [
-                    'label' => 'Paypal - Bestellstatus bei Capture',
-                    'description' => 'Wenn diese Option An ist, dann wird der Bestellstatus bei Paypal Bestellungen,<br>bei denen der Capture fehlschlägt, auf "Klärung notwendig" gesetzt"  <br>',
-                ],
                 'amazonSellerId' => [
                     'label' => 'AmazonPay - SellerId',
                     'description' => 'Ihre Amazonpay SellerId',
@@ -844,10 +840,6 @@ class CTPaymentConfigForms
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
                     'description' => '<p>Determines whether the requested amount is collected immediately or at a later date. <br><b>Important:<br>Please contact Computop Support for Manual to clarify the different application options.</b></p>',
-                ],
-                'paypalSetOrderStatus' => [
-                    'label' => 'Paypal - Order status on captures',
-                    'description' => 'If this option is enabled, the orderstatus of failed paypal captures will be set to "review necessary"<br>',
                 ],
                 'amazonSellerId' => [
                     'label' => 'AmazonPay - SellerId',
