@@ -303,7 +303,7 @@ class CTPaymentConfigForms
                         ['DIREKT', 'iDEAL Direkt'],
                         ['PPRO', 'via PPRO'],
                     ],
-                'description' => 'Die iDeal Issuers sind nur bei einer Direktanbindung nötig und werden automatisch beim Installieren des Plugins abgefragt. Hier können Sie bei Änderungen die Bankenliste aktualisieren.',
+                'description' => 'Wählen Sie hier Ihre Anbindung an iDeal aus - direkt oder über PPRO.',
             ],
         ];
 
@@ -736,7 +736,7 @@ class CTPaymentConfigForms
                 ],
                 'idealDirektOderUeberSofort' => [
                     'label' => 'iDEAL - Dienst',
-                    'description' => 'Ideal Zahlungen können direkt über Ideal oder über PPRO abgewickelt werden',
+                    'description' => 'Wählen Sie hier Ihre Anbindung an iDeal aus - direkt oder über PPRO.',
                 ],
                 'lastschriftDienst' => [
                     'label' => 'Lastschrift - Dienst',
@@ -890,7 +890,7 @@ class CTPaymentConfigForms
                 ],
                 'idealDirektOderUeberSofort' => [
                     'label' => 'iDEAL - Service',
-                    'description' => 'iDEAL payments can be handled by using direct (Sofort) or PPRO.',
+                    'description' => 'Select your integration with iDeal here - directly or via PPRO.',
                 ],
                 'lastschriftDienst' => [
                     'label' => 'Direct debit - Service',
