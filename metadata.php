@@ -124,7 +124,6 @@ $aModule = [
         ['name' => 'bonitaetinvalidateafterdays', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'crifmethod', 'type' => 'str', 'value' => '', 'group' => null],
 
-        ['name' => 'klarnaaction', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'klarnaaccount', 'type' => 'str', 'value' => '', 'group' => null],
 
     ],
