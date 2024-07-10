@@ -89,17 +89,14 @@ class CTPaymentConfigForms
                         ['inactive', [
                             'de_DE' => 'keine Protokollierung',
                             'en_GB' => 'disable logging',
-                            'fr_FR' => 'désactiver la journalisation',
                         ]],
                         ['active', [
                             'de_DE' => 'Protokollierung',
                             'en_GB' => 'enable logging',
-                            'fr_FR' => 'activer la journalisation',
                         ]],
                         ['extended', [
                             'de_DE' => 'erweiterte Protokollierung',
                             'en_GB' => 'enable extra logging',
-                            'fr_FR' => 'activer la journalisation supplémentaire',
                         ]],
                     ],
                 'description' => 'Erzeugt eine Log Datei <FatchipCTPayment_.log> mit Debug Ausgaben im Shopware Protokollverzeichnis.<BR>',
@@ -116,12 +113,10 @@ class CTPaymentConfigForms
                         ['blowfish', [
                             'de_DE' => 'Blowfish Verschlüsselung (Standard)',
                             'en_GB' => 'Blowfish encyption (default)',
-                            'fr_FR' => 'Blowfish chiffrement (défaut)',
                         ]],
                         ['aes', [
                             'de_DE' => 'AES Verschlüsselung',
                             'en_GB' => 'AES encyption',
-                            'fr_FR' => 'AES chiffrement',
                         ]],
                     ],
                 'description' => '<p>Art der verwendeten Verschlüsselung.</p><p>Blowfish Verschlüsselung wird vom Computop Support als Standard eingerichtet.</p><p>Sollte die Blowfish Verschlüsselung (bf-cbc) bei Ihrem Hoster nicht verfügbar sein, wenden Sie sich bitte an den Computop Support und lassen Sie AES aufschalten.</p><p>Wenn seitens Computop AES aktiviert wurde, stellen Sie auf AES um.</p>',
@@ -157,12 +152,10 @@ class CTPaymentConfigForms
                     [0, [
                         'de_DE' => 'inaktiv',
                         'en_GB' => 'disabled',
-                        'fr_FR' => 'désactivé',
                     ]],
                     [1, [
                         'de_DE' => 'aktiv',
                         'en_GB' => 'enabled',
-                        'fr_FR' => 'activé',
                     ]],
                 ],
             ],
@@ -178,13 +171,11 @@ class CTPaymentConfigForms
                         [0, [
                             'de_DE' => 'inaktiv',
                             'en_GB' => 'disabled',
-                            'fr_FR' => 'désactivé',
                         ]],
                         [1, [
                             'de_DE' => 'aktiv',
                             'en_GB' => 'enabled',
-                            'fr_FR' => 'activé',
-                        ]],
+                       ]],
                     ],
             ],
             'creditCardSilentModeBrandsMaster' => [
@@ -199,12 +190,10 @@ class CTPaymentConfigForms
                         [0, [
                             'de_DE' => 'inaktiv',
                             'en_GB' => 'disabled',
-                            'fr_FR' => 'désactivé',
                         ]],
                         [1, [
                             'de_DE' => 'aktiv',
                             'en_GB' => 'enabled',
-                            'fr_FR' => 'activé',
                         ]],
                     ],
             ],
@@ -220,12 +209,10 @@ class CTPaymentConfigForms
                         [0, [
                             'de_DE' => 'inaktiv',
                             'en_GB' => 'disabled',
-                            'fr_FR' => 'désactivé',
                         ]],
                         [1, [
                             'de_DE' => 'aktiv',
                             'en_GB' => 'enabled',
-                            'fr_FR' => 'activé',
                         ]],
                     ],
             ],
@@ -241,12 +228,10 @@ class CTPaymentConfigForms
                         ['AUTO', [
                             'de_DE' => 'Automatisch',
                             'en_GB' => 'automatic',
-                            'fr_FR' => 'automatique',
                         ]],
                         ['MANUAL', [
                             'de_DE' => 'Manuell',
                             'en_GB' => 'manual',
-                            'fr_FR' => 'manuel',
                         ]],
                     ],
                 'description' => '<p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
@@ -266,28 +251,6 @@ class CTPaymentConfigForms
                     ],
                 'description' => '<p><b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR><b>CAPN</b>: American Express<BR><b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare</p>',
             ],
-            'creditCardAccVerify' => [
-                'name' => 'creditCardAccVerify',
-                'type' => 'select',
-                'value' => 0,
-                'label' => 'Kreditkarte - Kontoverifizierung anfordern ',
-                'required' => false,
-                'editable' => false,
-                'store' =>
-                    [
-                        [0, [
-                            'de_DE' => 'inaktiv',
-                            'en_GB' => 'disabled',
-                            'fr_FR' => 'désactivé',
-                        ]],
-                        [1, [
-                            'de_DE' => 'aktiv',
-                            'en_GB' => 'enabled',
-                            'fr_FR' => 'activé',
-                        ]],
-                    ],
-                'description' => '<p>Indikator für Anforderung einer Kontoverifizierung (alias Nullwert-Authorisierung). <BR>Bei einer angeforderten Kontoverifizierung ist der übermittelte Betrag optional und <BR>wird für die tatsächliche Zahlungstransaktion ignoriert (z.B. Autorisierung).',
-            ],
             'creditCardSilentModeBrandDetection' => [
                 'name' => 'creditCardSilentModeBrandDetection',
                 'type' => 'select',
@@ -300,13 +263,11 @@ class CTPaymentConfigForms
                         [0, [
                             'de_DE' => 'inaktiv',
                             'en_GB' => 'disabled',
-                            'fr_FR' => 'désactivé',
                         ]],
                         [1, [
                             'de_DE' => 'aktiv',
                             'en_GB' => 'enabled',
-                            'fr_FR' => 'activé',
-                        ]],
+                       ]],
                     ],
                 'description' => 'Wählt anhand der eingebenen Kartennummer automatisch den Karten Typ und zeigt das Kartenlogo an.<BR>',
             ],
@@ -361,17 +322,14 @@ class CTPaymentConfigForms
                         ['DIREKT', [
                             'de_DE' => 'Direktanbindung',
                             'en_GB' => 'direct',
-                            'fr_FR' => 'direct',
                         ]],
                         ['EVO', [
                             'de_DE' => 'EVO Payments',
                             'en_GB' => 'EVO Payments',
-                            'fr_FR' => 'EVO Payments',
                         ]],
                         ['INTERCARD', [
                             'de_DE' => 'Intercard',
                             'en_GB' => 'Intercard',
-                            'fr_FR' => 'Intercard',
                         ]],
                     ],
                 'description' => 'Lastschrift Zahlungen können direkt, über EVO oder über INTERCARD abgewickelt werden.',
@@ -388,13 +346,11 @@ class CTPaymentConfigForms
                         ['AUTO', [
                             'de_DE' => 'Automatisch',
                             'en_GB' => 'automatic',
-                            'fr_FR' => 'automatique',
                         ]],
                         ['MANUAL', [
                             'de_DE' => 'Manuell',
                             'en_GB' => 'manual',
-                            'fr_FR' => 'manuel',
-                        ]],
+                       ]],
                     ],
                 'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
             ],
@@ -410,12 +366,10 @@ class CTPaymentConfigForms
                         ['Aus', [
                             'de_DE' => 'Aus',
                             'en_GB' => 'off',
-                            'fr_FR' => 'off',
                         ]],
                         ['An', [
                             'de_DE' => 'An',
                             'en_GB' => 'on',
-                            'fr_FR' => 'on',
                         ]],
                     ],
                 'description' => 'Stellt im Checkout und im Mein Konto Bereich die Iban anonymisiert dar',
@@ -452,12 +406,10 @@ class CTPaymentConfigForms
                         ['AUTO', [
                             'de_DE' => 'Automatisch',
                             'en_GB' => 'automatic',
-                            'fr_FR' => 'automatique',
                         ]],
                         ['MANUAL', [
                             'de_DE' => 'Manuell',
                             'en_GB' => 'manual',
-                            'fr_FR' => 'manuel',
                         ]],
                     ],
                 'description' => '<p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
@@ -482,12 +434,10 @@ class CTPaymentConfigForms
                         ['AUTO', [
                             'de_DE' => 'Automatisch',
                             'en_GB' => 'automatic',
-                            'fr_FR' => 'automatique',
                         ]],
                         ['MANUAL', [
                             'de_DE' => 'Manuell',
                             'en_GB' => 'manual',
-                            'fr_FR' => 'manuel',
                         ]],
                     ],
                 'description' => '<p>Bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br><b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b></p>',
@@ -504,12 +454,10 @@ class CTPaymentConfigForms
                         ['Aus', [
                             'de_DE' => 'Aus',
                             'en_GB' => 'off',
-                            'fr_FR' => 'off',
                         ]],
                         ['An', [
                             'de_DE' => 'An',
                             'en_GB' => 'on',
-                            'fr_FR' => 'on',
                         ]],
                     ],
                 'description' => '<p>Wenn diese Option An ist, dann wird der Bestellstatus bei Paypal Bestellungen,<br>bei denen der Capture fehlschlägt, auf "Klärung notwendig" gesetzt"  <br></p>',
@@ -581,16 +529,13 @@ class CTPaymentConfigForms
                         ['AUTO', [
                             'de_DE' => 'Automatisch',
                             'en_GB' => 'automatic',
-                            'fr_FR' => 'automatique',
                         ]],
                         ['MANUAL', [
                             'de_DE' => 'Manuell',
                             'en_GB' => 'manual',
-                            'fr_FR' => 'manuel',
                         ]],
                     ],
-                'description' => '<b>Automatisch</b>: Reservierte Beträge werden automatisch eingezogen.<BR>
-                                  <b>Manuell</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
+                'description' => '<p><b>Automatisch</b>: Reservierte Beträge werden automatisch eingezogen.<BR><b>Manuell</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
             ],
             'amazonButtonType' => [
                 'name' => 'amazonButtonType',
@@ -607,9 +552,7 @@ class CTPaymentConfigForms
                         ['LwA', 'LwA'],
                         ['Login', 'Login'],
                     ],
-                'description' => 'Typ des Amazon Buttons<BR>
-                                  Das Aussehen der verschiedenen Buttons.<BR>
-                                  Klicken Sie links auf den Link "AmazonPay - Button Typ"',
+                'description' => '<p>Typ des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Typ"</p>',
             ],
             'amazonButtonColor' => [
                 'name' => 'amazonButtonColor',
@@ -624,9 +567,7 @@ class CTPaymentConfigForms
                         ['LightGray', 'LightGray'],
                         ['DarkGray', 'DarkGray'],
                     ],
-                'description' => 'Farbe des Amazon Buttons<BR>
-                                  Das Aussehen der verschiedenen Buttons.<BR>
-                                  Klicken Sie links auf den Link "AmazonPay - Button Farbe"',
+                'description' => '<p>Farbe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Farbe"</p>',
             ],
             'amazonButtonSize' => [
                 'name' => 'amazonButtonSize',
@@ -640,17 +581,13 @@ class CTPaymentConfigForms
                         ['small', [
                             'de_DE' => 'klein',
                             'en_GB' => 'small',
-                            'fr_FR' => 'petit',
                         ]],
                         ['medium', [
                             'de_DE' => 'mittel',
                             'en_GB' => 'medium',
-                            'fr_FR' => 'moyen',
                         ]],
                     ],
-                'description' => 'Größe des Amazon Buttons<BR>
-                                  Das Aussehen der verschiedenen Buttons.<BR>
-                                  Klicken Sie links auf den Link "AmazonPay - Button Größe"',
+                'description' => '<p>Größe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Größe"</p>',
             ],
         ];
 
@@ -688,7 +625,6 @@ class CTPaymentConfigForms
                         ['inactive', [
                             'de_DE' => 'Inaktiv',
                             'en_GB' => 'inactive',
-                            'fr_FR' => 'inactif',
                         ]],
                         ['QuickCheck', [
                             'de_DE' => 'QuickCheck',
@@ -724,12 +660,7 @@ class CTPaymentConfigForms
                 'value' => '',
                 'label' => 'Klarna Konto',
                 'required' => false,
-                'description' => 'Das zu benutzende Klarna Konto. <br/><br/>
-
-            <b>Die verfügbaren Klarna-Zahlungsarten in Abhängigkeit von der Konfiguration bei Klarna </b><br/>
-            Wenn <u>Klarna PayNow</u> aktiviert ist, dann können <u>Klarna Lastschrift</u> und <u>Klarna Sofort</u> nicht aktiviert werden<br/>
-
-            Wenn <u>Klarna Lastschrift</u> und/oder <u>Klarna Sofort</u> aktiv ist, dann kann <u>Klarna PayNow</u> nicht aktiviert werden',
+                'description' => '<p>Das zu benutzende Klarna Konto.</p>',
             ],
         ];
 
@@ -748,9 +679,6 @@ class CTPaymentConfigForms
                     'label' => 'Passwort',
                     'description' => 'Ihr Verschlüsselungs-Passwort',
                 ],
-                'fatchip_computop_apitest_button' => [
-                    'label' => '<strong>API Zugang Testen (Erst Speichern und Caches leeren)<strong>',
-                ],
                 'fatchip_computop_ideal_button' => [
                     'label' => '<strong>iDeal Banken aktualisieren <strong>',
                 ],
@@ -768,21 +696,15 @@ class CTPaymentConfigForms
                 ],
                 'encryption' => [
                     'label' => 'Verschlüsselung',
-                    'description' => 'Art der verwendeten Verschlüsselung.<BR>
-                                  Blowfish Verschlüsselung wird vom Computop Support als Standard eingerichtet.<BR>
-                                  Sollte die Blowfish Verschlüsselung (bf-cbc) bei Ihrem Hoster nicht verfügbar sein, wenden Sie sich bitte an den Computop Support und lassen Sie AES aufschalten.<BR>
-                                  Wenn seitens Computop AES aktiviert wurde, stellen Sie auf AES um und führen den API Test durch.',
+                    'description' => '<p>Art der verwendeten Verschlüsselung.</p><p>Blowfish Verschlüsselung wird vom Computop Support als Standard eingerichtet.</p><p>Sollte die Blowfish Verschlüsselung (bf-cbc) bei Ihrem Hoster nicht verfügbar sein, wenden Sie sich bitte an den Computop Support und lassen Sie AES aufschalten.</p><p>Wenn seitens Computop AES aktiviert wurde, stellen Sie auf AES um.</p>',
                 ],
                 'creditCardMode' => [
                     'label' => 'Kreditkarte - Modus',
-                    'description' => '<b>IFrame</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in ein IFrame eingegeben<BR>
-                                  <b>Silent Mode</b>: Kreditkartendaten werden auf der Seite "Prüfen und Bestellen" eingegeben.<BR>
-								  <b>Payment Page</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in einem blanken Fenster eingegeben<BR>',
+                    'description' => '<p><b>IFrame</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in einem IFrame eingegeben<BR><b>Silent Mode</b>: Kreditkartendaten werden auf der Seite "Prüfen und Bestellen" eingegeben.<BR><b>Payment Page</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in einem blanken Fenster eingegeben.</p>',
                 ],
                 'creditCardTestMode' => [
                     'label' => 'Kreditkarte - Test-Modus',
-                    'description' => '<b>IFrame</b>: Kreditkartendaten werden nach klick auf "Zahlungsplichtig bestellen" in ein IFrame eingegeben<BR>
-                                  <b>Silent Mode</b>: Kreditkartendaten werden auf der Seite "Prüfen und Bestellen" eingegeben.<BR>',
+                    //'description' => '',
                 ],
                 'creditCardSilentModeBrandsVisa' => [
                     'label' => 'Kreditkarte - Visa (Silent Mode)',
@@ -798,20 +720,11 @@ class CTPaymentConfigForms
                 ],
                 'creditCardCaption' => [
                     'label' => 'Kreditkarte - Capture Modus',
-                    'description' => '<b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR>
-                                  <b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
+                    'description' => '<p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
                 ],
                 'creditCardAcquirer' => [
                     'label' => 'Kreditkarte - Acquirer',
-                    'description' => '<b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR>
-                                  <b>CAPN</b>: American Express<BR>
-                                  <b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare',
-                ],
-                'creditCardAccVerify' => [
-                    'label' => 'Kreditkarte - Kontoverifizierung anfordern',
-                    'description' => 'Indikator für Anforderung einer Kontoverifizierung (alias Nullwert-Authorisierung). <BR>
-                                  Bei einer angeforderten Kontoverifizierung ist der übermittelte Betrag optional und <BR>
-                                  wird für die tatsächliche Zahlungstransaktion ignoriert (z.B. Autorisierung).',
+                    'description' => '<p><b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR><b>CAPN</b>: American Express<BR><b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare</p>',
                 ],
                 'creditCardSilentModeBrandDetection' => [
                     'label' => 'Kreditkarte - Silent Mode Kartentyp Autoerkennung',
@@ -831,8 +744,7 @@ class CTPaymentConfigForms
                 ],
                 'lastschriftCaption' => [
                     'label' => 'Lastschrift - Capture Modus',
-                    'description' => '<b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR>
-                            <b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
+                    'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
                 ],
                 'lastschriftAnon' => [
                     'label' => 'Iban anonymisieren',
@@ -842,15 +754,9 @@ class CTPaymentConfigForms
                     'label' => 'Paydirekt - Shop Api Key',
                     'description' => 'Ihr Paydirekt Api Schlüssel',
                 ],
-                'payDirektCaption' => [
-                    'label' => 'Paydirekt - Capture Modus',
-                    'description' => '<b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR>
-                                  <b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
-                ],
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
-                    'description' => 'bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br>
-                                  <b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b>',
+                    'description' => '<p>Bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br><b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b></p>',
                 ],
                 'paypalSetOrderStatus' => [
                     'label' => 'Paypal - Bestellstatus bei Capture',
@@ -870,26 +776,19 @@ class CTPaymentConfigForms
                 ],
                 'amazonCaptureType' => [
                     'label' => 'Amazon Capture Modus',
-                    'description' => '<b>Automatisch</b>: Reservierte Beträge werden automatisch eingezogen.<BR>
-                                  <b>Manuell</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.',
+                    'description' => '<p><b>Automatisch</b>: Reservierte Beträge werden automatisch eingezogen.<BR><b>Manuell</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
                 ],
                 'amazonButtonType' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_TYPE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Typ</a>',
-                    'description' => 'Typ des Amazon Buttons<BR>
-                                  Das Aussehen der verschiedenen Buttons.<BR>
-                                  Klicken Sie links auf den Link "AmazonPay - Button Typ"',
+                    'description' => '<p>Typ des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Typ"</p>',
                 ],
                 'amazonButtonColor' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_COLOR_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Farbe</a>',
-                    'description' => 'Farbe des Amazon Buttons<BR>
-                                  Das Aussehen der verschiedenen Buttons.<BR>
-                                  Klicken Sie links auf den Link "AmazonPay - Button Farbe"',
+                    'description' => '<p>Farbe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Farbe"</p>',
                 ],
                 'amazonButtonSize' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Größe</a>',
-                    'description' => 'Größe des Amazon Buttons<BR>
-                                  Das Aussehen der verschiedenen Buttons.<BR>
-                                  Klicken Sie links auf den Link "AmazonPay - Button Größe"',
+                    'description' => '<p>Größe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Größe"</p>',
                 ],
                 'bonitaetusereturnaddress' => [
                     'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
@@ -912,10 +811,7 @@ class CTPaymentConfigForms
                 ],
                 'klarnaaccount' => [
                     'label' => 'Klarna Konto',
-                    'description' => 'Das zu benutzende Klarna Konto. <br/><br/>
-                                    <b>Die verfügbaren Klarna-Zahlungsarten in Abhängigkeit von der Konfiguration bei Klarna </b><BR>
-                                    Wenn <u>Klarna PayNow</u> aktiviert ist, dann können <u>Klarna Lastschrift</u> und <u>Klarna Sofort</u> nicht aktiviert werden<BR>
-                                    Wenn <u>Klarna Lastschrift</u> und/oder <u>Klarna Sofort</u> aktiv ist, dann kann <u>Klarna PayNow</u> nicht aktiviert werden',
+                    'description' => '<p>Das zu benutzende Klarna Konto.</p>',
                 ],
             ],
             'en_GB' => [
@@ -930,9 +826,6 @@ class CTPaymentConfigForms
                 'blowfishPassword' => [
                     'label' => 'Password',
                     'description' => 'Your encryption password',
-                ],
-                'fatchip_computop_apitest_button' => [
-                    'label' => '<strong>test API credentials (Save and clear cache first)<strong>',
                 ],
                 'fatchip_computop_ideal_button' => [
                     'label' => '<strong>update iDeal banks<strong>',
@@ -951,15 +844,11 @@ class CTPaymentConfigForms
                 ],
                 'encryption' => [
                     'label' => 'Encyption',
-                    'description' => 'Type of encryption used.<br>
-                                  Blowfish encryption is set up by Computop Support as a standard. If Blowfish encryption (bf-cbc) is not available from your hoster, please contact Computop Support and have AES activated.<BR>
-                                  If Computop has activated AES, switch to AES and run the API test.',
+                    'description' => '<p>Type of encryption used.<br>Blowfish encryption is set up by Computop Support as a standard. If Blowfish encryption (bf-cbc) is not available from your hoster, please contact Computop Support and have AES activated.<BR>If Computop has activated AES, switch to AES.</p>',
                 ],
                 'creditCardMode' => [
                     'label' => 'Creditcard - Mode',
-                    'description' => '<b>IFrame</b>: The creditcard form will be displayed after clicking "confirm payment" in an iframe<BR>
-                                  <b>Silent Mode</b>: The creditcard form will be displayed on the "complete order" page.<BR>
-                                  <b>Payment Page</b>: Credit card details are entered in a blank page after clicking on "Order payment".',
+                    'description' => '</p><b>IFrame</b>: The creditcard form will be displayed after clicking "confirm payment" in an iframe<BR><b>Silent Mode</b>: The creditcard form will be displayed on the "complete order" page.<BR><b>Payment Page</b>: Credit card details are entered in a blank page after clicking on "Order payment".',
                 ],
                 'creditCardTestMode' => [
                     'label' => 'Creditcard - Testmode',
@@ -979,14 +868,11 @@ class CTPaymentConfigForms
                 ],
                 'creditCardCaption' => [
                     'label' => 'Creditcard - Capture Mode',
-                    'description' => '<b>AUTO</b>: Reserved amounts will be captured automatically.<BR>
-                                  <b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.',
+                    'description' => '<p></p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR><b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
                 ],
                 'creditCardAcquirer' => [
                     'label' => 'Creditcard - Acquirer',
-                    'description' => '<b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR>
-                                  <b>CAPN</b>: American Express<BR>
-                                  <b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare',
+                    'description' => '<p><b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR><b>CAPN</b>: American Express<BR><b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare</p>',
                 ],
                 'creditCardAccVerify' => [
                     'label' => 'Creditcard - Account verification',
@@ -1012,26 +898,16 @@ class CTPaymentConfigForms
                 ],
                 'lastschriftCaption' => [
                     'label' => 'Direct debit - Capture Mode',
-                    'description' => '<b>AUTO</b>: Reserved amounts will be captured automatically.<BR>
-                                  <b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.',
+                    'description' => '<p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR>
+                                  <b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
                 ],
                 'lastschriftAnon' => [
                     'label' => 'Anonymize IBAN',
                     'description' => 'The customers IBAN will be displayed anonymized in checkout and on the my accoutn page',
                 ],
-                'payDirektShopApiKey' => [
-                    'label' => 'Paydirekt - Shop Api Key',
-                    'description' => 'Your Paydirekt Api Key',
-                ],
-                'payDirektCaption' => [
-                    'label' => 'Paydirekt - Capture Modus',
-                    'description' => '<b>AUTO</b>: Reserved amounts will be captured automatically.<BR>
-                                  <b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.',
-                ],
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
-                    'description' => 'capture reserverd amounts now or manually later. <br>
-                                  <b>Important:<br>Please contact the computop customer support before using the manual setting to clarify possible use cases .</b>',
+                    'description' => '<p>Determines whether the requested amount is collected immediately or at a later date. <br><b>Important:<br>Please contact Computop Support for Manual to clarify the different application options.</b></p>',
                 ],
                 'paypalSetOrderStatus' => [
                     'label' => 'Paypal - Order status on captures',
@@ -1051,26 +927,19 @@ class CTPaymentConfigForms
                 ],
                 'amazonCaptureType' => [
                     'label' => 'Amazon Capture Mode',
-                    'description' => '<b>AUTO</b>: Reserved amounts will be captured automatically.<BR>
-                                  <b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.',
+                    'description' => '<p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR><b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
                 ],
                 'amazonButtonType' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_TYPE_PARAMETER" target="_blank" rel="noopener">AmazonPay - Button Type</a>',
-                    'description' => 'Type of the Amazon button<BR>
-                                  The look of the different buttons.<BR>
-                                  Please click on the left link "AmazonPay - Button Type"',
+                    'description' => '<p>Type of the Amazon button<BR>The look of the different buttons.<BR>Please click on the left link "AmazonPay - Button Type"</p>',
                 ],
                 'amazonButtonColor' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_COLOR_PARAMETER" target="_blank" rel="noopener">AmazonPay - Button Color</a>',
-                    'description' => 'Color of the Amazon button<BR>
-                                  The look of the different button.<BR>
-                                  Please click on the left link "AmazonPay - Button Color"',
+                    'description' => '<p>Color of the Amazon button<BR>The look of the different button.<BR>Please click on the left link "AmazonPay - Button Color"</p>',
                 ],
                 'amazonButtonSize' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener">AmazonPay - Button Size</a>',
-                    'description' => 'Size of the amazon button<BR>
-                                  The look of the different button.<BR>
-                                  Please click on the left link "AmazonPay - Button Size"',
+                    'description' => '<p>Size of the amazon button<BR>The look of the different button.<BR>Please click on the left link "AmazonPay - Button Size"</p>',
                 ],
                 'bonitaetusereturnaddress' => [
                     'label' => 'Credit check  - Use customer addresses from credit check response',
@@ -1093,192 +962,7 @@ class CTPaymentConfigForms
                 ],
                 'klarnaaccount' => [
                     'label' => 'Klarna Account',
-                    'description' => 'Your Klarna account. <br/><br/>
-                                    <b>Available Klarna Payments depending on your Klarna account configuration</b><BR>
-                                    If <u>Klarna PayNow</u> is active, you cant activate <u>Klarna Direct debit</u> und <u>Klarna Sofort</u><BR>
-                                    if <u>Klarna Direct debit</u> and/or <u>Klarna Sofort</u> are active, then <u>Klarna PayNow</u> can not be activated',
-                ],
-            ],
-            'fr_FR' => [
-                'merchantID' => [
-                    'label' => 'MerchantID',
-                    'description' => 'Votre MerchantID',
-                ],
-                'mac' => [
-                    'label' => 'MAC',
-                    'description' => 'Votre clé HMAC',
-                ],
-                'blowfishPassword' => [
-                    'label' => 'Mot de passe Blowfish',
-                    'description' => 'Votre mot de passe de cryptage',
-                ],
-                'fatchip_computop_apitest_button' => [
-                    'label' => '<strong>Tester les données d`accès API (Enregistrer d`abord et vider le cache)<strong>',
-                ],
-                'fatchip_computop_ideal_button' => [
-                    'label' => '<strong>Actualiser les iDeal banques<strong>',
-                ],
-                'prefixOrdernumber' => [
-                    'label' => 'Préfixe de numéro de commande',
-                    'description' => 'Préfixe pour les numéros de commande. Vous pouvez utiliser les paramètres fictifs suivants: %transid% , %payid%, %xid%',
-                ],
-                'suffixOrdernumber' => [
-                    'label' => 'Suffixe de numéro de commande',
-                    'description' => 'Suffixe pour les numéros de commande. Vous pouvez utiliser les paramètres fictifs suivants: %transid% , %payid%, %xid%',
-                ],
-                'debuglog' => [
-                    'label' => 'Journalisation de déboggage',
-                    'description' => 'Créer un journal <FatchipCTPayment_.log> avec les traces de déboggage dans le dossier de journaux de shopware',
-                ],
-                'encryption' => [
-                    'label' => 'Chiffrement',
-                    'description' => 'Type de chiffrement utilisé.<br>
-                                  Le chiffrement Blowfish est défini comme standard par le support Computop. Si le chiffrement Blowfish (bf-cbc) n\'est pas disponible chez votre hébergeur, veuillez contacter le support Computop and activer AES.<BR>
-                                  Si Computop a activé AES, basculez vers AES et executez le test de l\'API.',
-                ],
-                'creditCardMode' => [
-                    'label' => 'Carte de crédit - Mode',
-                    'description' => '<b>IFrame</b>: Le formulaire sera affiché après avoir cliqué sur "Confirmer le paiement" dans un iframe<BR>
-                                  <b>Mode silencieux</b>: Le formulaire sera affiché sur la page "Vérifier et Commander".<BR>
-                                  <b>Payment Page</b>: Les coordonnées de la carte de crédit sont saisies dans une fenêtre vierge après avoir cliqué sur "Commande avec obligation de paiement".',
-                ],
-                'creditCardTestMode' => [
-                    'label' => 'Carte de crédit - Mode test',
-                    // 'description' => '',
-                ],
-                'creditCardSilentModeBrandsVisa' => [
-                    'label' => 'Carte de crédit - Visa (Mode silencieux)',
-                    // 'description' => '',
-                ],
-                'creditCardSilentModeBrandsMaster' => [
-                    'label' => 'Carte de crédit - MasterCard (Mode silencieux)',
-                    // 'description' => '',
-                ],
-                'creditCardSilentModeBrandsAmex' => [
-                    'label' => 'Carte de crédit - American Express (Mode silencieux)',
-                    // 'description' => '',
-                ],
-                'creditCardCaption' => [
-                    'label' => 'Carte de crédit - Mode de débit',
-                    'description' => '<b>AUTO</b>: Les montants réservés seront débités automatiquement.<BR>
-                                  <b>MANUEL</b>: Les montants réservés doivent être débités manuellement via l\'administration de la boutique.',
-                ],
-                'creditCardAcquirer' => [
-                    'label' => 'Carte de crédit - Acquéreur',
-                    'description' => '<b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR>
-                                  <b>CAPN</b>: American Express<BR>
-                                  <b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare',
-                ],
-                'creditCardAccVerify' => [
-                    'label' => 'Carte de crédit - Vérification de compte',
-                    'description' => 'Indicateur pour une requête de vérification de compte (alias Null-Auth).<BR>
-                                  En utilisant une demande de vérification de compte, le montant est<BR>
-                                  facultatif et sera ignoré pour le paiement réel (Exemple, autorisation).',
-                ],
-                'creditCardSilentModeBrandDetection' => [
-                    'label' => 'Carte de crédit - Mode silencieux détection automatique du type de carte',
-                    'description' => 'Choisit automatiquement le type de carte lors de la saisie du numéro, et affiche le logo de la carte de crédit.<BR>',
-                ],
-                'creditCardTemplate' => [
-                    'label' => 'Carte de crédit - Nom du modèle',
-                    'description' => 'Nom du fichier XSLT avec votre disposition de formulaire de paiment individuel. Si vous souhaitez utiliser le modèle computop adaptable pour les appareils mobiles, veuillez utiliser le nom de modèle „ct_responsive“.',
-                ],
-                'idealDirektOderUeberSofort' => [
-                    'label' => 'iDEAL - Service',
-                    'description' => 'iDEAL payments can be handled by using direct (Sofort) or PPRO.',
-                    'description' => 'Les paiements iDEAL peuvent être gérés en utilisant direct (Sofort) ou PPRO.',
-                ],
-                'lastschriftDienst' => [
-                    'label' => 'Direct debit - Service',
-                    'description' => 'Les paiements par prélèvement peuvent être gérés en utilisant direct, EVO ou INTERCARD.',
-                ],
-                'lastschriftCaption' => [
-                    'label' => 'Direct debit - Mode de débit',
-                    'description' => '<b>AUTO</b>: Les montants réservés seront débités automatiquement.<BR>
-                                  <b>MANUEL</b>: Les montants réservés doivent être débités manuellement via l\'administration de la boutique.',
-                ],
-                'lastschriftAnon' => [
-                    'label' => 'Anonymiser l\'IBAN',
-                    'description' => 'L\'IBAN du client sera affiché de manière anonyme durant la transaction et sur la page \'Mon compte\'.',
-                ],
-                'payDirektShopApiKey' => [
-                    'label' => 'Paydirekt - Clé API',
-                    'description' => 'Votre clé API Paydirekt',
-                ],
-                'payDirektCaption' => [
-                    'label' => 'Paydirekt - Mode de débit',
-                    'description' => '<b>AUTO</b>: Les montants réservés seront débités automatiquement.<BR>
-                                  <b>MANUEL</b>: Les montants réservés doivent être débités manuellement via l\'administration de la boutique.',
-                ],
-                'paypalCaption' => [
-                    'label' => 'Paypal - Mode de débit',
-                    'description' => 'Les montants réservés seront débités maintenant ou manuellement plus tard. <br>
-                                  <b>Important:<br>Veuillez contacter le service client computop avant d\'utiliser le paramètre manuel, pour clarifier les possibles cas d\'usage.</b>',
-                ],
-                'paypalSetOrderStatus' => [
-                    'label' => 'Paypal - Statut de la commande sur les débits',
-                    'description' => 'Si cette option est activée, le statut de commande d\'un débit Paypal échoué sera converti en "révision nécessaire"<br>',
-                ],
-                'amazonSellerId' => [
-                    'label' => 'AmazonPay - SellerId',
-                    'description' => 'Voire SellerId Amazonpay',
-                ],
-                'amazonClientId' => [
-                    'label' => 'AmazonPay - ClientId',
-                    'description' => 'Votre ClientId Amazonpay',
-                ],
-                'amazonLiveMode' => [
-                    'label' => 'Mode Amazon',
-                    'description' => 'Utiliser AmazonPay en mode live ou test',
-                ],
-                'amazonCaptureType' => [
-                    'label' => 'Amazon Mode de débit',
-                    'description' => '<b>AUTO</b>: Les montants réservés seront débités automatiquement.<BR>
-                                  <b>MANUEL</b>: Les montants réservés doivent être débités manuellement via l\'administration de la boutique.',
-                ],
-                'amazonButtonType' => [
-                    'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_TYPE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Type de bouton</a>',
-                    'description' => 'Type du bouton Amazon<BR>
-                                  L\'aspect des différents boutons.<BR>
-                                  Veuillez cliquer sur le lien à gauche "AmazonPay - Type de bouton"',
-                ],
-                'amazonButtonColor' => [
-                    'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_COLOR_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Couleur de bouton</a>',
-                    'description' => 'Couleur du bouton Amazon<BR>
-                                  L\'aspect des différents boutons.<BR>
-                                  Veuillez cliquer sur le lien à gauche "AmazonPay - Couleur de bouton"',
-                ],
-                'amazonButtonSize' => [
-                    'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Taille de bouton</a>',
-                    'description' => 'Taille du bouton Amazon<BR>
-                                  L\'aspect des différents boutons.<BR>
-                                  Veuillez cliquer sur le lien à gauche "AmazonPay - Taille de bouton"',
-                ],
-                'bonitaetusereturnaddress' => [
-                    'label' => 'Vérification de crédit  - Utiliser l\'adresse du client de la vérification de crédit',
-                    'description' => 'Remplace l\'adresse du client par celle reçue dans la réponse de vérification de crédit',
-                ],
-                'bonitaetinvalidateafterdays' => [
-                    'label' => 'Vérification de crédit - Validité de la vérification de crédit en jours',
-                    'description' => 'Définir combien de jours une vérification de crédit reste valide pour un client avant re-vérification',
-                ],
-                'crifmethod' => [
-                    'label' => 'Vérification de crédit CRIF',
-                    'description' => 'Vérifie la validité du crédit avant d\'afficher les paiements disponibles.<BR>
-                                  Créez vos propre règles dans "Gestion de risque" avec les conditions <BR>
-                                  "Computop Traffic light IS <Color>"<BR>et<BR>
-                                  "Computop Traffic light IST NOT <Color>"<BR>',
-                ],
-                'klarnaaction' => [
-                    'label' => 'Code action Klarna',
-                    'description' => 'Cette valeur dépend de la durée et des termes de taux mensuels que vous avez convenus avec Klarna. Cette valeur peut différer entre chaque sous-boutique.',
-                ],
-                'klarnaaccount' => [
-                    'label' => 'Compte Klarna',
-                    'description' => 'Votre compte Klarna. <br/><br/>
-                                    <b>Paiement Klarna disponibles selon la configuration de votre compte Klarna</b><BR>
-                                    Si <u>Klarna PayNow</u> est actif, vous ne pouvez pas activer <u>Klarna Direct debit</u> et <u>Klarna Sofort</u><BR>
-                                    si <u>Klarna Direct debit</u> et/ou <u>Klarna Sofort</u> sont actifs, alors <u>Klarna PayNow</u> ne peut pas être activé',
+                    'description' => '<p>Your Klarna account.</p>',
                 ],
             ],
         ];
