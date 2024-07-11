@@ -18,6 +18,13 @@
                     {{ translate({ ident: "FATCHIP_COMPUTOP_CONF_VALID" }) }}
                 {% endif %}
             </div>
+            {% if oView.getIdealUpdateSuccess() is null %}
+                {# No action when getIdealUpdateSuccess() is null (initial state) #}
+            {% else %}
+                <div class="alert alert-{{ oView.getIdealUpdateSuccess() ? 'success' : 'danger' }} mb-3" role="alert">
+                    {{ translate({ ident: oView.getIdealUpdateSuccess() ? "FATCHIP_COMPUTOP_IDEAL_ISSUERS" : "FATCHIP_COMPUTOP_IDEAL_ISSUERS_ERROR" }) }}
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -33,7 +40,7 @@
             'title': translate({ ident: "FATCHIP_COMPUTOP_GENERAL_SETTINGS" }),
             'formFields': generalFormFields,
             'currentBlock': 'general',
-            'expanded': true
+            'expanded': false
         } %}
 
         {# Credit Card Settings #}
