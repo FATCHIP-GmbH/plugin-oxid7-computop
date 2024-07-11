@@ -30,7 +30,6 @@ namespace Fatchip\CTPayment;
 use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
-use Fatchip\CTPayment\CTCrif\CRIF;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use OxidEsales\Eshop\Core\Registry;
 
@@ -139,18 +138,6 @@ class CTPaymentService extends Encryption
     {
         $class = 'Fatchip\\CTPayment\\CTPaymentMethods\\' . $className;
         return new $class();
-    }
-
-    /**
-     * @param $config
-     * @param $order
-     * @param $orderDesc
-     * @param $userData
-     * @return CRIF
-     */
-    public function getCRIFClass($config, $order, $orderDesc, $userData)
-    {
-        return new CRIF($config, $order, $orderDesc, $userData);
     }
 
     /**
