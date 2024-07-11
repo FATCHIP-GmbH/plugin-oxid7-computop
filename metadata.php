@@ -108,7 +108,6 @@ $aModule = [
 
         ['name' => 'lastschriftAnon', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'paypalCaption', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'paypalSetOrderStatus', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'amazonpayMerchantId', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'amazonpayPrivKey', 'type' => 'str', 'value' => '', 'group' => null],
