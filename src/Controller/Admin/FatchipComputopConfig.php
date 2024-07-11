@@ -66,7 +66,6 @@ class FatchipComputopConfig extends AdminController
         $lastschriftFormFields = CTPaymentConfigForms::formLastschriftSelectElements;
         $payPalFormFields = CTPaymentConfigForms::formPayPalSelectElements;
         $amazonFormFields = array_merge(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
-        $bonitaetFormFields = array_merge(CTPaymentConfigForms::formBonitaetElements, CTPaymentConfigForms::formBonitaetSelectElements);
         $klarnaFormFields = CTPaymentConfigForms::formKlarnaTextElements;
 
         $mergedFormFields = array_replace_recursive(
@@ -76,7 +75,6 @@ class FatchipComputopConfig extends AdminController
             $lastschriftFormFields,
             $payPalFormFields,
             $amazonFormFields,
-            $bonitaetFormFields,
             $klarnaFormFields,
             $configArr
         );
@@ -96,7 +94,6 @@ class FatchipComputopConfig extends AdminController
         $this->addTplParam('lastschriftFormFields', $lastschriftFormFields);
         $this->addTplParam('payPalFormFields', $payPalFormFields);
         $this->addTplParam('amazonFormFields', $amazonFormFields);
-        $this->addTplParam('bonitaetFormFields', $bonitaetFormFields);
         $this->addTplParam('klarnaFormFields', $klarnaFormFields);
         $this->addTplParam('config', $mergedFormFields);
         $thisTemplate = parent::render();
