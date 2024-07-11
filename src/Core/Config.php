@@ -98,13 +98,6 @@ class Config
 
     protected $amazonButtonSize = null;
 
-    protected $bonitaetusereturnaddress = null;
-
-    protected $bonitaetinvalidateafterdays = null;
-
-    protected $crifmethod = null;
-
-
     protected $klarnaaccount = null;
 
     /**
@@ -622,72 +615,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('amazonButtonSize', $amazonButtonSize, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getBonitaetusereturnaddress()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('bonitaetusereturnaddress', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    public function setBonitaetusereturnaddress($bonitaetusereturnaddress): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('bonitaetusereturnaddress', $bonitaetusereturnaddress, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getBonitaetinvalidateafterdays()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('bonitaetinvalidateafterdays', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    public function setBonitaetinvalidateafterdays($bonitaetinvalidateafterdays): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('bonitaetinvalidateafterdays', $bonitaetinvalidateafterdays, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getCrifmethod()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('crifmethod', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $crifmethod
-     */
-    public function setCrifmethod($crifmethod): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('crifmethod', $crifmethod, FatchipComputopModule::MODULE_ID);
     }
 
     /**
