@@ -27,4 +27,6 @@ $aLang = [
     'FATCHIP_COMPUTOP_AMAZON_SETTINGS' => 'Amazon',
     'FATCHIP_COMPUTOP_BONITAET_SETTINGS' => 'Bonität',
     'FATCHIP_COMPUTOP_KLARNA_SETTINGS' => 'Klarna',
+    'FATCHIP_COMPUTOP_IDEAL_ISSUERS' => 'Banken erfolgreich geupdated',
+    'FATCHIP_COMPUTOP_IDEAL_ISSUERS_ERROR' => 'Fehler beim Updaten der Banken',
 ];
