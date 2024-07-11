@@ -116,6 +116,7 @@ class Order extends Order_parent
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
             if ($isFatchipComputopDirectPayment) {
                 $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
+                $this->fatchipComputopPaymentService->handleDirectPaymentResponse($response);
             } else if ($isFatchipComputopRedirectPayment){
                 $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
                 Registry::getUtils()->redirect($response, false);
