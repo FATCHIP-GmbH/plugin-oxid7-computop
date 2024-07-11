@@ -115,26 +115,6 @@ class CTPaymentAttributes
         ]
     ];
 
-    /**
-     * $attributeName => [ 'type' => 'MYSQL_TYPE']
-     * @var array
-     */
-    const userAddressAttributes = [
-
-        'crifresult' => [
-            'type' => 'VARCHAR(255)',
-        ],
-        'crifdate' => [
-            'type' => 'DATE',
-        ],
-        'crifstatus' => [
-            'type' => 'float',
-        ],
-        'crifdescription' => [
-            'type' => 'VARCHAR(255)',
-        ]
-    ];
-
     const userAttributes = [
         'SocialSecurityNumber' => [
             'type' => 'VARCHAR(12)',

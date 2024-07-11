@@ -531,59 +531,6 @@ class CTPaymentConfigForms
             ],
         ];
 
-    const formBonitaetElements =
-        [
-            'bonitaetusereturnaddress' => [
-                'name' => 'bonitaetusereturnaddress',
-                'type' => 'boolean',
-                'value' => false,
-                'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
-                'required' => false,
-                'description' => 'Ersetzt die Rechnungsaddresse mit u.U. korrigierten Adressen aus der Bonitätsprüfung',
-            ],
-            'bonitaetinvalidateafterdays' => [
-                'name' => 'bonitaetinvalidateafterdays',
-                'type' => 'number',
-                'value' => '30',
-                'label' => 'Bonitätsprüfung - Gültigkeit der Bonitätsprüfung in Tagen',
-                'required' => false,
-                'description' => 'Stellen Sie hier ein, wie lange ein bereits durchgeführte Bontitätsprüfung gültig bleibt',
-            ],
-        ];
-
-    const formBonitaetSelectElements =
-        [
-            'crifmethod' => [
-                'name' => 'crifmethod',
-                'type' => 'select',
-                'value' => 'inactive',
-                'label' => 'CRIF Bonitätsprüfung',
-                'required' => false,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['inactive', [
-                            'de_DE' => 'Inaktiv',
-                            'en_GB' => 'inactive',
-                        ]],
-                        ['QuickCheck', [
-                            'de_DE' => 'QuickCheck',
-                            'en_GB' => 'quick check',
-                            'fr_FR' => 'vérification rapide',
-                        ]],
-                        ['CreditCheck', [
-                            'de_DE' => 'Kredit Check',
-                            'en_GB' => 'Creditcard check',
-                            'fr_FR' => 'Vérification CreditCheck',
-                        ]],
-                    ],
-                'description' => 'führt eine Bonitätsprüfung aus, bevor ein Benutzer Zahlarten auswählen kann.<BR>
-                                  Erstellen Sie unter "Einstellungen->Riskmanagement" Regeln mit den Bedingungen<BR>
-                                  "Computop Risikoampel IST <Farbe>"<BR>und<BR>
-                                  "Computop Risikoampel IST NICHT <Farbe>"<BR>',
-            ],
-        ];
-
     const formKlarnaTextElements =
         [
             'klarnaaccount' => [
@@ -714,21 +661,7 @@ class CTPaymentConfigForms
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Größe</a>',
                     'description' => '<p>Größe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Größe"</p>',
                 ],
-                'bonitaetusereturnaddress' => [
-                    'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
-                    'description' => 'Ersetzt die Rechnungsaddresse mit u.U. korrigierten Adressen aus der Bonitätsprüfung',
-                ],
-                'bonitaetinvalidateafterdays' => [
-                    'label' => 'Bonitätsprüfung - Gültigkeit der Bonitätsprüfung in Tagen',
-                    'description' => 'Stellen Sie hier ein, wie lange ein bereits durchgeführte Bontitätsprüfung gültig bleibt',
-                ],
-                'crifmethod' => [
-                    'label' => 'CRIF Bonitätsprüfung',
-                    'description' => 'führt eine Bonitätsprüfung aus, bevor ein Benutzer Zahlarten auswählen kann.<BR>
-                                  Erstellen Sie unter "Einstellungen->Riskmanagement" Regeln mit den Bedingungen<BR>
-                                  "Computop Risikoampel IST <Farbe>"<BR>und<BR>
-                                  "Computop Risikoampel IST NICHT <Farbe>"<BR>',
-                ],
+
                 'klarnaaccount' => [
                     'label' => 'Klarna Konto',
                     'description' => '<p>Das zu benutzende Klarna Konto.</p>',
@@ -857,21 +790,7 @@ class CTPaymentConfigForms
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener">AmazonPay - Button Size</a>',
                     'description' => '<p>Size of the amazon button<BR>The look of the different button.<BR>Please click on the left link "AmazonPay - Button Size"</p>',
                 ],
-                'bonitaetusereturnaddress' => [
-                    'label' => 'Credit check  - Use customer addresses from credit check response',
-                    'description' => 'Replaces the customers addresses with the addresses from the credit check response',
-                ],
-                'bonitaetinvalidateafterdays' => [
-                    'label' => 'Credit check - Validity of the credit check in days',
-                    'description' => 'Set how many days a credit check stays valid for a customer befor re-cehecking',
-                ],
-                'crifmethod' => [
-                    'label' => 'CRIF Credit check',
-                    'description' => 'checks credit worthiness before displaying possible payments.<BR>
-                                  Create your own rules in "Riskmanagement" with the conditions <BR>
-                                  "Computop Traffic light IS <Color>"<BR>and<BR>
-                                  "Computop Traffic light IST NOT <Color>"<BR>',
-                ],
+
                 'klarnaaccount' => [
                     'label' => 'Klarna Account',
                     'description' => '<p>Your Klarna account.</p>',

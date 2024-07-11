@@ -119,9 +119,6 @@ $aModule = [
 
         ['name' => 'amazonButtonColor', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'amazonButtonSize', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'bonitaetusereturnaddress', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'bonitaetinvalidateafterdays', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'crifmethod', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'klarnaaccount', 'type' => 'str', 'value' => '', 'group' => null],
 
