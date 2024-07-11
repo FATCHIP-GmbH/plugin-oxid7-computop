@@ -90,6 +90,7 @@ class CTPaymentMethods
                 'className' => 'PaypalExpress',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],
+            /*
             [
                 'name' => 'fatchip_computop_amazonpay',
                 'shortname' => 'AmazonPay',
@@ -99,6 +100,6 @@ class CTPaymentMethods
                 'additionalDescription' => '',
                 'className' => 'AmazonPay',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
-            ],
+            ], */
         ];
 }
