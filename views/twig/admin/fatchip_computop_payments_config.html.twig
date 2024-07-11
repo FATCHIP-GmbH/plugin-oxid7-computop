@@ -88,15 +88,6 @@
             'currentBlock': 'amazon'
         } %}
 
-        {# Bonitaet Settings #}
-        {#  % include sModuleId ~ "/admin/accordion_section.html.twig" with {
-            'headingId': 'headingBonitaet',
-            'collapseId': 'collapseBonitaet',
-            'title': translate({ ident: "FATCHIP_COMPUTOP_BONITAET_SETTINGS" }),
-            'formFields': bonitaetFormFields,
-            'currentBlock': 'bonitaet'
-        } % #}
-
         {# Klarna Settings #}
         {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
             'headingId': 'headingKlarna',
