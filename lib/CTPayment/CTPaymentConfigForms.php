@@ -727,12 +727,6 @@ class CTPaymentConfigForms
                     'label' => 'Creditcard - Acquirer',
                     'description' => '<p><b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR><b>CAPN</b>: American Express<BR><b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare</p>',
                 ],
-                'creditCardAccVerify' => [
-                    'label' => 'Creditcard - Account verification',
-                    'description' => 'Indicator for an account verification request (alias Null-Auth).<BR>
-                                  By using an account verification request the amount is optional and<BR>
-                                  will be ignored for the real payment (E.g. authorization).',
-                ],
                 'creditCardSilentModeBrandDetection' => [
                     'label' => 'Creditcard - Silent Mode card type autodetection',
                     'description' => 'Chooses automatically the card type when entering the creditcard number and shows the creditcard logo.<BR>',
@@ -751,8 +745,7 @@ class CTPaymentConfigForms
                 ],
                 'lastschriftCaption' => [
                     'label' => 'Direct debit - Capture Mode',
-                    'description' => '<p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR>
-                                  <b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
+                    'description' => '<p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR><b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
                 ],
                 'lastschriftAnon' => [
                     'label' => 'Anonymize IBAN',
