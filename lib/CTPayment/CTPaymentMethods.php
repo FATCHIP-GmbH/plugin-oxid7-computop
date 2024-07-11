@@ -40,7 +40,7 @@ class CTPaymentMethods
                 'className' => 'Ideal',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],
-            [
+           /* [
                 'name' => 'fatchip_computop_twint',
                 'shortname' => 'Twint',
                 'description' => 'Computop Twint',
@@ -49,7 +49,7 @@ class CTPaymentMethods
                 'additionalDescription' => '',
                 'className' => 'Twint',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
-            ],
+            ],*/
             [
                 'name' => 'fatchip_computop_klarna',
                 'shortname' => 'Klarna',
