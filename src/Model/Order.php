@@ -308,23 +308,18 @@ class Order extends Order_parent
     function customizeOrdernumber(
         $response
     ) {
-        $payID = $response->getPayID();
-        $transID = $response->getTransID();
-        $xID = $response->getXID();
-        $orderPrefix = $this->fatchipComputopConfig['prefixOrdernumber'];
-        $orderSuffix = $this->fatchipComputopConfig['suffixOrdernumber'];
         $orderNumber = $this->getFieldData('oxordernr');
-        $newOrdernumber = $orderPrefix . $orderNumber . $orderSuffix;
-
-        // replace placeholders
-        $newOrdernumber = str_replace('%transid%', $transID, $newOrdernumber);
-        $newOrdernumber = str_replace('%payid%', $payID, $newOrdernumber);
-        $newOrdernumber = str_replace('%xid%', $xID, $newOrdernumber);
+        $whitelist = '/[^a-zA-Z0-9]/';
+        // make sure only 4 chars are used for pre and suffix
+        $orderPrefix = preg_replace($whitelist, '', substr($this->fatchipComputopConfig['prefixOrdernumber'], 0, 4));
+        $orderSuffix = preg_replace($whitelist, '', substr($this->fatchipComputopConfig['suffixOrdernumber'], 0, 4));
+        $orderNumberLength = 11 - (strlen($orderPrefix) + strlen($orderSuffix));
+        $orderNumberCut = substr($orderNumber, 0, $orderNumberLength);
+        $newOrdernumber = $orderPrefix.$orderNumberCut.$orderSuffix;
 
         $this->setFieldData('oxordernr', $newOrdernumber);
         $this->save();
 
-        // TODO Use sessionID from CustomParm response
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $oUser = $this->getUser();
             $customerId = $oUser->getFieldData('oxcustnr');
