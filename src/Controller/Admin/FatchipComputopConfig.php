@@ -45,6 +45,8 @@ use Psr\Container\NotFoundExceptionInterface;
  */
 class FatchipComputopConfig extends AdminController
 {
+    protected $idealUpdateSuccess = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -248,6 +250,8 @@ class FatchipComputopConfig extends AdminController
         $service = new CTAPITestService($config);
         try {
             $success = $service->getIdealIssuers();
+            $this->setIdealUpdateSuccess($success);
+
         }
         catch (Exception $e) {
             Registry::getUtilsView()->addErrorToDisplay(
@@ -257,5 +261,21 @@ class FatchipComputopConfig extends AdminController
                 'fatchip_computop_error'
             );
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIdealUpdateSuccess()
+    {
+        return $this->idealUpdateSuccess;
+    }
+
+    /**
+     * @param mixed $idealUpdateSuccess
+     */
+    public function setIdealUpdateSuccess($idealUpdateSuccess): void
+    {
+        $this->idealUpdateSuccess = $idealUpdateSuccess;
     }
 }
