@@ -464,7 +464,7 @@ class Order extends Order_parent
         $paymentName = $payment::paymentClass;
 
         $response = $payment->callComputop($requestParams, $url);
-        $logMessage = oxNew(Apilog::class);
+        $logMessage = oxNew(ApiLog::class);
         $logMessage->setPaymentName($paymentName);
         $logMessage->setRequest($requestType);
         $logMessage->setRequestDetails(json_encode($requestParams));

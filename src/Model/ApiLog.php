@@ -28,8 +28,9 @@ namespace Fatchip\ComputopPayments\Model;
 
 use OxidEsales\Eshop\Core\Model\BaseModel;
 
-class Apilog extends BaseModel
+class ApiLog extends BaseModel
 {
+    public static $sTableName = "fatchip_computop_api_log";
 
     /**
      * Class constructor
@@ -37,19 +38,19 @@ class Apilog extends BaseModel
     public function __construct()
     {
         parent::__construct();
-        $this->init(__CLASS__);
+        $this->init(self::$sTableName);
     }
 
   /**
    * Id of the Log entry
    *
-   * @var integer $id
+   * @var integer $oxid
    *
    * @ORM\Column(name="id", type="integer", nullable=false)
    * @ORM\Id
    * @ORM\GeneratedValue(strategy="IDENTITY")
    */
-    private $id;
+    private $oxid;
 
   /**
    * will be used to save the type of the request to computop

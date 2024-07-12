@@ -29,80 +29,12 @@ namespace Fatchip\ComputopPayments\Controller\Admin;
 
 use Fatchip\ComputopPayments\Core\Constants;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
-use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 
 /**
  * Controller for admin > Amazon Pay/Configuration page
  */
 class FatchipComputopApiLog extends AdminController
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->_sThisTemplate = '@fatchip_computop_payments/admin/' . Constants::TEMPLATE_PREFIX . 'api_log';
-    }
+    protected $_sThisTemplate = '@fatchip_computop_payments/admin/' . Constants::TEMPLATE_PREFIX . 'apilog';
 
-    /**
-     * @return string
-     */
-    public function render()
-    {
-        // TODO add Paging
-        $offset = Registry::getRequest()->getRequestEscapedParameter('offset');
-        $limit = Registry::getRequest()->getRequestEscapedParameter('limit');
-        $APILogEntries = $this->getAPILogs($offset, $limit);
-        $this->addTplParam('apilogentries', $APILogEntries);
-
-        $thisTemplate = parent::render();
-
-
-        return $thisTemplate;
-    }
-
-    /**
-     * Returns API Logs fom database
-     *
-     *
-     * @return array key=>value
-     */
-    protected function getAPILogs($offset, $limit)
-    {
-        $container = ContainerFactory::getInstance()->getContainer();
-        $queryBuilderFactory = $container->get(QueryBuilderFactoryInterface::class);
-        $queryBuilder = $queryBuilderFactory->create();
-        $queryBuilder
-            ->select('*')
-            ->from(Constants::APILOG_TABLE)
-            ->where('1')
-            ->orderBy('id', 'desc');
-        $APILogEntries = $queryBuilder->execute();
-        $apiLogs = $APILogEntries->fetchAll();
-        $apiLogs = $this->addArrayRequestResponse($apiLogs);
-
-        return $apiLogs;
-    }
-
-    protected function addArrayRequestResponse($result)
-    {
-        if (!empty($result)) {
-            foreach ($result as $key => $entry) {
-                $request = '';
-                $response = '';
-
-                $dataRequest = json_decode($entry['request_details'], true);
-                $dataResponse = json_decode($entry['response_details'], true);
-                foreach ($dataRequest as $dataKey => $dataValue) {
-                    $request .= $dataKey . '=' . $dataValue . '<BR>';
-                }
-                foreach ($dataResponse as $dataKey => $dataValue) {
-                    $response .= $dataKey . '=' . $dataValue . '<BR>';
-                }
-                $result[$key]['requestArray'] = $request;
-                $result[$key]['responseArray'] = $response;
-            }
-        }
-        return $result;
-    }
 }

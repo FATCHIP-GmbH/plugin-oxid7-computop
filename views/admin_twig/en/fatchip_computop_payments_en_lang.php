@@ -29,4 +29,5 @@ $aLang = [
     'FATCHIP_COMPUTOP_KLARNA_SETTINGS' => 'Klarna',
     'FATCHIP_COMPUTOP_IDEAL_ISSUERS' => 'Bank list updated successfully',
     'FATCHIP_COMPUTOP_IDEAL_ISSUERS_ERROR' => 'An error occurred while updating the bank list',
+    'fatchip_computop_ADMIN_API_LOGS_SELECT_ENTRY' => 'Bitte Log auswählen',
 ];
