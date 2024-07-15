@@ -577,7 +577,7 @@ class Order extends Order_parent
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $sessionID = $this->fatchipComputopSession->getId();
             $customerId = $oUser->getFieldData('oxcustnr');
-            $order = var_export($ctOrder, true);
+            $order = var_export($this, true);
             $paymentName = $this->fatchipComputopPaymentClass;
             $this->fatchipComputopLogger->log(
                 'DEBUG',

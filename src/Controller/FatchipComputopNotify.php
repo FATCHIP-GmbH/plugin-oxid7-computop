@@ -30,6 +30,7 @@ use Exception;
 use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTPaymentService;
+use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
@@ -91,14 +92,12 @@ class FatchipComputopNotify extends FrontendController
     {
         // TODO uncomment for raw requests
         file_put_contents("requestdump.txt", var_export($_POST, true), FILE_APPEND);
-
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
         $custom = Registry::getRequest()->getRequestParameter('Custom');
         $customParams = explode('&', base64_decode($custom));
         $session = explode('=', $customParams[0])[1];
         $transId = explode('=', $customParams[1])[1];
-
         $PostRequestParams = [
             'Len' => $len,
             'Data' => $data,
@@ -106,7 +105,9 @@ class FatchipComputopNotify extends FrontendController
             'TransId' => $transId,
         ];
         $response = $this->paymentService->getDecryptedResponse($PostRequestParams);
-        $this->fatchipComputopLogger->logRequestResponse([], '', 'NOTIFY', $response);
+        $paymentName = $this->getPaymentName($response, $session);
+
+        $this->fatchipComputopLogger->logRequestResponse([], $paymentName, 'NOTIFY', $response,);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -141,6 +142,21 @@ class FatchipComputopNotify extends FrontendController
         exit(0);
     }
 
+    /**
+     * @param $response CTResponse
+     * @return string
+     */
+    protected function getPaymentName(CTResponse $response, $session) {
+        $oOrder = oxNew(Order::class);
+        if ($oOrder->load($session) !== true) {
+         exit;
+        }
+        if ( $paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
+            return $paymentName;
+        } else {
+            exit;
+        }
+    }
 }
 
 

@@ -28,6 +28,7 @@
                 <col width="25%">
                 <col width="10%">
                 <col width="20%">
+                <col width="20%">
             </colgroup>
 
             <tr class="listitem">
@@ -59,6 +60,13 @@
                         </div>
                     </div>
                 </td>
+                <td valign="top" class="listfilter" align="left">
+                    <div class="r1">
+                        <div class="b1">
+                            <input class="listedit" type="text" size="15" name="where[fatchip_computop_api_log][payment_name]" value="{{ where.fatchip_computop_api_log.payment_name }}">
+                        </div>
+                    </div>
+                </td>
             </tr>
 
             <tr>
@@ -66,6 +74,7 @@
                 <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'fatchip_computop_api_log', 'trans_id', 'asc');document.search.submit();" class="listheader">trans_id</a></td>
                 <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'fatchip_computop_api_log', 'pay_id', 'asc');document.search.submit();" class="listheader">pay_id</a></td>
                 <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'fatchip_computop_api_log', 'request', 'asc');document.search.submit();" class="listheader">request</a></td>
+                <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'fatchip_computop_api_log', 'payment_name', 'asc');document.search.submit();" class="listheader">payment_name</a></td>
             </tr>
 
             {% set blWhite = "" %}
@@ -107,6 +116,13 @@
                             <div class="listitemfloating">
                                 <a href="Javascript:top.oxid.admin.editThis('{{ listitem.fatchip_computop_api_log__oxid.value }}');" class="{{ listclass }}">
                                     {{ listitem.fatchip_computop_api_log__request.value }}
+                                </a>
+                            </div>
+                        </td>
+                        <td valign="top" class="{{ listclass }}" height="15">
+                            <div class="listitemfloating">
+                                <a href="Javascript:top.oxid.admin.editThis('{{ listitem.fatchip_computop_api_log__oxid.value }}');" class="{{ listclass }}">
+                                    {{ listitem.fatchip_computop_api_log__payment_name.value }}
                                 </a>
                             </div>
                         </td>

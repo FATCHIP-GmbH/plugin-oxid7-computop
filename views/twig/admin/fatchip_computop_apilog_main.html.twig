@@ -15,6 +15,10 @@
     .show-more {
         color:red;
     }
+    #editval_computop_no_entry {
+        maring:20px;
+        padding:30px;
+    }
 </style>
 <script type="text/javascript">
 
@@ -78,7 +82,7 @@
                 <h2>requestDetails</h2>
                 {% if requestDetails %}
                     <andypf-json-viewer data='{{ requestDetails }}' indent="2"
-                                        expanded="true"
+                                        expanded="false"
                                         theme="default-light"
                                         show-data-types="true"
                                         show-toolbar="true"
@@ -94,7 +98,7 @@
                 {% if responseDetails %}
                     <pre class="prettyprint language-js"><code></code></pre>
                     <andypf-json-viewer data='{{ responseDetails }}' indent="2"
-                                        expanded="true"
+                                        expanded="false"
                                         theme="default-light"
                                         show-data-types="true"
                                         show-toolbar="true"
@@ -108,14 +112,11 @@
         </tr>
     </table>
 {% else %}
-    <table cellspacing="0" cellpadding="0" border="0" style="width:98%;border-collapse: collapse;">
-        <tr class="response">
-            <td id="editval_computop_no_entry" class="edittext">
-                {{ translate({ ident: 'fatchip_computop_ADMIN_API_LOGS_SELECT_ENTRY' }) }}
 
-            </td>
-        </tr>
-    </table>
+            <div id="editval_computop_no_entry" class="">
+                {{ translate({ident: 'fatchip_computop_ADMIN_API_LOGS_SELECT_ENTRY' }) }}
+            </div>
+
 {% endif %}
 
 
