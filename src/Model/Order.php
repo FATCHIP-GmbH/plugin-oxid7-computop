@@ -585,7 +585,6 @@ class Order extends Order_parent
                 [
                     'payment' => $paymentName,
                     'UserID' => $customerId,
-                    'order' => $order,
                     'SessionID' => $sessionID,
                     'params' => $params
                 ]

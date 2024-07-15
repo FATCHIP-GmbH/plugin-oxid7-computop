@@ -226,7 +226,7 @@ class CTPaymentService extends Encryption
     {
         $this->fatchipComputopSession->setVariable('FatchipComputopRedirectResponse', $response);
         $redirectRequest = $this->fatchipComputopSession->getVariable(
-            Constants::CONTROLLER_PREFIX . 'RedirectRequestParams'
+            Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams'
         );
         $this->fatchipComputopLogger->logRequestResponse(
             $redirectRequest,
