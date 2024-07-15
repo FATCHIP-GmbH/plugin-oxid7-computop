@@ -79,8 +79,8 @@
     <table cellspacing="0" cellpadding="0" border="0" style="width:98%;border-collapse: collapse;">
         <tr class="response">
             <td id="editval_computop__response">
+                {% if requestDetails != false %}
                 <h2>requestDetails</h2>
-                {% if requestDetails %}
                     <andypf-json-viewer data='{{ requestDetails }}' indent="2"
                                         expanded="false"
                                         theme="default-light"
@@ -94,8 +94,8 @@
         </tr>
         <tr class="response">
             <td id="editval_computop__response">
+                {% if responseDetails != false %}
                 <h2>ResponseDetails</h2>
-                {% if responseDetails %}
                     <pre class="prettyprint language-js"><code></code></pre>
                     <andypf-json-viewer data='{{ responseDetails }}' indent="2"
                                         expanded="false"

@@ -105,7 +105,11 @@ class FatchipComputopNotify extends FrontendController
             'TransId' => $transId,
         ];
         $response = $this->paymentService->getDecryptedResponse($PostRequestParams);
-        $paymentName = $this->getPaymentName($response, $session);
+        $oOrder = oxNew(Order::class);
+        if ($oOrder->load($session) !== true) {
+            exit;
+        }
+        $paymentName = $this->getPaymentName($oOrder);
 
         $this->fatchipComputopLogger->logRequestResponse([], $paymentName, 'NOTIFY', $response,);
 
@@ -126,7 +130,7 @@ class FatchipComputopNotify extends FrontendController
 
                 $order->updateOrderAttributes($response);
                 $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
-                // $this->updateRefNrWithComputop($order, $this->paymentClass);
+                //$this->updateRefNrWithComputop($order, $this->paymentClass);
             }
                 /* $this->inquireAndupdatePaymentStatus(
                         $order,
@@ -146,11 +150,7 @@ class FatchipComputopNotify extends FrontendController
      * @param $response CTResponse
      * @return string
      */
-    protected function getPaymentName(CTResponse $response, $session) {
-        $oOrder = oxNew(Order::class);
-        if ($oOrder->load($session) !== true) {
-         exit;
-        }
+    protected function getPaymentName($oOrder) {
         if ( $paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
             return $paymentName;
         } else {

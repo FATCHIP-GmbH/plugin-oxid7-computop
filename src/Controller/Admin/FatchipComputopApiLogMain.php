@@ -112,14 +112,10 @@ class FatchipComputopApiLogMain extends AdminDetailsController
         if ($this->_oRequestLog) {
             if ($sData == 'edit') {
                 return $this->_oRequestLog;
-            } elseif ($sData == 'request') {
-                return $this->_oRequestLog->fatchip_computop_api_log__request->rawValue;
-            } elseif ($sData == 'response') {
-                return $this->_oRequestLog->fatchip_computop_api_log__response->rawValue;
-            } elseif ($sData == 'request_details') {
-                return $this->_oRequestLog->fatchip_computop_api_log__request_details->rawValue;
-            }elseif ($sData == 'response_details') {
-                return $this->_oRequestLog->fatchip_computop_api_log__response_details->rawValue;
+            }
+            $rawValue = $this->_oRequestLog->{"fatchip_computop_api_log__$sData"}->rawValue;
+            if (!empty($rawValue && $rawValue !== '[]')) {
+                return $rawValue;
             }
         }
         return false;
