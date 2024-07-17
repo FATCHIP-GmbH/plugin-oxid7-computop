@@ -26,44 +26,29 @@
 
 namespace Fatchip\ComputopPayments\Repository;
 
-use Fatchip\ComputopPayments\Core\Constants;
-use OxidEsales\Eshop\Core\DatabaseProvider;
-use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
-use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
-use Fatchip\ComputopPayments\Model\Apilog;
+use Fatchip\ComputopPayments\Model\ApiLog;
 
 class ApiLogRepository
 {
     /**
-     * @param Apilog $apiLogEntry
-     * @throws DatabaseErrorException
-     * @throws DatabaseConnectionException
-     * @psalm-suppress InternalMethod
+     * @param ApiLog $apiLogEntry
+     * @return bool|string|null
+     * @throws \Exception
      */
-    public function saveApiLog(Apilog $apiLogEntry)
+    public function saveApiLog(ApiLog $apiLogEntry): bool|string|null
     {
-        $sql = 'INSERT IGNORE INTO ' .  Constants::APILOG_TABLE . ' (
-                `request`,
-                `response`,
-                `creation_date`,
-                `payment_name`,
-                `request_details`,
-                `response_details`,
-                `trans_id`,
-                `pay_id`,
-                `x_id`
-                ) VALUES (?,?,?,?,?,?,?,?,?);';
-
-        DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql, [
-            $apiLogEntry->getRequest(),
-            $apiLogEntry->getResponse(),
-            $apiLogEntry->getCreationDate(),
-            $apiLogEntry->getPaymentName(),
-            $apiLogEntry->getRequestDetails(),
-            $apiLogEntry->getResponseDetails(),
-            $apiLogEntry->getTransId(),
-            $apiLogEntry->getPayId(),
-            $apiLogEntry->getXId(),
+       // $oApiLog  = oxNew(ApiLog::class);
+        $apiLogEntry->assign([
+            'request' => $apiLogEntry->getRequest(),
+            'response' =>       $apiLogEntry->getResponse(),
+            'creation_date' =>    $apiLogEntry->getCreationDate(),
+            'payment_name' => $apiLogEntry->getPaymentName(),
+            'request_details' => $apiLogEntry->getRequestDetails(),
+            'response_details' =>  $apiLogEntry->getResponseDetails(),
+            'trans_id' =>  $apiLogEntry->getTransId(),
+            'pay_id' =>$apiLogEntry->getPayId(),
+            'x_id' =>   $apiLogEntry->getXId(),
         ]);
+        return $apiLogEntry->save();
     }
 }

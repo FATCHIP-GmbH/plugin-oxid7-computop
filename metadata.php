@@ -1,6 +1,10 @@
 <?php
 
+use Fatchip\ComputopPayments\Controller\Admin\ApiLogList;
+use Fatchip\ComputopPayments\Controller\Admin\ApiLogMain;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopAjaxApiLog;
+use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogList;
+use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogMain;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopConfig;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiTest;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLog;
@@ -65,6 +69,8 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'config' => FatchipComputopConfig::class,
         Constants::GENERAL_PREFIX . 'apitest' => FatchipComputopApiTest::class,
         Constants::GENERAL_PREFIX . 'apilog' => FatchipComputopApiLog::class,
+        Constants::GENERAL_PREFIX . 'apilog_main' => FatchipComputopApiLogMain::class,
+        Constants::GENERAL_PREFIX . 'apilog_list' => FatchipComputopApiLogList::class,
         Constants::GENERAL_PREFIX . 'ajaxapilog' => FatchipComputopAjaxApiLog::class,
         Constants::GENERAL_PREFIX . 'updateidealissuers' => FatchipComputopUpdateIdealIssuers::class,
 

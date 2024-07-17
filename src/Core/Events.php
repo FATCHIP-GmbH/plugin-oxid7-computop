@@ -208,7 +208,7 @@ class Events
         $sql = '
 
         CREATE TABLE IF NOT EXISTS `fatchip_computop_api_log` (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `oxid` char(32) NOT NULL,
             `request` varchar(255) DEFAULT NULL,
             `response` varchar(255) DEFAULT NULL,
             `creation_date` datetime NOT NULL,
@@ -218,7 +218,7 @@ class Events
             `trans_id` varchar(255) DEFAULT NULL,
             `pay_id` varchar(255) DEFAULT NULL,
             `x_id` varchar(255) DEFAULT NULL,
-            PRIMARY KEY (`id`)
+            PRIMARY KEY (`oxid`)
         ) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
         ';
 

@@ -4,7 +4,7 @@ namespace Fatchip\ComputopPayments\Controller;
 
 use Exception;
 use Fatchip\ComputopPayments\Core\Logger;
-use Fatchip\ComputopPayments\Model\Apilog;
+use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
@@ -1058,7 +1058,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $paymentName = $payment::paymentClass;
 
         $response = $payment->callComputop($requestParams, $url);
-        $logMessage = oxNew(Apilog::class);
+        $logMessage = oxNew(ApiLog::class);
         $logMessage->setPaymentName($paymentName);
         $logMessage->setRequest($requestType);
         $logMessage->setRequestDetails(json_encode($requestParams));

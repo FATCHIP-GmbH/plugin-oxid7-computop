@@ -459,7 +459,7 @@ class Order extends Order_parent
         $paymentName = $payment::paymentClass;
 
         $response = $payment->callComputop($requestParams, $url);
-        $logMessage = oxNew(Apilog::class);
+        $logMessage = oxNew(ApiLog::class);
         $logMessage->setPaymentName($paymentName);
         $logMessage->setRequest($requestType);
         $logMessage->setRequestDetails(json_encode($requestParams));
@@ -572,7 +572,7 @@ class Order extends Order_parent
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $sessionID = $this->fatchipComputopSession->getId();
             $customerId = $oUser->getFieldData('oxcustnr');
-            $order = var_export($ctOrder, true);
+            $order = var_export($this, true);
             $paymentName = $this->fatchipComputopPaymentClass;
             $this->fatchipComputopLogger->log(
                 'DEBUG',
@@ -580,7 +580,6 @@ class Order extends Order_parent
                 [
                     'payment' => $paymentName,
                     'UserID' => $customerId,
-                    'order' => $order,
                     'SessionID' => $sessionID,
                     'params' => $params
                 ]

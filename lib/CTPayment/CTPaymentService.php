@@ -161,6 +161,7 @@ class CTPaymentService extends Encryption
         // Set special Custom Params (Oxid Session id and TransId)
         $response = new CTResponse($requestArray);
         $response->setShopTransId($rawRequest['TransId']);
+        $response->setType($requestArray['Type']);
         $response->setSessionId(($rawRequest['SessionId']));
         return $response;
     }
@@ -225,7 +226,7 @@ class CTPaymentService extends Encryption
     {
         $this->fatchipComputopSession->setVariable('FatchipComputopRedirectResponse', $response);
         $redirectRequest = $this->fatchipComputopSession->getVariable(
-            Constants::CONTROLLER_PREFIX . 'RedirectRequestParams'
+            Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams'
         );
         $this->fatchipComputopLogger->logRequestResponse(
             $redirectRequest,

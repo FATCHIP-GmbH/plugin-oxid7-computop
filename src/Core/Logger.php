@@ -28,7 +28,7 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Exception;
-use Fatchip\ComputopPayments\Model\Apilog;
+use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonoLogLogger;
@@ -58,7 +58,10 @@ class Logger extends AbstractLogger
 
     public function logRequestResponse($requestParams, $paymentName, $requestType, $response)
     {
-        $logMessage = new Apilog();
+        if ($paymentName === '' || $paymentName === null) {
+           $paymentName = Registry::getSession()->getVariable('paymentid');
+         }
+        $logMessage = new ApiLog();
         $logMessage->setPaymentName($paymentName);
         $logMessage->setCreationDate(date('Y-m-d H-i-s'));
         $logMessage->setRequest($requestType);
