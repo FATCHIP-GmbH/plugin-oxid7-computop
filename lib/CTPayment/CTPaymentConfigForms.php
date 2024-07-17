@@ -63,7 +63,7 @@ class CTPaymentConfigForms
                 'value' => '',
                 'label' => 'Bestellnummer Präfix',
                 'required' => false,
-                'description' => 'Präfix für Bestellnummern. Sie können folgende Platzhalter verwenden: %transid% , %payid%, %xid%',
+                'description' => 'Präfix für Bestellnummern.',
             ],
             'suffixOrdernumber' => [
                 'name' => 'suffixOrdernumber',
@@ -71,7 +71,7 @@ class CTPaymentConfigForms
                 'value' => '',
                 'label' => 'Bestellnummer Suffix',
                 'required' => false,
-                'description' => 'Suffix für Bestellnummern. Sie können folgende Platzhalter verwenden: %transid% , %payid%, %xid%',
+                'description' => 'Suffix für Bestellnummern.',
             ],
         ];
 
@@ -563,11 +563,11 @@ class CTPaymentConfigForms
                 ],
                 'prefixOrdernumber' => [
                     'label' => 'Bestellnummer Präfix',
-                    'description' => 'Präfix für Bestellnummern. Sie können folgende Platzhalter verwenden: %transid% , %payid%, %xid%',
+                    'description' => 'Präfix für Bestellnummern.',
                 ],
                 'suffixOrdernumber' => [
                     'label' => 'Bestellnummer Suffix',
-                    'description' => 'Suffix für Bestellnummern. Sie können folgende Platzhalter verwenden: %transid% , %payid%, %xid%',
+                    'description' => 'Suffix für Bestellnummern.',
                 ],
                 'debuglog' => [
                     'label' => 'Debug Protokoll',
@@ -685,11 +685,11 @@ class CTPaymentConfigForms
                 ],
                 'prefixOrdernumber' => [
                     'label' => 'Ordernumber prefix',
-                    'description' => 'Prefix for ordernumbers. You can use the following placeholders: %transid% , %payid%, %xid%',
+                    'description' => 'Prefix for ordernumbers.',
                 ],
                 'suffixOrdernumber' => [
                     'label' => 'Ordernumber suffix',
-                    'description' => 'Suffix for ordernumbers. You can use the following placeholders: %transid% , %payid%, %xid%',
+                    'description' => 'Suffix for ordernumbers.',
                 ],
                 'debuglog' => [
                     'label' => 'Debug protocol',
