@@ -60,6 +60,7 @@ class Logger extends AbstractLogger
     {
         if ($paymentName === '' || $paymentName === null) {
            $paymentName = Registry::getSession()->getVariable('paymentid');
+           $paymentName = Constants::getPaymentClassfromId($paymentName);
          }
         $logMessage = new ApiLog();
         $logMessage->setPaymentName($paymentName);

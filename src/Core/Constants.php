@@ -45,6 +45,7 @@ class Constants
         'fatchip_computop_klarna',
         'fatchip_computop_paypal_standard',
         'fatchip_computop_easycredit',
+        'fatchip_computop_creditcard',
         'fatchip_computop_twint',
         'fatchip_computop_ideal'
     ];

@@ -41,6 +41,8 @@ use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Model\Basket;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\PaymentGateway;
+use OxidEsales\Eshop\Core\Exception\StandardException;
+use OxidEsales\Eshop\Core\Price;
 use OxidEsales\Eshop\Core\Registry;
 
 use function date;
@@ -210,91 +212,131 @@ class Order extends Order_parent
         return Constants::isFatchipComputopDirectPayment($paymentId);
     }
 
-
-    /**
-     * @param $force
-     *
-     */
-    public function autoCapture($oUser, $force = false)
+    public function getCapturedAmount()
     {
+        $capturedAmount = $this->getFieldData('fatchip_computop_amount_captured');
+
+        if ($capturedAmount > 0.0) {
+            return oxNew(Price::class, $capturedAmount / 100)->getPrice();
+        }
+
+        $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
+        $ctOrder = $this->createCTOrder();
+        $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
+            $this->fatchipComputopPaymentClass,
+            $this->fatchipComputopConfig,
+            $ctOrder
+        );
+
+        $payId = $this->getFieldData('fatchip_computop_payid');
+        $param = $payment->getInquireParams($payId);
+
+        try {
+            $response = $payment->callComputop($param, $payment->getCTInquireURL());
+        } catch (StandardException $e) {
+            return 0.0;
+        }
+
+        $capturedAmount = (double) $response->getAmountCap();
+        $this->assign(['fatchip_computop_amount_captured' => $capturedAmount]);
+        $this->save();
+
+        return oxNew(Price::class, $capturedAmount / 100)->getPrice();
+    }
+    public function autoCapture($oUser = false, $force = false): void
+    {
+        if ($this->fatchipComputopPaymentClass === null) {
+            $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
+        }
+
+        // Skip Auto Capture if its iDEAL
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal') {
-            $this->fatchipComputopLogger->log(
-                'DEBUG',
-                'autoCapture: skipping for ' . $this->fatchipComputopPaymentId,
-                []
-            );
+            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentId, $oUser);
             return;
         }
 
-        if ($force !== true && (!
-            (($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard' && $this->fatchipComputopConfig['creditCardCaption'] === 'AUTO')
-                || ($this->fatchipComputopPaymentId === 'fatchip_computop_lastschrift' && $this->fatchipComputopConfig['lastschriftCaption'] === 'AUTO')
-                || ($this->fatchipComputopPaymentId === 'fatchip_computop_paypal_standard' && $this->fatchipComputopConfig['paypalCaption'] === 'AUTO')
-                || ($this->fatchipComputopPaymentId === 'fatchip_computop_paypal_express' && $this->fatchipComputopConfig['paypalCaption'] === 'AUTO')
-                || ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay' && $this->fatchipComputopConfig['amazonCaptureType'] === 'AUTO')
-            ))
-        ) {
-            if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
-                $sessionID = $this->fatchipComputopSession->getId();
-                $customerId = $oUser->getId();
-                $this->fatchipComputopLogger->log(
-                    'DEBUG',
-                    'autoCapture: skipping for ' . $this->fatchipComputopPaymentClass,
-                    ['UserID' => $customerId, 'SessionID' => $sessionID]
-                );
-            }
+        $this->fatchipComputopPaymentId = $this->getFieldData('oxpaymenttype');
+
+        // Check if auto-capture is enabled for the payment method
+        if (!$force && !$this->isAutoCaptureEnabled()) {
+            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass,[], $oUser);
             return;
         }
 
         $captureResponse = $this->captureOrder();
-        $captureResponseStatus = $captureResponse->getStatus();
-        if ($captureResponseStatus === 'OK') {
+
+        $this->handleCaptureResponse($captureResponse, $oUser);
+    }
+
+    private function isAutoCaptureEnabled()
+    {
+        $autoCaptureConfigKey = 'creditCardCaption';
+        $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {
+            $autoCaptureConfigKey = 'amazonCaptureType';
+        }
+
+        return ($autoCaptureValue === 'AUTO');
+    }
+
+    private function handleCaptureResponse($captureResponse, $oUser)
+    {
+        $status = $captureResponse->getStatus();
+
+        if ($status === 'OK') {
             $this->updateComputopFatchipOrderStatus(
-                CONSTANTS::PAYMENTSTATUSPAID,
+                Constants::PAYMENTSTATUSPAID,
                 ['captureAmount' => $captureResponse->getAmountCap()]
             );
-            if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
-                $oUser = $this->getUser();
-                $customerId = $oUser->getFieldData('oxcustnr');
-                $sessionID = $this->fatchipComputopSession->getId();
-                $paymentClass = Constants::getPaymentClassfromId($this->fatchipComputopPaymentClass);
-                $this->fatchipComputopLogger->log(
-                    'DEBUG',
-                    'autoCapture: success for ' . $paymentClass . 'order status is' . Constants::PAYMENTSTATUSPAID,
-                    [
-                        'order' => $this->getFieldData('oxordernr'),
-                        'payment' => $paymentClass,
-                        'UserID' => $customerId,
-                        'SessionID' => $sessionID,
-                        'CaptureResponse' => var_export($captureResponse, true)
-                    ]
-                );
+        } elseif ($status === 'FAILED') {
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSREVIEWNECESSARY,
+                $data = [
+                    'errorCode' => $captureResponse->getCode(),
+                    'errorMessage' => $captureResponse->getDescription()
+                ]
+            );
+        }
+
+        $this->logCaptureResponse($status, $captureResponse, $oUser); // Logging
+    }
+
+    private function logDebug(string $message, array $data = [], $oUser = null)  // Added $oUser parameter
+    {
+        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
+            $sessionID = $this->fatchipComputopSession->getId();
+            $customerId = $oUser ? $oUser->getId() : null; // Get customerId if user is available
+
+            $this->fatchipComputopLogger->log(
+                'DEBUG',
+                $message,
+                array_merge(['UserID' => $customerId, 'SessionID' => $sessionID], $data)
+            );
+        }
+    }
+
+    private function logCaptureResponse(string $status, $captureResponse, $oUser)
+    {
+        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
+            $sessionID = $this->fatchipComputopSession->getId();
+            $customerId = $oUser ? $oUser->getFieldData('oxcustnr') : null;
+            $paymentClass = Constants::getPaymentClassfromId($this->fatchipComputopPaymentId);
+
+            $logMessage = "autoCapture: {$status} for {$paymentClass}";
+            if ($status === 'FAILED') {
+                $logMessage .= ', setting order status to ' . Constants::PAYMENTSTATUSREVIEWNECESSARY;
             }
-        } else {
-            if ($captureResponseStatus === 'FAILED') {
-                $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSREVIEWNECESSARY,
-                    $data = [
-                        'errorCode' => $captureResponse->getCode(),
-                        'errorMessage' => $captureResponse->getDescription()
-                    ]
-                );
-                if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
-                    $sessionID = $this->fatchipComputopSession->getId();
-                    $customerId = $oUser->getFieldData('oxcustnr');
-                    $paymentClass = Constants::getPaymentClassfromId($this->fatchipComputopPaymentId);
-                    $this->fatchipComputopLogger->log(
-                        'DEBUG',
-                        'autoCapture: failure for ' . $paymentClass . 'setting order status to ' . CONSTANTS::PAYMENTSTATUSREVIEWNECESSARY,
-                        [
-                            'order' => $this->getFieldData('oxordernr'),
-                            'payment' => $paymentClass,
-                            'UserID' => $customerId,
-                            'SessionID' => $sessionID,
-                            'CaptureResponse' => var_export($captureResponse, true)
-                        ]
-                    );
-                }
-            }
+
+            $this->fatchipComputopLogger->log(
+                'DEBUG',
+                $logMessage,
+                [
+                    'order' => $this->getFieldData('oxordernr'),
+                    'payment' => $paymentClass,
+                    'UserID' => $customerId,
+                    'SessionID' => $sessionID,
+                    'CaptureResponse' => var_export($captureResponse, true)
+                ]
+            );
         }
     }
 
@@ -361,7 +403,6 @@ class Order extends Order_parent
     function captureOrder()
     {
         $ctOrder = $this->createCTOrder();
-
         if ($this->fatchipComputopPaymentClass !== 'PaypalExpress'
             && $this->fatchipComputopPaymentClass !== 'AmazonPay'
         ) {
@@ -373,10 +414,8 @@ class Order extends Order_parent
         } else {
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($this->fatchipComputopPaymentClass);
         }
-
-        $test = $this->getFieldData('oxorder__fatchip_computop_payid');
-        $test2 = $this->getFieldData('fatchip_computop_payid');
-        $orderSum = ((double)$this->oxorder__oxtotalordersum) * 100;
+        $totalOrderSum =  ((double)$this->oxorder__oxtotalordersum->value);
+        $orderSum = $totalOrderSum * 100;
         $payId = $this->getFieldData('fatchip_computop_payid');
         $transId = $this->getFieldData('fatchip_computop_transid');
         $xid = $this->getFieldData('fatchip_computop_xid');
@@ -394,6 +433,7 @@ class Order extends Order_parent
 
         return $this->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
     }
+
 
     /**
      * creates a CTAddress object from an oxid order
@@ -572,7 +612,7 @@ class Order extends Order_parent
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $sessionID = $this->fatchipComputopSession->getId();
             $customerId = $oUser->getFieldData('oxcustnr');
-            $order = var_export($this, true);
+            $order = var_export('', true);
             $paymentName = $this->fatchipComputopPaymentClass;
             $this->fatchipComputopLogger->log(
                 'DEBUG',
@@ -646,9 +686,9 @@ class Order extends Order_parent
     function getUrlParams()
     {
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLSuccess = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId;
-        $URLFailure = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId;
-        $URLCancel = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId;
+        $URLSuccess = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId.'&sid='.Registry::getSession()->getId();
+        $URLFailure = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId.'&sid='.Registry::getSession()->getId();
+        $URLCancel = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId.'&sid='.Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify';
         return [
             'UrlSuccess' => $URLSuccess,
@@ -711,19 +751,19 @@ class Order extends Order_parent
                     'IBAN' => $dynValue['fatchip_computop_lastschrift_iban'],
                 ];
             case "fatchip_computop_klarna";
-                    $aOrderlines = $this->getKlarnaOrderlinesParams();
-                    $taxAmount = $this->calculateTaxAmount($aOrderlines);
-                    $oxcountryid = $oUser->getFieldData('oxcountryid');
-                    $oCountry = oxNew(Country::class);
-                    $oCountry->load($oxcountryid);
-                    $oxisoalpha2 = $oCountry->getFieldData('oxisoalpha2');
+                $aOrderlines = $this->getKlarnaOrderlinesParams();
+                $taxAmount = $this->calculateTaxAmount($aOrderlines);
+                $oxcountryid = $oUser->getFieldData('oxcountryid');
+                $oCountry = oxNew(Country::class);
+                $oCountry->load($oxcountryid);
+                $oxisoalpha2 = $oCountry->getFieldData('oxisoalpha2');
 
-                    return [
-                        'TaxAmount' => $taxAmount,
-                        'ArticleList' => $aOrderlines,
-                        'Account' => $this->fatchipComputopConfig['klarnaaccount'],
-                        'bdCountryCode' => $oxisoalpha2,
-                    ];
+                return [
+                    'TaxAmount' => $taxAmount,
+                    'ArticleList' => $aOrderlines,
+                    'Account' => $this->fatchipComputopConfig['klarnaaccount'],
+                    'bdCountryCode' => $oxisoalpha2,
+                ];
 
             case "fatchip_computop_easycredit":
                 return [
@@ -745,6 +785,9 @@ class Order extends Order_parent
                         'issuerID' => $dynValue['fatchip_computop_ideal_bankname'],
                     ];
                 }
+            case "fatchip_computop_creditcard":
+                return ['RefNr' => Registry::getSession()->getSessionChallengeToken()];
+
         }
         return [];
     }

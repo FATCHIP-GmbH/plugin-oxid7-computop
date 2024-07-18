@@ -45,6 +45,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     protected $fatchipComputopConfig;
     protected $fatchipComputopBasket;
     protected $fatchipComputopSession;
+    /** @var \OxidEsales\Eshop\Core\Config */
     protected $fatchipComputopShopConfig;
     protected $fatchipComputopPaymentId;
     protected $fatchipComputopPaymentClass;
@@ -130,7 +131,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                         $ctOrder,
                         '',
                         '',
-                       '',
+                        '',
                         'Test',
                         $this->getUserDataParam(),
                         CTEnumEasyCredit::EVENTTOKEN_GET
@@ -199,8 +200,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     $order->customizeOrdernumber($response);
                     $order->updateOrderAttributes($response);
                     $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+                    $this->updateRefNrWithComputop($order);
                     $order->autocapture($oUser, false);
-                    // $this->updateRefNrWithComputop($order, $this->paymentClass);
+
                 }
             }
         }
@@ -301,8 +303,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $params['browserInfo'] = $this->getParamBrowserInfo($dynValue, $request);
         if ($params['AccVerify'] !== 'Yes') {
             unset($params['AccVerify']);
-        }
-        $params['AccVerify'] = 'Yes';
+        }   unset($params['AccVerify']);
+        //  $params['AccVerify'] = 'Yes';
         // $silentParams = $payment->prepareSilentRequest($params);
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $sessionID = $this->fatchipComputopSession->getId();
@@ -927,28 +929,29 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     private
     function updateRefNrWithComputop(
         $order,
-        $paymentClass
     ) {
         if (!$order) {
             return null;
         }
-
-        $ctOrder = $this->createCTOrderFromSWorder($order);
+        $paymentId = $order->getFieldData('oxpaymenttype');
+        if ($this->fatchipComputopPaymentClass === null) {
+            $paymentClass = Constants::getPaymentClassfromId($paymentId);
+        }
+        $ctOrder = $this->createCTOrder();
         if ($paymentClass !== 'PaypalExpress'
             && $paymentClass !== 'AmazonPay'
             && $paymentClass !== 'KlarnaPayments'
         ) {
-            $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($paymentClass, $this->fatchipComputopConfig, $ctOrder);
         } else {
-            $payment = $this->paymentService->getPaymentClass($paymentClass);
+            $payment = $this->fatchipComputopPaymentService->getPaymentClass($paymentClass);
         }
-        $attribute = $order->getAttribute();
-        $payID = $attribute->getfatchipctPayid();
-        $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
+        $payID = $order->getFieldData('fatchip_computop_payid');
+        $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
         $RefNrChangeParams['EtiId'] = $this->getUserDataParam();
 
 
-        return $this->plugin->callComputopService(
+        return $this->callComputopService(
             $RefNrChangeParams,
             $payment,
             'REFNRCHANGE',
@@ -959,8 +962,11 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public
     function getUserDataParam()
     {
-        return $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxname->value . ' '
-            . $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxversion->value;
+        $test = $this->fatchipComputopShopConfig->getActiveShop();
+        $this->fatchipComputopShopConfig->getActiveShop()->getFieldData('oxname') . ' '
+        . $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxversion->value;
+        return $this->fatchipComputopShopConfig->getActiveShop()->getFieldData('oxname') . ' '
+            . $this->fatchipComputopShopConfig->getActiveShop()->getFieldData('oxversion');
     }
 
     protected

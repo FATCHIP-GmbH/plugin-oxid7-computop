@@ -1,13 +1,12 @@
 <?php
 
-use Fatchip\ComputopPayments\Controller\Admin\ApiLogList;
-use Fatchip\ComputopPayments\Controller\Admin\ApiLogMain;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopAjaxApiLog;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogList;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLogMain;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopConfig;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiTest;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLog;
+use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopOrderSettings;
 use Fatchip\ComputopPayments\Controller\FatchipComputopEasycredit;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopUpdateIdealIssuers;
 use Fatchip\ComputopPayments\Controller\FatchipComputopIdeal;
@@ -73,6 +72,7 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'apilog_list' => FatchipComputopApiLogList::class,
         Constants::GENERAL_PREFIX . 'ajaxapilog' => FatchipComputopAjaxApiLog::class,
         Constants::GENERAL_PREFIX . 'updateidealissuers' => FatchipComputopUpdateIdealIssuers::class,
+        Constants::GENERAL_PREFIX . 'order_settings' => FatchipComputopOrderSettings::class,
 
         // Frontend
         Constants::GENERAL_PREFIX . 'payments' => FatchipComputopPayments::class,
@@ -104,7 +104,6 @@ $aModule = [
         ['name' => 'creditCardSilentModeBrandsAmex', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'creditCardCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'creditCardAcquirer', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'creditCardAccVerify', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'creditCardSilentModeBrandDetection', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'creditCardTemplate', 'type' => 'str', 'value' => 'ct_responsive', 'group' => null],

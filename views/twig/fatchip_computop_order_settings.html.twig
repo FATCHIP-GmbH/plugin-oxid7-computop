@@ -1,0 +1,235 @@
+{% include "headitem.html.twig" with {title: "GENERAL_ADMIN_TITLE"|translate} %}
+
+<script type="text/javascript">
+    <!--
+    function toggleRefundType(oElem)
+    {
+        var quantityDisplay = oElem.value === 'quantity' ? '' : 'none';
+        var amountDisplay = oElem.value === 'amount' ? '' : 'none';
+
+        setDisplayStyleForClassName('refundQuantity', quantityDisplay);
+        setDisplayStyleForClassName('refundAmount', amountDisplay);
+    }
+
+    function setDisplayStyleForClassName(className, displayStyle)
+    {
+        var aElements = document.getElementsByClassName(className);
+        for (i = 0; i < aElements.length; i++) {
+            aElements[i].style.display = displayStyle;
+        }
+    }
+
+    function copyRefundDescription(oElem)
+    {
+        var aFormElements = document.getElementsByClassName("refund_description");
+        if (typeof aFormElements !== undefined && aFormElements.length > 0) {
+            for (var i = 0; i < aFormElements.length; i++) {
+                aFormElements[i].value = oElem.value;
+            }
+        }
+    }
+
+    //-->
+</script>
+<style>
+    .refundTable TD {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    TD.borderTop {
+        border-top: 1px solid black!important;
+    }
+    FIELDSET {
+        border-radius: 15px;
+        margin-bottom: 20px;
+        padding: 10px;
+    }
+    FIELDSET.fullRefund SPAN{
+        margin-left: 2px;
+    }
+    FIELDSET .refundSubmit {
+        margin-top: 15px;
+    }
+    .typeSelect {
+        margin-bottom: 10px;
+    }
+    FIELDSET.refundError {
+        background-color: #FF8282;
+        color: black;
+        border: 3px solid #F00000;
+    }
+    FIELDSET.refundNotice {
+        background-color: #ffeeb5;
+        border: 3px solid #FFE385;
+    }
+    FIELDSET.refundSuccess {
+        background-color: #7aff9e;
+        border: 3px solid #00b02f;
+    }
+    FIELDSET.message STRONG {
+        display: block;
+        margin-bottom: 10px;
+    }
+</style>
+
+{% if readonly %}
+    {% set readonly = "readonly disabled" %}
+{% else %}
+    {% set readonly = "" %}
+{% endif %}
+
+<form name="transfer" id="transfer" action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+    {{ oViewConf.getHiddenSid()|raw }}
+    <input type="hidden" name="oxid" value="{{ oxid }}">
+    <input type="hidden" name="cl" value="fatchip_computop_order_settings">
+</form>
+{% if oView.isComputopOrder() is same as(true) %}
+   {# {% if oView.wasRefundSuccessful() == true %}
+        <fieldset class="refundSuccess message">
+            {{ translate({ ident: "Computop_REFUND_SUCCESSFUL" }) }}
+        </fieldset>
+    {% endif %}
+    {% if oView.getErrorMessage() != false %}
+        <fieldset class="refundError message">
+            <strong>Error</strong>
+            {{ oView.getErrorMessage() }}
+        </fieldset>
+    {% endif %}
+
+    {% set blIsOrderRefundable = oView.isOrderRefundable() %}
+
+    {% if blIsOrderRefundable == false %}
+        <fieldset class="refundNotice message">
+            <strong>{{ translate({ ident: "Computop_NOTICE" }) }}</strong>
+            {{ translate({ ident: "Computop_ORDER_NOT_REFUNDABLE" }) }}
+        </fieldset>
+    {% endif %}
+
+    {% if oView.hasOrderVoucher() == true %}
+        <fieldset class="refundNotice message">
+            <strong>{{ translate({ ident: "Computop_NOTICE" }) }}</strong>
+            {{ translate({ ident: "Computop_VOUCHERS_EXISTING" }) }}
+        </fieldset>
+    {% endif %}#}
+
+    {% set order = oView.getOrder() %}
+    {% set paymentType = order.getPaymentType() %}
+    <fieldset>
+        <legend>{{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT_DETAILS" }) }}</legend>
+        <table>
+            <tr>
+                <td class="edittext">
+                    {{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT_API_LOG_PAYMENT_NAME" }) }}:
+                </td>
+                <td class="edittext">
+                    {{ paymentType.oxpayments__oxdesc.value }}
+                </td>
+                <td class="edittext"></td>
+            </tr>
+            <tr>
+                <td class="edittext">
+                    {{ translate({ ident: "FATCHIP_COMPUTOP_PAYMENT_API_LOG_RESPONSE_TRANS_ID" }) }}:
+                </td>
+                <td class="edittext">
+                    {{ order.oxorder__fatchip_computop_transid.value }}
+                </td>
+                <td class="edittext"></td>
+            </tr>
+            {% if order.oxorder__fatchip_computop_payid.value != "" %}
+                <tr>
+                    <td class="edittext">
+                        {{ translate({ ident: "FATCHIP_COMPUTOP_EXTERNAL_TRANSACTION_ID" }) }}:
+                    </td>
+                    <td class="edittext">
+                        {{ order.oxorder__fatchip_computop_payid.value }}
+                    </td>
+                    <td class="edittext"></td>
+                </tr>
+            {% endif %}
+            {% if order.oxorder__fatchip_computop_payid.value != "" %}
+                <tr>
+                    <td class="edittext">
+                        {{ translate({ ident: "FATCHIP_COMPUTOP_ORDER_REMARK" }) }}:
+                    </td>
+                    <td class="edittext">
+                        {{ order.oxorder__fatchip_computop_remark.value }}
+                    </td>
+                    <td class="edittext"></td>
+                </tr>
+            {% endif %}
+            {% if order.oxorder__fatchip_computop_payid.value != "" %}
+                <tr>
+                    <td class="edittext">
+                        {{ translate({ ident: "FATCHIP_COMPUTOP_ORDER_CAPTURED_AMOUNT" }) }}:
+                    </td>
+                    <td class="edittext">
+                        {{ order.getCapturedAmount() }}
+                    </td>
+                    <td class="edittext"></td>
+                </tr>
+            {% endif %}
+        </table>
+    </fieldset>
+
+<fieldset>
+    <legend>{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_TITLE" }) }}</legend>
+    {% if oView.isComputopOrder() is same as(false) %}
+        {{ translate({ ident: "FATCHIP_COMPUTOP_NO_COMPUTOP_PAYMENT" }) }}
+    {% else %}
+        <table cellspacing="0" cellpadding="0" border="0" width="98%" class="refundTable">
+            <tr>
+                <td class="listheader first" height="15" width="10%">{{ translate({ ident: "GENERAL_ITEMNR" }) }}</td>
+                <td class="listheader" width="10%">{{ translate({ ident: "GENERAL_TITLE" }) }}</td>
+                <td class="listheader" width="10%">{{ translate({ ident: "FATCHIP_COMPUTOP_HEADER_SINGLE_PRICE" }) }}</td>
+                <td class="listheader" width="10%">{{ translate({ ident: "GENERAL_ATALL" }) }}</td>
+                <td class="listheader" width="10%">{{ translate({ ident: "ORDER_ARTICLE_MWST" }) }}</td>
+            </tr>
+            {% set blWhite = "" %}
+            {% set class = "" %}
+            {% set blBorderDrawn = false %}
+            {% set _cnt = 0 %}
+            {% for listitem in oView.getRefundItems() %}
+                {% set _cnt = _cnt+1 %}
+                <tr id="art.{{ _cnt }}">
+                    {% if listitem.isOrderarticle == false and blBorderDrawn == false %}
+                        {% set class = " borderTop" %}
+                        {% set blBorderDrawn = true %}
+                    {% endif %}
+                    {% set listclass = listitemblWhite %}
+                    <td valign="top" class="{{ listclass }}{{ class }}" height="15">{{ listitem.artnum }}</a></td>
+                    <td valign="top" class="{{ listclass }}{{ class }}">{{ listitem.title|striptags }}</a></td>
+                    <td valign="top" class="{{ listclass }}{{ class }}">{{ oView.getFormatedPrice(listitem.singlePrice) }} <small>{{ edit.oxorder__oxcurrency.value }}</small></td>
+                    <td valign="top" class="{{ listclass }}{{ class }}">{{ oView.getFormatedPrice(listitem.totalPrice) }} <small>{{ edit.oxorder__oxcurrency.value }}</small></td>
+                    <td valign="top" class="{{ listclass }}{{ class }}">{{ listitem.vat }}</td>
+                    {% if listitem.isOrderarticle == false %}
+                        {% set class = "" %}
+                    {% endif %}
+                </tr>
+                {% if blWhite == "2" %}
+                    {% set blWhite = "" %}
+                {% else %}
+                    {% set blWhite = "2" %}
+                {% endif %}
+            {% endfor %}
+            <tr>
+                <td valign="top" class="{{ listclass }}{{ class }}" nowrap>
+                    <span class="refundQuantity">
+                        <form action="{{ oViewConf.getSelfLink()|raw }}" method="post">
+                            {{ oViewConf.getHiddenSid()|raw }}
+                            <input type="hidden" name="cl" value="fatchip_computop_order_settings">
+                            <input type="hidden" name="oxid" value="{{ oxid }}">
+                            <input type="hidden" name="fnc" value="captureManual">
+                            <input type="hidden" name="capture_description" value="" class="capture_description">
+                            <input type="text" name="captureAmount" value="{{ order.oxorder__oxtotalordersum.value }}" class="listedit">
+                            <input type="submit" value="{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_SUBMIT" }) }}">
+                        </form>
+                    </span>
+                </td>
+            </tr>
+        </table><br>
+    {% endif %}
+</fieldset>
+{% endif %}
+{% include "bottomnaviitem.html.twig" %}
+</table>
+{% include "bottomitem.html.twig" %}

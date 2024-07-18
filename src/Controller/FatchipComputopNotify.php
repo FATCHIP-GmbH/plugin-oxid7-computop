@@ -90,6 +90,7 @@ class FatchipComputopNotify extends FrontendController
      */
     public function notifyAction()
     {
+        die;
         // TODO uncomment for raw requests
         file_put_contents("requestdump.txt", var_export($_POST, true), FILE_APPEND);
         $len = Registry::getRequest()->getRequestParameter('Len');
