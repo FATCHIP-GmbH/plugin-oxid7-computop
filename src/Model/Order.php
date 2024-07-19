@@ -603,7 +603,7 @@ class Order extends Order_parent
         $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         $oUser = $this->getUser();
         $payment = $this->getPaymentClassForGatewayAction();
-        $UrlParams = $this->getUrlParams();
+        $UrlParams = $this->getUrlParams(true);
         $redirectParams = $payment->getRedirectUrlParams();
         $paymentParams = $this->getPaymentParams($oUser, $dynValue);
         $customParam = $this->getCustomParam($payment->getTransID());
@@ -683,13 +683,17 @@ class Order extends Order_parent
     }
 
     public
-    function getUrlParams()
+    function getUrlParams($redirect = false)
     {
+        $paymentClass = $this->fatchipComputopPaymentId;
+        if ($redirect === true) {
+            $paymentClass = Constants::GENERAL_PREFIX.'redirect';
+        }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLSuccess = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId.'&sid='.Registry::getSession()->getId();
-        $URLFailure = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId.'&sid='.Registry::getSession()->getId();
-        $URLCancel = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId.'&sid='.Registry::getSession()->getId();
-        $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify';
+        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
+        $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
+        $URLCancel = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
+        $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
         return [
             'UrlSuccess' => $URLSuccess,
             'UrlFailure' => $URLFailure,
@@ -786,7 +790,11 @@ class Order extends Order_parent
                     ];
                 }
             case "fatchip_computop_creditcard":
-                return ['RefNr' => Registry::getSession()->getSessionChallengeToken()];
+                return [
+                    'RefNr' => Registry::getSession()->getSessionChallengeToken(),
+                    'UserData' => Registry::getSession()->getId()
+                    ];
+
 
         }
         return [];
@@ -922,7 +930,7 @@ class Order extends Order_parent
             );
         }
 
-        $urlParams = $this->getUrlParams();
+        $urlParams = $this->getUrlParams(true);
         $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
             Constants::getPaymentClassfromId($this->fatchipComputopPaymentId),
             $this->fatchipComputopConfig,

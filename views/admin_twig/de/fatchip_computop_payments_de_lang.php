@@ -39,4 +39,5 @@ $aLang = [
     'FATCHIP_COMPUTOP_ORDER_SETTINGS' => 'Computop Bestellung verwalten',
     'FATCHIP_COMPUTOP_PAYMENT_DETAILS' => 'Computop Bestelldetails',
     'FATCHIP_COMPUTOP_ORDER_CAPTURED_AMOUNT' => 'Eingezogener Betrag',
+    'FATCHIP_COMPUTOP_ORDER_PAYID' => 'PayId',
 ];

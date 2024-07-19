@@ -17,6 +17,7 @@ use Fatchip\ComputopPayments\Controller\FatchipComputopPayment;
 use Fatchip\ComputopPayments\Controller\FatchipComputopPayments;
 use Fatchip\ComputopPayments\Controller\FatchipComputopNotify;
 use Fatchip\ComputopPayments\Controller\FatchipComputopPaypalStandard;
+use Fatchip\ComputopPayments\Controller\FatchipComputopRedirect;
 use Fatchip\ComputopPayments\Controller\FatchipComputopTwint;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\ViewConfig as ModuleViewConfig;
@@ -84,6 +85,7 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
         Constants::GENERAL_PREFIX . 'ideal' => FatchipComputopIdeal::class,
         Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,
+        Constants::GENERAL_PREFIX . 'redirect' => FatchipComputopRedirect::class
     ],
     'blocks'      => [
     ],
