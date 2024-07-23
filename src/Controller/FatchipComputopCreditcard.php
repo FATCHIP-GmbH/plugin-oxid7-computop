@@ -55,8 +55,6 @@ class FatchipComputopCreditcard extends FrontendController
     public function init()
     {
         parent::init();
-        ini_set('session.cookie_samesite', 'None');
-        ini_set('session.cookie_secure', true);
     }
     /**
      * Class constructor, sets all required parameters for requests.
@@ -85,26 +83,29 @@ class FatchipComputopCreditcard extends FrontendController
     {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
+        $custom = Registry::getRequest()->getRequestParameter('Custom');
         if (!empty($len) && !empty($data)) {
             $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
+                'Len'    => $len,
+                'Data'   => $data,
+                'Custom' => $custom,
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
-        $action = Registry::getRequest()->getRequestParameter('action');
-        if (empty($action)) {
+        if ($response !== null) {
+            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
+        } else {
+            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
                 $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
             } else {
                 $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_silent';
             }
-        } else {
-            $this->$action();
         }
-        return parent::render();
-    }
 
+        return parent::render();
+
+    }
     /**
      * Returns iframe url or redirects directly to it
      *
@@ -147,8 +148,11 @@ class FatchipComputopCreditcard extends FrontendController
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $returnUrl = $sShopUrl . 'index.php?cl=order&amp;fnc=execute&amp;FatchipComputopLen=' . $len . '&amp;FatchipComputopData=' . $data;
-        return $returnUrl;
+        $stoken = $response->getRefNr();
+        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
+        .'&stoken='.$stoken;
+        $returnurl = json_encode($returnUrl);
+        return  $returnurl;
 
     }
 

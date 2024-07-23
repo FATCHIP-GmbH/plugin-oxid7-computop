@@ -1,9 +1,12 @@
 {% capture append = "oxidBlock_content" %}
-    {# ordering steps #}
-    {% include "page/checkout/inc/steps.html.twig" with {active: 4} %}
 <script>
-    alert('i was here' + "{{ oView.getFinishUrl() }}");
-    window.top.location.href = "{{ oView.getFinishUrl() }}";
+    document.addEventListener('DOMContentLoaded', function() {
+        // Direktes Einfügen der URL
+        var finishUrl = {{ oView.getFinishUrl()|raw }};
+        if (window.top !== window.self) {
+            window.top.location.href = finishUrl;
+        }
+    });
 </script>
 {% endcapture %}
 {% include "layout/page.html.twig" %}

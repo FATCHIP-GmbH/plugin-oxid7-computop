@@ -603,7 +603,11 @@ class Order extends Order_parent
         $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         $oUser = $this->getUser();
         $payment = $this->getPaymentClassForGatewayAction();
-        $UrlParams = $this->getUrlParams(true);
+        if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
+            $UrlParams = $this->getUrlParams();
+        } else {
+            $UrlParams = $this->getUrlParams(true);
+        }
         $redirectParams = $payment->getRedirectUrlParams();
         $paymentParams = $this->getPaymentParams($oUser, $dynValue);
         $customParam = $this->getCustomParam($payment->getTransID());
@@ -631,8 +635,8 @@ class Order extends Order_parent
                 $response = $payment->getHTTPGetURL($params);
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
-                $returnUrl = 'index.php?cl='.$this->fatchipComputopPaymentId;
-                Registry::getUtils()->redirect($returnUrl, false);
+                $returnUrl = 'index.php?cl='.$this->fatchipComputopPaymentId.'&stoken='.Registry::getSession()->getSessionChallengeToken();
+                Registry::getUtils()->redirect($returnUrl);
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
@@ -705,7 +709,7 @@ class Order extends Order_parent
             $paymentClass = Constants::GENERAL_PREFIX.'redirect';
         }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
+        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
         $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
         $URLCancel = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
