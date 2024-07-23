@@ -53,7 +53,8 @@ class FatchipComputopCreditcard extends FrontendController
     public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
     public function init()
-    {
+{       ini_set('session.cookie_samesite', 'None');
+        ini_set('session.cookie_secure', true);
         parent::init();
     }
     /**
