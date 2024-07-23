@@ -58,7 +58,6 @@ class PaymentGateway extends PaymentGateway_parent
 
         $this->_iLastErrorNo = null;
         $this->_sLastError = null;
-
         /** @var Order $oOrder */
         if ($oOrder->isFatchipComputopRedirectPayment()) {
             return  $oOrder->handleRedirectPayment($dAmount, $this);

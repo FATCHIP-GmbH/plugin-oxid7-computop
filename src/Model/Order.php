@@ -625,10 +625,25 @@ class Order extends Order_parent
                 ]
             );
         }
-
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
+            $this->fatchipComputopPaymentClass = 'CreditCard';
+            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
+                $response = $payment->getHTTPGetURL($params);
+                $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
+                $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
+                $returnUrl = 'index.php?cl='.$this->fatchipComputopPaymentId;
+                Registry::getUtils()->redirect($returnUrl, false);
+            }
+            if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
+                $response = $payment->getHTTPGetURL($params);
+                $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
+                Registry::getUtils()->redirect($response, false);
+            }
+        }
         $response = $payment->getHTTPGetURL($params);
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
         Registry::getUtils()->redirect($response, false);
+
         // return true;
     }
 

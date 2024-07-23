@@ -85,6 +85,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
                 $this->fatchipComputopPaymentClass = 'CreditCard';
                 if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
+
                 } else {
                     if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
                     }
@@ -301,10 +302,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $payment->setCredentialsOnFile('CIT', $initialPayment);
         $params = $payment->getRedirectUrlParams();
         $params['browserInfo'] = $this->getParamBrowserInfo($dynValue, $request);
-        if ($params['AccVerify'] !== 'Yes') {
-            unset($params['AccVerify']);
-        }   unset($params['AccVerify']);
-        //  $params['AccVerify'] = 'Yes';
         // $silentParams = $payment->prepareSilentRequest($params);
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $sessionID = $this->fatchipComputopSession->getId();
@@ -936,11 +933,12 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $paymentId = $order->getFieldData('oxpaymenttype');
         if ($this->fatchipComputopPaymentClass === null) {
             $paymentClass = Constants::getPaymentClassfromId($paymentId);
+        } else {
+            $paymentClass = $this->fatchipComputopPaymentClass;
         }
         $ctOrder = $this->createCTOrder();
         if ($paymentClass !== 'PaypalExpress'
             && $paymentClass !== 'AmazonPay'
-            && $paymentClass !== 'KlarnaPayments'
         ) {
             $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($paymentClass, $this->fatchipComputopConfig, $ctOrder);
         } else {

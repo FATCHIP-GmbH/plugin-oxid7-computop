@@ -63,8 +63,6 @@ class Config
 
     protected $creditCardAcquirer = null;
 
-   // protected $creditCardAccVerify = null;
-
     protected $creditCardSilentModeBrandDetection = null;
 
     protected $creditCardTemplate = null;
