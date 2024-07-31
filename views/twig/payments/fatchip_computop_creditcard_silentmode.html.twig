@@ -55,7 +55,7 @@
 {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/creditcard.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
 
 <div class="credit-card-form">
-    <h2>Bähhhh</h2>
+    <h2>Kreditkarte</h2>
     <form id="computopSilentPostForm" action="https://www.computop-paygate.com/paynow.aspx" method="post">
         {{ oViewConf.getHiddenSid()|raw }}
         <input type="hidden" name="sDeliveryAddressMD5" value="{{ oView.getDeliveryAddressMD5() }}">
