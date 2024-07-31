@@ -228,6 +228,11 @@ class CTPaymentService extends Encryption
         $redirectRequest = $this->fatchipComputopSession->getVariable(
             Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams'
         );
+       $directSilent =  $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+       if ($directSilent) {
+           $redirectRequest = $directSilent;
+       }
+
         $this->fatchipComputopLogger->logRequestResponse(
             $redirectRequest,
             $this->fatchipComputopPaymentClass,
@@ -241,7 +246,7 @@ class CTPaymentService extends Encryption
             case CTEnumStatus::AUTHORIZE_REQUEST:
             $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
                 . 'index.php?cl=order&fnc=execute&action=result&stoken='
-                . Registry::getSession()->getSessionChallengeToken();
+                . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.Registry::getSession()->getUser()->getEncodedDeliveryAddress();
                 break;
             case CTEnumStatus::FAILED:
                 $this->fatchipComputopSession->setVariable('FatchipComputopErrorCode', $response->getCode());

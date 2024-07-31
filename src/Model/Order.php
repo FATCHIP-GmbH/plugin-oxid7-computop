@@ -108,7 +108,8 @@ class Order extends Order_parent
         $isFatchipComputopPayment = Constants::isFatchipComputopPayment($paymentId);
         $isFatchipComputopRedirectPayment = Constants::isFatchipComputopRedirectPayment($paymentId);
         $isFatchipComputopDirectPayment = Constants::isFatchipComputopDirectPayment($paymentId);
-
+        /** @var CTResponse $responseDirect */
+        $responseDirect = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
         if (
             $ret < 2 &&
             !$blRecalculatingOrder &&
@@ -116,24 +117,26 @@ class Order extends Order_parent
         ) {
             $this->fatchipComputopPaymentId = $paymentId;
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
-            if ($isFatchipComputopDirectPayment) {
-                $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
-                $this->fatchipComputopPaymentService->handleDirectPaymentResponse($response);
-            } else if ($isFatchipComputopRedirectPayment){
-                $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
-                Registry::getUtils()->redirect($response, false);
-                return $this->handleRedirectResponse($response);
+            if ($responseDirect === null) {
+                if ($isFatchipComputopDirectPayment) {
+                    $this->fatchipComputopPaymentService->handleDirectPaymentResponse($response);
+                } else if ($isFatchipComputopRedirectPayment){
+                    $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
+                    Registry::getUtils()->redirect($response, false);
+                    return $this->handleRedirectResponse($response);
+                }
+            } else {
+                $returning = true;
             }
 
-            $returning = false;
             if ($returning) {
-                $this->customizeOrdernumber($response);
-                $this->updateOrderAttributes($response);
+                $this->customizeOrdernumber($responseDirect);
+                $this->updateOrderAttributes($responseDirect);
                 $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
                 $this->autocapture($oUser, false);
             }
         }
-        if ($ret === 3) {
+        if ($ret === 3 || $responseDirect !== null) {
             // check Status and set Order appropiatelay
             $ret = $this->finalizeRedirectOrder($oBasket, $oUser, $blRecalculatingOrder);
         }

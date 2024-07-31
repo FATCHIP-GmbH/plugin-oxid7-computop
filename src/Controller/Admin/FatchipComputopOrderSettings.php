@@ -35,10 +35,10 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     protected $_sErrorMessage = false;
 
     /**
-     * Mollie ApiOrder
+     * Compuop ApiOrder
      *
      */
-    protected $_oMollieApiOrder = null;
+    protected $_oCompuopApiOrder = null;
 
     /**
      * Flag if a successful refund was executed
@@ -141,8 +141,8 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Returns true if order was made with Mollie order API
-     * False if payed with Mollie payment API
+     * Returns true if order was made with Compuop order API
+     * False if payed with Compuop payment API
      *
      * @return bool
      */
@@ -161,8 +161,8 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     {
         $oOrder = $this->getOrder();
      /*   foreach ($oOrder->getOrderArticles() as $oOrderArticle) {
-            if (((double)$oOrderArticle->oxorderarticles__mollieamountrefunded->value > 0 && $oOrderArticle->oxorderarticles__molliequantityrefunded->value == 0)
-                || ($oOrderArticle->oxorderarticles__molliequantityrefunded->value * $oOrderArticle->oxorderarticles__oxbprice->value != $oOrderArticle->oxorderarticles__mollieamountrefunded->value)) {
+            if (((double)$oOrderArticle->oxorderarticles__Compuopamountrefunded->value > 0 && $oOrderArticle->oxorderarticles__Compuopquantityrefunded->value == 0)
+                || ($oOrderArticle->oxorderarticles__Compuopquantityrefunded->value * $oOrderArticle->oxorderarticles__oxbprice->value != $oOrderArticle->oxorderarticles__Compuopamountrefunded->value)) {
                 return true;
             }
         }*/
@@ -233,16 +233,16 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Mollie needs its own line id for the refund so we have to collect it
+     * Compuop needs its own line id for the refund so we have to collect it
      *
      * @param string $sId
      * @return string
      */
-    protected function getMollieLineIdFromApi($sId)
+    protected function getCompuopLineIdFromApi($sId)
     {
-        $oMollieApiOrder = $this->getMollieApiOrder();
-        if ($oMollieApiOrder instanceof \Mollie\Api\Resources\Order) {
-            $aLines = $oMollieApiOrder->lines();
+        $oCompuopApiOrder = $this->getCompuopApiOrder();
+        if ($oCompuopApiOrder instanceof \Compuop\Api\Resources\Order) {
+            $aLines = $oCompuopApiOrder->lines();
             foreach ($aLines as $oLine) {
                 if ($oLine->sku == $sId) {
                     return $oLine->id;
@@ -253,28 +253,28 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Returns remaining refundable amount from Mollie Api
+     * Returns remaining refundable amount from Compuop Api
      *
      * @return double
      */
     public function getRemainingRefundableAmount()
     {
-        $oMollieApiOrder = $this->getMollieApiOrder(true);
+        $oCompuopApiOrder = $this->getCompuopApiOrder(true);
 
         $dAmount = 0;
-        if ($oMollieApiOrder && $oMollieApiOrder->amount && $oMollieApiOrder->amount->value) {
-            $dAmount = $oMollieApiOrder->amount->value;
+        if ($oCompuopApiOrder && $oCompuopApiOrder->amount && $oCompuopApiOrder->amount->value) {
+            $dAmount = $oCompuopApiOrder->amount->value;
         }
 
         $dAmountRefunded = 0;
-        if ($oMollieApiOrder && $oMollieApiOrder->amountRefunded && $oMollieApiOrder->amountRefunded->value) {
-            $dAmountRefunded = $oMollieApiOrder->amountRefunded->valu;
+        if ($oCompuopApiOrder && $oCompuopApiOrder->amountRefunded && $oCompuopApiOrder->amountRefunded->value) {
+            $dAmountRefunded = $oCompuopApiOrder->amountRefunded->valu;
         }
         return ($dAmount - $dAmountRefunded);
     }
 
     /**
-     * Generate refund lines for the Mollie API request
+     * Generate refund lines for the Compuop API request
      *
      * @return array
      */
@@ -287,7 +287,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         foreach ($aRefundItems as $sId => $aRefundItem) {
             $aBasketItem = $this->getRefundItemById($sId);
             if ($aBasketItem['type'] == 'product') {
-                $sId = $aBasketItem['artnum']; // Mollie doesnt know the orderarticles id - only the artnum
+                $sId = $aBasketItem['artnum']; // Compuop doesnt know the orderarticles id - only the artnum
             }
 
             $aLine = ['id' =>$sId];
@@ -374,13 +374,13 @@ class FatchipComputopOrderSettings extends AdminDetailsController
                         if ($aRefundItem['refund_amount'] > $oOrderArticle->oxorderarticles__oxbrutprice->value) {
                             $aRefundItem['refund_amount'] = $oOrderArticle->oxorderarticles__oxbrutprice->value;
                         }
-                        $oOrderArticle->oxorderarticles__mollieamountrefunded = new Field((double)$oOrderArticle->oxorderarticles__mollieamountrefunded->value += $aRefundItem['refund_amount']);
+                        $oOrderArticle->oxorderarticles__Compuopamountrefunded = new Field((double)$oOrderArticle->oxorderarticles__Compuopamountrefunded->value += $aRefundItem['refund_amount']);
                     } elseif (isset($aRefundItem['refund_quantity'])) {
                         if ($aRefundItem['refund_quantity'] > $oOrderArticle->oxorderarticles__oxamount->value) {
                             $aRefundItem['refund_quantity'] = $oOrderArticle->oxorderarticles__oxamount->value;
                         }
-                        $oOrderArticle->oxorderarticles__molliequantityrefunded = new Field((int)$oOrderArticle->oxorderarticles__molliequantityrefunded->value += $aRefundItem['refund_quantity']);
-                        $oOrderArticle->oxorderarticles__mollieamountrefunded = new Field((double)$oOrderArticle->oxorderarticles__mollieamountrefunded->value += $aRefundItem['refund_quantity'] * $oOrderArticle->oxorderarticles__oxbprice->value);
+                        $oOrderArticle->oxorderarticles__Compuopquantityrefunded = new Field((int)$oOrderArticle->oxorderarticles__Compuopquantityrefunded->value += $aRefundItem['refund_quantity']);
+                        $oOrderArticle->oxorderarticles__Compuopamountrefunded = new Field((double)$oOrderArticle->oxorderarticles__Compuopamountrefunded->value += $aRefundItem['refund_quantity'] * $oOrderArticle->oxorderarticles__oxbprice->value);
                     }
                     $oOrderArticle->save();
                     continue 2;
@@ -414,17 +414,17 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     protected function updateRefundedAmounts($oOrder, $sType, $dAmount)
     {
         if ($sType == 'shipping_fee') {
-            $oOrder->oxorder__molliedelcostrefunded = new Field((double)$oOrder->oxorder__molliedelcostrefunded->value + $dAmount);
+            $oOrder->oxorder__Compuopdelcostrefunded = new Field((double)$oOrder->oxorder__Compuopdelcostrefunded->value + $dAmount);
         } elseif ($sType == 'payment_fee') {
-            $oOrder->oxorder__molliepaycostrefunded = new Field((double)$oOrder->oxorder__molliepaycostrefunded->value + $dAmount);
+            $oOrder->oxorder__Compuoppaycostrefunded = new Field((double)$oOrder->oxorder__Compuoppaycostrefunded->value + $dAmount);
         } elseif ($sType == 'wrapping') {
-            $oOrder->oxorder__molliewrapcostrefunded = new Field((double)$oOrder->oxorder__molliewrapcostrefunded->value + $dAmount);
+            $oOrder->oxorder__Compuopwrapcostrefunded = new Field((double)$oOrder->oxorder__Compuopwrapcostrefunded->value + $dAmount);
         } elseif ($sType == 'giftcard') {
-            $oOrder->oxorder__molliegiftcardrefunded = new Field((double)$oOrder->oxorder__molliegiftcardrefunded->value + $dAmount);
+            $oOrder->oxorder__Compuopgiftcardrefunded = new Field((double)$oOrder->oxorder__Compuopgiftcardrefunded->value + $dAmount);
         } elseif ($sType == 'voucher') {
-            $oOrder->oxorder__mollievoucherdiscountrefunded = new Field((double)$oOrder->oxorder__mollievoucherdiscountrefunded->value + $dAmount);
+            $oOrder->oxorder__Compuopvoucherdiscountrefunded = new Field((double)$oOrder->oxorder__Compuopvoucherdiscountrefunded->value + $dAmount);
         } elseif ($sType == 'discount') {
-            $oOrder->oxorder__molliediscountrefunded = new Field((double)$oOrder->oxorder__molliediscountrefunded->value + $dAmount);
+            $oOrder->oxorder__Compuopdiscountrefunded = new Field((double)$oOrder->oxorder__Compuopdiscountrefunded->value + $dAmount);
         }
         return $oOrder;
     }
@@ -437,16 +437,16 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     protected function markOrderAsFullyRefunded()
     {
         $oOrder = $this->getOrder();
-        $oOrder->oxorder__molliedelcostrefunded = new Field($oOrder->oxorder__oxdelcost->value);
-        $oOrder->oxorder__molliepaycostrefunded = new Field($oOrder->oxorder__oxpaycost->value);
-        $oOrder->oxorder__molliewrapcostrefunded = new Field($oOrder->oxorder__oxwrapcost->value);
-        $oOrder->oxorder__molliegiftcardrefunded = new Field($oOrder->oxorder__oxgiftcardcost->value);
-        $oOrder->oxorder__mollievoucherdiscountrefunded = new Field($oOrder->oxorder__oxvoucherdiscount->value);
-        $oOrder->oxorder__molliediscountrefunded = new Field($oOrder->oxorder__oxdiscount->value);
+        $oOrder->oxorder__Compuopdelcostrefunded = new Field($oOrder->oxorder__oxdelcost->value);
+        $oOrder->oxorder__Compuoppaycostrefunded = new Field($oOrder->oxorder__oxpaycost->value);
+        $oOrder->oxorder__Compuopwrapcostrefunded = new Field($oOrder->oxorder__oxwrapcost->value);
+        $oOrder->oxorder__Compuopgiftcardrefunded = new Field($oOrder->oxorder__oxgiftcardcost->value);
+        $oOrder->oxorder__Compuopvoucherdiscountrefunded = new Field($oOrder->oxorder__oxvoucherdiscount->value);
+        $oOrder->oxorder__Compuopdiscountrefunded = new Field($oOrder->oxorder__oxdiscount->value);
         $oOrder->save();
 
         foreach ($this->getOrder()->getOrderArticles() as $oOrderArticle) {
-            $oOrderArticle->oxorderarticles__mollieamountrefunded = new Field($oOrderArticle->oxorderarticles__oxbrutprice->value);
+            $oOrderArticle->oxorderarticles__Compuopamountrefunded = new Field($oOrderArticle->oxorderarticles__oxbrutprice->value);
             $oOrderArticle->save();
         }
 
@@ -464,14 +464,14 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     {
         $oOrder = $this->getOrder();
         foreach ($oOrder->getOrderArticles() as $oOrderArticle) {
-            if ($oOrderArticle->oxorderarticles__mollieamountrefunded->value < $oOrderArticle->oxorderarticles__oxbrutprice->value) {
-                $dRemaining = $oOrderArticle->oxorderarticles__oxbrutprice->value - $oOrderArticle->oxorderarticles__mollieamountrefunded->value;
+            if ($oOrderArticle->oxorderarticles__Compuopamountrefunded->value < $oOrderArticle->oxorderarticles__oxbrutprice->value) {
+                $dRemaining = $oOrderArticle->oxorderarticles__oxbrutprice->value - $oOrderArticle->oxorderarticles__Compuopamountrefunded->value;
                 if ($dRemaining > $dFreeAmount) {
-                    $oOrderArticle->oxorderarticles__mollieamountrefunded->value = new Field($oOrderArticle->oxorderarticles__mollieamountrefunded->value + $dFreeAmount);
+                    $oOrderArticle->oxorderarticles__Compuopamountrefunded->value = new Field($oOrderArticle->oxorderarticles__Compuopamountrefunded->value + $dFreeAmount);
                     $oOrderArticle->save();
                     break;
                 } else {
-                    $oOrderArticle->oxorderarticles__mollieamountrefunded = new Field($oOrderArticle->oxorderarticles__oxbrutprice->value);
+                    $oOrderArticle->oxorderarticles__Compuopamountrefunded = new Field($oOrderArticle->oxorderarticles__oxbrutprice->value);
                     $oOrderArticle->save();
                     $dFreeAmount -= $dRemaining;
                 }
@@ -483,14 +483,14 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Returns Mollie payment object or in case of Order API the method retrieves the payment object from the order object
+     * Returns Compuop payment object or in case of Order API the method retrieves the payment object from the order object
      *
-     * @return \Mollie\Api\Resources\Order|Payment
+     * @return \Compuop\Api\Resources\Order|Payment
      */
-    protected function getMolliePaymentTransaction()
+    protected function getCompuopPaymentTransaction()
     {
-        $oApiObject = $this->getMollieApiOrder();
-        if ($oApiObject instanceof \Mollie\Api\Resources\Order) {
+        $oApiObject = $this->getCompuopApiOrder();
+        if ($oApiObject instanceof \Compuop\Api\Resources\Order) {
             $aPayments = $oApiObject->payments();
             if (!empty($aPayments)) {
                 $oApiObject = $aPayments[0];
@@ -506,32 +506,32 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         return $result;
     }
     /**
-     * Return Mollie api order
+     * Return Compuop api order
      *
      * @param bool $blRefresh
-     * @return \Mollie\Api\Resources\Order|Payment
+     * @return \Compuop\Api\Resources\Order|Payment
      */
-    protected function getMollieApiOrder($blRefresh = false)
+    protected function getCompuopApiOrder($blRefresh = false)
     {
-        if ($this->_oMollieApiOrder === null || $blRefresh === true) {
-            $this->_oMollieApiOrder = $this->getMollieApiRequestModel()->get($this->getOrder()->oxorder__oxtransid->value, ["embed" => "payments"]);
+        if ($this->_oCompuopApiOrder === null || $blRefresh === true) {
+            $this->_oCompuopApiOrder = $this->getCompuopApiRequestModel()->get($this->getOrder()->oxorder__oxtransid->value, ["embed" => "payments"]);
         }
-        return $this->_oMollieApiOrder;
+        return $this->_oCompuopApiOrder;
     }
 
     /**
-     * Check Mollie API if order is refundable
+     * Check Compuop API if order is refundable
      *
      * @return bool
      */
     public function isOrderRefundable()
     {
         if ($this->wasRefundSuccessful() === true && Registry::getRequest()->getRequestEscapedParameter('fnc') == 'fullRefund') {
-            // the mollie order is not updated instantly, so this is used to show that the order was fully refunded already
+            // the Compuop order is not updated instantly, so this is used to show that the order was fully refunded already
             return false;
         }
 
-      //  $oApiOrder = $this->getMollieApiOrder();
+      //  $oApiOrder = $this->getCompuopApiOrder();
 
    //  if (empty($oApiOrder->amountRefunded) || $oApiOrder->amountRefunded->value != $oApiOrder->amount->value) {
      //       return true;
@@ -540,13 +540,13 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Returns refunded amount from Mollie API
+     * Returns refunded amount from Compuop API
      *
      * @return string
      */
     public function getAmountRefunded()
     {
-        $oApiOrder = $this->getMollieApiOrder();
+        $oApiOrder = $this->getCompuopApiOrder();
 
         $dPrice = 0;
         if ($oApiOrder && !empty($oApiOrder->amountRefunded)) {
@@ -556,13 +556,13 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Returns remaining amount from Mollie API
+     * Returns remaining amount from Compuop API
      *
      * @return string
      */
     public function getAmountRemaining()
     {
-        $oApiOrder = $this->getMollieApiOrder();
+        $oApiOrder = $this->getCompuopApiOrder();
 
         $dPrice = 0;
         if ($oApiOrder) {
@@ -576,7 +576,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Checks if order was payed with Mollie
+     * Checks if order was payed with Compuop
      *
      * @return bool
      */
@@ -631,17 +631,17 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $oOrder = $this->getOrder();
     /*    switch ($sType) {
             case 'shipping_fee':
-                return $oOrder->oxorder__molliedelcostrefunded->value;
+                return $oOrder->oxorder__Compuopdelcostrefunded->value;
             case 'payment_fee':
-                return $oOrder->oxorder__molliepaycostrefunded->value;
+                return $oOrder->oxorder__Compuoppaycostrefunded->value;
             case 'wrapping':
-                return $oOrder->oxorder__molliewrapcostrefunded->value;
+                return $oOrder->oxorder__Compuopwrapcostrefunded->value;
             case 'giftcard':
-                return $oOrder->oxorder__molliegiftcardrefunded->value;
+                return $oOrder->oxorder__Compuopgiftcardrefunded->value;
             case 'voucher':
-                return $oOrder->oxorder__mollievoucherdiscountrefunded->value;
+                return $oOrder->oxorder__Compuopvoucherdiscountrefunded->value;
             case 'discount':
-                return $oOrder->oxorder__molliediscountrefunded->value;
+                return $oOrder->oxorder__Compuopdiscountrefunded->value;
         }*/
         return 0;
     }
@@ -657,30 +657,30 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $oOrder = $this->getOrder();
         switch ($sType) {
             case 'shipping_fee':
-                return $oOrder->oxorder__oxdelcost->value - $oOrder->oxorder__molliedelcostrefunded->value;
+                return $oOrder->oxorder__oxdelcost->value - $oOrder->oxorder__Compuopdelcostrefunded->value;
             case 'payment_fee':
-                return $oOrder->oxorder__oxpaycost->value - $oOrder->oxorder__molliepaycostrefunded->value;
+                return $oOrder->oxorder__oxpaycost->value - $oOrder->oxorder__Compuoppaycostrefunded->value;
             case 'wrapping':
-                return $oOrder->oxorder__oxwrapcost->value - $oOrder->oxorder__molliewrapcostrefunded->value;
+                return $oOrder->oxorder__oxwrapcost->value - $oOrder->oxorder__Compuopwrapcostrefunded->value;
             case 'giftcard':
-                return $oOrder->oxorder__oxgiftcardcost->value - $oOrder->oxorder__molliegiftcardrefunded->value;
+                return $oOrder->oxorder__oxgiftcardcost->value - $oOrder->oxorder__Compuopgiftcardrefunded->value;
             case 'voucher':
-                return $oOrder->oxorder__oxvoucherdiscount->value - $oOrder->oxorder__mollievoucherdiscountrefunded->value;
+                return $oOrder->oxorder__oxvoucherdiscount->value - $oOrder->oxorder__Compuopvoucherdiscountrefunded->value;
             case 'discount':
-                return $oOrder->oxorder__oxdiscount->value - $oOrder->oxorder__molliediscountrefunded->value;
+                return $oOrder->oxorder__oxdiscount->value - $oOrder->oxorder__Compuopdiscountrefunded->value;
         }
         return 0;
     }
 
     /**
-     * Returns Mollie payment or order Api
+     * Returns Compuop payment or order Api
      *
      * @return EndpointAbstract
      */
-    protected function getMollieApiRequestModel()
+    protected function getCompuopApiRequestModel()
     {
         $oOrder = $this->getOrder();
-        return $oOrder->mollieGetPaymentModel()->getApiEndpointByOrder($oOrder);
+        return $oOrder->CompuopGetPaymentModel()->getApiEndpointByOrder($oOrder);
     }
 
     /**
@@ -693,7 +693,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $aItems = array();
 
         $oOrder = $this->getOrder();
-       // $oRequestModel = $oOrder->mollieGetPaymentModel()->getApiRequestModel($oOrder);
+       // $oRequestModel = $oOrder->CompuopGetPaymentModel()->getApiRequestModel($oOrder);
         $aBasketItems = $oOrder->getOrderArticles()->getArray();
         foreach ($aBasketItems as $aBasketItem) {
             if (in_array($aBasketItem['type'], array('physical', 'digital'))) {
@@ -730,7 +730,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     public function isQuantityAvailable()
     {
         foreach ($this->getOrder()->getOrderArticles() as $orderArticle) {
-            if ((double)$orderArticle->oxorderarticles__mollieamountrefunded->value > 0 && fmod($orderArticle->oxorderarticles__mollieamountrefunded->value, $orderArticle->oxorderarticles__oxbprice->value) != 0) {
+            if ((double)$orderArticle->oxorderarticles__Compuopamountrefunded->value > 0 && fmod($orderArticle->oxorderarticles__Compuopamountrefunded->value, $orderArticle->oxorderarticles__oxbprice->value) != 0) {
                 return false;
             }
         }
@@ -749,8 +749,8 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $oOrderArticles = $this->getOrder()->getOrderArticles();
         /** @var OrderArticle $orderArticle */
         foreach ($oOrderArticles as $orderArticle) {
-           /* $quantityRefunded = $orderArticle->oxorderarticles__molliequantityrefunded->value;
-            if ($orderArticle->oxorderarticles__mollieamountrefunded->value == $orderArticle->oxorderarticles__oxbrutprice->value) {
+           /* $quantityRefunded = $orderArticle->oxorderarticles__Compuopquantityrefunded->value;
+            if ($orderArticle->oxorderarticles__Compuopamountrefunded->value == $orderArticle->oxorderarticles__oxbrutprice->value) {
                 $quantityRefunded = $orderArticle->oxorderarticles__oxamount->value;
             }*/
 
@@ -804,15 +804,15 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
 
     /**
-     * Triggers sending Mollie second chance email
+     * Triggers sending Compuop second chance email
      *
      * @return void
      */
     public function sendSecondChanceEmail()
     {
         $oOrder = $this->getOrder();
-        if ($oOrder && $oOrder->mollieIsMolliePaymentUsed()) {
-            $oOrder->mollieSendSecondChanceEmail();
+        if ($oOrder && $oOrder->CompuopIsCompuopPaymentUsed()) {
+            $oOrder->CompuopSendSecondChanceEmail();
         }
     }
 

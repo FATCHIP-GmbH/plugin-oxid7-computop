@@ -16,5 +16,15 @@
         {% if payment.oxpayments__oxid.value == 'fatchip_computop_easycredit'  %}
             {% include "@fatchip_computop_payments/fatchip_computop/checkout_order_easycredit"%}
         {% endif %}
+
     {% endblock %}
+{% endblock %}
+{% block checkout_order_next_step_side %}
+    {% set payment = oView.getPayment() %}
+
+    {% if payment.oxpayments__oxid.value == 'fatchip_computop_creditcard'  %}
+
+        {% include "@fatchip_computop_payments/payments/fatchip_computop_creditcard_silentmode"%}
+
+    {% endif %}
 {% endblock %}

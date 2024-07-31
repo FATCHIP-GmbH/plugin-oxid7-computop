@@ -93,14 +93,15 @@ class FatchipComputopCreditcard extends FrontendController
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
-        if ($response !== null) {
+        if ($response !== null && $this->fatchipComputopConfig['creditCardMode'] === 'SILENT' ) {
             $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
         } else {
             $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
                 $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
             } else {
-                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_silent';
+                return parent::render();
+
             }
         }
 

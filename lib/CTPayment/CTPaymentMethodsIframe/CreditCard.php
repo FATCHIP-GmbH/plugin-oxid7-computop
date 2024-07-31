@@ -680,7 +680,23 @@ class CreditCard extends CTPaymentMethodIframe
         return $this->TxType;
     }
 
+    public function getBrowserInfo() {
 
+        $browserInfoParams = [
+            'javaScriptEnabled' => true, // This is already correct
+            'javaEnabled' => ($_SERVER['HTTP_USER_AGENT'] ?? '') ? filter_var(strpos($_SERVER['HTTP_USER_AGENT'], 'Java') !== false, FILTER_VALIDATE_BOOLEAN) : false, // Check for Java in User-Agent
+            'colorDepth' => (int)($_COOKIE['colorDepth'] ?? '24'), // Default to 24-bit if not found
+            'screenHeight' => (int)($_COOKIE['screenHeight'] ?? '1080'), // Default to 1080p if not found
+            'screenWidth' => (int)($_COOKIE['screenWidth'] ?? '1920'), // Default to 1080p if not found
+            'timeZoneOffset' => '300',  // Get timezone offset from JavaScript
+            'acceptHeaders' => $_SERVER['HTTP_ACCEPT'] ?? '',      // Get from Accept header
+            'ipAddress' => $_SERVER['REMOTE_ADDR'] ?? '',           // Get client's IP address
+            'language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',  // Get preferred language
+            'userAgent' => $_SERVER['HTTP_USER_AGENT'] ?? '',       // Get the User-Agent string
+        ];
+
+        return $browserInfoParams;
+    }
 
     /**
      * returns encrypted url for preauthorizations for paynow silent mode
@@ -692,7 +708,14 @@ class CreditCard extends CTPaymentMethodIframe
     {
         return $this->prepareComputopRequest($ctRequest, $this->getCTPayNowURL());
     }
+    public function getPaynowURLasJson($ctRequest)
+    {
+        $ctRequest['browserInfo'] = base64_encode(json_encode($this->getBrowserInfo()));
+       // $ctRequest['billingAddress'] = base64_encode(json_encode($ctRequest['billingAddress']));
 
+        $silentRequestParams = $this->prepareSilentRequest($ctRequest);
+        return json_encode($silentRequestParams);
+    }
     /**
      * returns url for preauthorizations for paynow silent mode
      *
@@ -729,11 +752,9 @@ class CreditCard extends CTPaymentMethodIframe
     {
         $params = [
             'merchantID' => $this->merchantID,
-            'PayID' => $payID,
-            'TransID' => $transID,
-            'Amount' => $amount,
-            'Currency' => $currency,
-            'Capture' => $capture,
+            'amount' => $amount,
+            'currency' => $currency,
+       //     'Capture' => $capture,
         ];
 
         return $params;

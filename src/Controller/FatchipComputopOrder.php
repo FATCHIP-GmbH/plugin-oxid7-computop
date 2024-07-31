@@ -176,6 +176,104 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         return parent::render();
     }
 
+    public function creditCardSilent() {
+        try {
+            $ctOrder = $this->createCTOrder();
+            $this->execute();
+            $amount = $this->calculateTotalAmount();
+            $paymentId = $this->fatchipComputopBasket->getPaymentId();
+            $paymentClass = Constants::getPaymentClassfromId($paymentId);
+            $payment = $this->initializePayment($ctOrder, $paymentClass);
+            $currency = $this->fatchipComputopBasket->getBasketCurrency()->name;
+            $request = $this->createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder);
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest', $request);
+            $jsonEncoded = $payment->getPaynowURLasJson($request);
+            echo $jsonEncoded;
+            exit;
+        } catch (Exception $e) {
+            // Log the exception or handle the error appropriately
+            error_log('Error in creditCardSilent: ' . $e->getMessage());
+            echo json_encode(['error' => 'An error occurred while processing the payment.']);
+            exit;
+        }
+    }
+
+    private function calculateTotalAmount() {
+        try {
+            $oDelivery = $this->fatchipComputopBasket->getCosts('oxdelivery');
+            $sDeliveryCosts = $oDelivery === null ? 0.0 : (int)($oDelivery->getBruttoPrice() * 100);
+            $sDeliveryCosts = (double)str_replace(',', '.', $sDeliveryCosts);
+
+            $totalAmount = (int)(($this->fatchipComputopBasket->getBruttoSum() * 100) + $sDeliveryCosts);
+            return $totalAmount;
+        } catch (Exception $e) {
+            throw new Exception('Error calculating total amount: ' . $e->getMessage());
+        }
+    }
+
+    private function initializePayment($ctOrder, $paymentClass) {
+        try {
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
+                $paymentClass,
+                $this->fatchipComputopConfig,
+                $ctOrder,
+                '',
+                '',
+                '',
+                'Test:0000',
+                $this->getUserDataParam(),
+                CTEnumEasyCredit::EVENTTOKEN_GET
+            );
+
+            $payment->setCredentialsOnFile();
+            return $payment;
+        } catch (Exception $e) {
+            throw new Exception('Error initializing payment: ' . $e->getMessage());
+        }
+    }
+
+    private function createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder) {
+        try {
+            $request = $payment->getAuthorizeParams(
+                $paymentClass,
+                Registry::getSession()->getSessionChallengeToken(),
+                $amount,
+                $currency,
+                'AUTO'
+            );
+
+            $request = $this->addAdditionalRequestParameters($request, $payment, $ctOrder);
+
+            $urlParams = $this->getUrlParams(true);
+            $request = array_merge($request, $urlParams);
+
+            return $request;
+        } catch (Exception $e) {
+            throw new Exception('Error creating authorize request: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param $request
+     * @param $payment CreditCard
+     * @param $ctOrder CTOrder
+     * @return array
+     */
+    private function addAdditionalRequestParameters($request, $payment, $ctOrder) {
+        $request['EtiId'] = $payment->getEtiId();
+        $request['ReqId'] = $payment->getTransID();
+        $request['transID'] = $payment->getTransID();
+   //     $request['RefNr'] = $payment->getR();
+        $request['billingAddress'] = $payment->getBillingAddress();
+        $request['shippingAddress'] = $payment->getShippingAddress();
+        $request['msgVer'] = '2.0';
+        $request['Capture'] = $payment->getCapture();
+        $request['orderDesc'] = $payment->getOrderDesc();
+        $request['credentialOnFile'] = $payment->getCredentialsOnFile();
+        $request['template'] = 'ct_responsive';
+        $request['Response'] = 'encrypt';
+        return $request;
+    }
     public function execute() {
         $basket = Registry::getSession()->getBasket();
 
@@ -187,23 +285,23 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             // if order is validated and finalized complete Order on thankyou
             if ($ret === 'thankyou') {
                 $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
-                $orderOxId = $response->getSessionId();
-                $order = oxNew(Order::class);
-                $oUser = $this->getUser();
-                if ($order->load($orderOxId)) {
-                    /** @var \Fatchip\ComputopPayments\Model\Order $order */
-                    if (empty($order->getFieldData('oxordernr'))) {
-                        $orderNumber = $order->getFieldData('oxordernr');
-                    } else {
-                        $orderNumber = $order->getFieldData('oxordernr');
+                if ($response) {
+                    $orderOxId = $response->getSessionId();
+                    $order = oxNew(Order::class);
+                    $oUser = $this->getUser();
+                    if ($order->load($orderOxId)) {
+                        /** @var \Fatchip\ComputopPayments\Model\Order $order */
+                        if (empty($order->getFieldData('oxordernr'))) {
+                            $orderNumber = $order->getFieldData('oxordernr');
+                        } else {
+                            $orderNumber = $order->getFieldData('oxordernr');
+                        }
+                        $order->customizeOrdernumber($response);
+                        $order->updateOrderAttributes($response);
+                        $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+                        $this->updateRefNrWithComputop($order);
+                        $order->autocapture($oUser, false);
                     }
-
-                    $order->customizeOrdernumber($response);
-                    $order->updateOrderAttributes($response);
-                    $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
-                    $this->updateRefNrWithComputop($order);
-                    $order->autocapture($oUser, false);
-
                 }
             }
         }
@@ -735,14 +833,17 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     }
 
     public
-    function getUrlParams()
+    function getUrlParams($redirect = false)
     {
+        $paymentClass = $this->fatchipComputopPaymentId;
+        if ($redirect === true) {
+            $paymentClass = Constants::GENERAL_PREFIX.'redirect';
+        }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLSuccess = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId;
-        $URLFailure = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId;
-        $URLCancel = $sShopUrl . 'index.php?cl=' . $this->fatchipComputopPaymentId;
-        $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify';
-
+        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
+        $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
+        $URLCancel = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
+        $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
         return [
             'UrlSuccess' => $URLSuccess,
             'UrlFailure' => $URLFailure,
@@ -750,6 +851,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             'UrlCancel' => $URLCancel,
         ];
     }
+
 
     public
     function getCustomParam($transid)
