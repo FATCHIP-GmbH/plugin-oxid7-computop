@@ -70,9 +70,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const sDeliveryAddressMD5 = computopForm.querySelector('input[name="sDeliveryAddressMD5"]');
             const stokenValue = stokenInput ? stokenInput.value : ''; //
             const sDeliveryAddressMD5Value = sDeliveryAddressMD5 ? sDeliveryAddressMD5.value : ''; //
-            // Convert expiry date from MM/YYYY to YYYYMM
             const [month, year] = expiryDateValue.split('/');
-            // Set the formatted expiry date back to the input field
             const urlParams = new URLSearchParams({
                 'cl': 'order',
                 'fnc': 'creditCardSilent',
@@ -85,7 +83,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.Data && data.Len) {
-                        // Fill hidden fields with values
                         computopForm.querySelector('input[name="Data"]').value = data.Data;
                         computopForm.querySelector('input[name="Len"]').value = data.Len;
                         computopForm.querySelector('input[name="MerchantID"]').value = data.MerchantID;
@@ -98,16 +95,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         if (sDeliveryAddressMD5) {
                             sDeliveryAddressMD5.remove();
                         }
-                        // Submit form automatically or trigger any other action
                         computopForm.submit();
                     } else {
                         console.error('Invalid response format or missing data.');
-                        // Handle the error appropriately (e.g., show a message to the user)
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching captured amount:', error);
-                    // Handle the error appropriately
                 });
         });
     } else {
