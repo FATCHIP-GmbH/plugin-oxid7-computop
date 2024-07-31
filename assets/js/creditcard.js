@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'stoken': stokenValue,
                 'sDeliveryAddressMD5': sDeliveryAddressMD5Value,
             });
-
+            const fetchUrl = `${window.location.origin}/index.php?${urlParams.toString()}`;
             expiryDateInput.value = year + month;
-            fetch('https://www.dannyddev.ngrok.pizza/index.php?' + urlParams.toString())
+            fetch(fetchUrl)
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.Data && data.Len) {
