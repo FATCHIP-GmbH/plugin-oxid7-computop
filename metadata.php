@@ -33,7 +33,7 @@ use OxidEsales\Eshop\Core\ViewConfig as CoreViewConfig;
 
 
 /**
- * Metadata version
+ * Metadata version - SMALL CHANGE
  */
 $sMetadataVersion = '2.0';
 
