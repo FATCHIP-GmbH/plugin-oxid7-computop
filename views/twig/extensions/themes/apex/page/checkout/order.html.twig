@@ -21,10 +21,12 @@
 {% endblock %}
 {% block checkout_order_next_step_side %}
     {% set payment = oView.getPayment() %}
+    {% set fatchipComputopConfig = oView.getFatchipComputopShopConfig() %}
 
-    {% if payment.oxpayments__oxid.value == 'fatchip_computop_creditcard'  %}
+    {% if payment.oxpayments__oxid.value == 'fatchip_computop_creditcard' and fatchipComputopConfig['creditCardMode'] == 'silent'  %}
 
         {% include "@fatchip_computop_payments/payments/fatchip_computop_creditcard_silentmode"%}
-
+    {% else %}
+        {{  parent() }}
     {% endif %}
 {% endblock %}

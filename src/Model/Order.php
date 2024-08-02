@@ -601,6 +601,7 @@ class Order extends Order_parent
         $amount,
         PaymentGateway $oPayGateway = null
     ) {
+
         $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
         $this->fatchipComputopPaymentId = $this->getFieldData('oxpaymenttype');
         $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
@@ -611,8 +612,11 @@ class Order extends Order_parent
         } else {
             $UrlParams = $this->getUrlParams(true);
         }
+        $ctOrder = $this->createCTOrder();
         $redirectParams = $payment->getRedirectUrlParams();
+        $payment->setBillToCustomer($ctOrder);
         $paymentParams = $this->getPaymentParams($oUser, $dynValue);
+        $paymentParams['billToCustomer'] = $payment->getBillToCustomer();
         $customParam = $this->getCustomParam($payment->getTransID());
         $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams', $params);
@@ -643,12 +647,14 @@ class Order extends Order_parent
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
+                Registry::getSession()->freeze();
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 Registry::getUtils()->redirect($response, false);
             }
         }
         $response = $payment->getHTTPGetURL($params);
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
+        Registry::getSession()->freeze();
         Registry::getUtils()->redirect($response, false);
 
         // return true;

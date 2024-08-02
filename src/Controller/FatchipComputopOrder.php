@@ -183,6 +183,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $amount = $this->calculateTotalAmount();
             $paymentId = $this->fatchipComputopBasket->getPaymentId();
             $paymentClass = Constants::getPaymentClassfromId($paymentId);
+            /** @var CreditCard $payment */
             $payment = $this->initializePayment($ctOrder, $paymentClass);
             $currency = $this->fatchipComputopBasket->getBasketCurrency()->name;
             $request = $this->createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder);
@@ -232,6 +233,15 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
     }
 
+    /**
+     * @param CreditCard $payment
+     * @param $paymentClass
+     * @param $amount
+     * @param $currency
+     * @param $ctOrder
+     * @return array
+     * @throws Exception
+     */
     private function createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder) {
         try {
             $request = $payment->getAuthorizeParams(
@@ -260,12 +270,14 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
      * @return array
      */
     private function addAdditionalRequestParameters($request, $payment, $ctOrder) {
+        $payment->setBillToCustomer($ctOrder);
         $request['EtiId'] = $payment->getEtiId();
         $request['ReqId'] = $payment->getTransID();
         $request['transID'] = $payment->getTransID();
    //     $request['RefNr'] = $payment->getR();
         $request['billingAddress'] = $payment->getBillingAddress();
         $request['shippingAddress'] = $payment->getShippingAddress();
+        $request['billToCustomer'] = $payment->getBillToCustomer();
         $request['msgVer'] = '2.0';
         $request['Capture'] = $payment->getCapture();
         $request['orderDesc'] = $payment->getOrderDesc();
@@ -276,7 +288,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     }
     public function execute() {
         $basket = Registry::getSession()->getBasket();
-
+        if (empty($basket->getPaymentId())) {
+        }
         $paymentId = $basket->getPaymentId();
 
         $ret = null;
@@ -991,6 +1004,11 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
 
         return $taxAmount;
+    }
+
+    public function getFatchipComputopShopConfig(): \OxidEsales\Eshop\Core\Config
+    {
+        return $this->fatchipComputopShopConfig;
     }
 
     /**

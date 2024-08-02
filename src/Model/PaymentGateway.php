@@ -67,7 +67,7 @@ class PaymentGateway extends PaymentGateway_parent
         if ($configArray['creditCardMode'] === 'SILENT' && $silentCCResponse) {
             return true;
         }
-        if ($silentCCRequest === null) {
+        if ($silentCCRequest === null && $configArray['creditCardMode'] === 'SILENT') {
             return false;
         }
         /** @var Order $oOrder */

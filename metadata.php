@@ -20,6 +20,7 @@ use Fatchip\ComputopPayments\Controller\FatchipComputopPaypalStandard;
 use Fatchip\ComputopPayments\Controller\FatchipComputopRedirect;
 use Fatchip\ComputopPayments\Controller\FatchipComputopTwint;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Core\FatchipComputopSession;
 use Fatchip\ComputopPayments\Core\ViewConfig as ModuleViewConfig;
 use Fatchip\ComputopPayments\Controller\FatchipComputopCreditcard;
 use OxidEsales\Eshop\Application\Controller\OrderController as CoreOrderController;
@@ -60,6 +61,8 @@ $aModule = [
         CorePaymentController::class => FatchipComputopPayment::class,
         CoreOrderModel::class => ModuleOrder::class,
         CoreViewConfig::class => ModuleViewConfig::class,
+        \OxidEsales\Eshop\Core\Session::class => FatchipComputopSession::class,
+
 
         // Models
         CorePaymentGateway::class => ModulePaymentGateway::class,

@@ -239,14 +239,17 @@ class CTPaymentService extends Encryption
             'REDIRECT',
             $response
         );
+       if ( Registry::getSession()->getUser()) {
+           $encodedDeliveryAdress =  Registry::getSession()->getUser()->getEncodedDeliveryAddress();
 
+       }
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
             $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
                 . 'index.php?cl=order&fnc=execute&action=result&stoken='
-                . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.Registry::getSession()->getUser()->getEncodedDeliveryAddress();
+                . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
                 break;
             case CTEnumStatus::FAILED:
                 $this->fatchipComputopSession->setVariable('FatchipComputopErrorCode', $response->getCode());

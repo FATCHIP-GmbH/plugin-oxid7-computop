@@ -97,9 +97,13 @@ class FatchipComputopCreditcard extends FrontendController
             $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
         } else {
             $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
-            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
+            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME' && ($response !== null && $response->getStatus() === 'AUTHORIZED')) {
+                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
+            }
+            else if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
                 $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
-            } else {
+            }
+            else {
                 return parent::render();
 
             }
