@@ -49,16 +49,16 @@ class FatchipComputopRedirect extends FatchipComputopPayments
                 'Custom' => $custom,
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-            $response2 = $this->fatchipComputopPaymentService->getRequest();
         }
 
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         if (!empty($response)) {
             $stoken = $response->getRefNr();
+
         }
 
         $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
-            . '&stoken=' . $stoken . '&sid=' . $sessionId;
+            . '&stoken=' . $stoken;
 
         Registry::getUtils()->redirect($returnUrl, false, 301);
 
