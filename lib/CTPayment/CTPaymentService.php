@@ -163,6 +163,8 @@ class CTPaymentService extends Encryption
         $response->setShopTransId($rawRequest['TransId']);
         $response->setType($requestArray['Type']);
         $response->setSessionId(($rawRequest['SessionId']));
+        $response->setStoken(($rawRequest['Stoken']));
+        $response->setDelAdress(($rawRequest['delAdress']));
         return $response;
     }
 
@@ -183,12 +185,16 @@ class CTPaymentService extends Encryption
         $customParams = explode('&', base64_decode($custom));
         $session = explode('=', $customParams[0])[1];
         $transId = explode('=', $customParams[1])[1];
+        $stoken = explode('=', $customParams[2])[1];
+        $delAdress = explode('=', $customParams[3])[1];
 
         $PostRequestParams = [
             'Len' => $len,
             'Data' => $data,
             'SessionId' => $session,
             'TransId' => $transId,
+            'Stoken' => $stoken,
+            'delAdress' => $delAdress
         ];
 
         if (!empty($len) && !empty($data)) {

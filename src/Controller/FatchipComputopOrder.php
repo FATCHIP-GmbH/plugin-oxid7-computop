@@ -179,8 +179,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public function creditCardSilent() {
         try {
             $ctOrder = $this->createCTOrder();
-            $this->execute();
+            //$this->execute();
             $amount = $this->calculateTotalAmount();
+
             $paymentId = $this->fatchipComputopBasket->getPaymentId();
             $paymentClass = Constants::getPaymentClassfromId($paymentId);
             /** @var CreditCard $payment */
@@ -274,6 +275,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $request['EtiId'] = $payment->getEtiId();
         $request['ReqId'] = $payment->getTransID();
         $request['transID'] = $payment->getTransID();
+        $customParam = $this->getCustomParam($payment->getTransID());
+        $test = $customParam['custom'];
+        $request['custom'] = $customParam['custom'];
    //     $request['RefNr'] = $payment->getR();
         $request['billingAddress'] = $payment->getBillingAddress();
         $request['shippingAddress'] = $payment->getShippingAddress();
@@ -853,7 +857,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $paymentClass = Constants::GENERAL_PREFIX.'redirect';
         }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
+        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
         $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
         $URLCancel = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
@@ -871,8 +875,15 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     {
         $this->fatchipComputopSession->setVariable(Constants::GENERAL_PREFIX . 'TransId', $transid);
         $orderOxId = Registry::getSession()->getVariable('sess_challenge');
-        $custom = 'session='.$orderOxId . '&transid=' . $transid;
-        return ['custom' => $custom];
+        if ($delAdressMd5 = Registry::getRequest()->getRequestParameter('sDeliveryAddressMD5') !== null) {
+            $delAdressMd5 = Registry::getRequest()->getRequestParameter('sDeliveryAddressMD5');
+        }
+        $custom = base64_encode(
+            'session='.$orderOxId
+            . '&transid=' . $transid
+            . '&stoken='.Registry::getSession()->getSessionChallengeToken()
+            .'&delAdressMd5='.$delAdressMd5);
+        return ['custom' => 'Custom='.$custom];
     }
 
     /**
@@ -1006,9 +1017,13 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         return $taxAmount;
     }
 
-    public function getFatchipComputopShopConfig(): \OxidEsales\Eshop\Core\Config
+    public function getFatchipComputopShopConfigMode()
     {
-        return $this->fatchipComputopShopConfig;
+        if (is_array($this->fatchipComputopConfig)) {
+            return $this->fatchipComputopConfig['creditCardMode'];
+        }
+        return null;
+
     }
 
     /**

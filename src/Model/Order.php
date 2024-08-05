@@ -647,14 +647,17 @@ class Order extends Order_parent
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
-                Registry::getSession()->freeze();
+                $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
+                Registry::getUtils()->redirect($response, false);
+            }
+            if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
+                $response = $payment->getHTTPGetURL($params);
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 Registry::getUtils()->redirect($response, false);
             }
         }
         $response = $payment->getHTTPGetURL($params);
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
-        Registry::getSession()->freeze();
         Registry::getUtils()->redirect($response, false);
 
         // return true;
@@ -751,7 +754,7 @@ class Order extends Order_parent
     {
         $this->fatchipComputopSession->setVariable(Constants::GENERAL_PREFIX . 'TransId', $transid);
         $orderOxId = Registry::getSession()->getVariable('sess_challenge');
-        $custom = base64_encode('session='.$orderOxId . '&transid=' . $transid);
+        $custom = base64_encode('session='.$orderOxId . '&transid=' . $transid.'&stoken='.Registry::getSession()->getSessionChallengeToken());
         // return ['custom' => $custom];
         return ['custom' => 'Custom=' . $custom];
     }

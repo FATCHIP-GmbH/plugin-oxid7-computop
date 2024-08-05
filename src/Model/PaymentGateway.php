@@ -63,13 +63,13 @@ class PaymentGateway extends PaymentGateway_parent
         $this->_iLastErrorNo = null;
         $this->_sLastError = null;
         $silentCCResponse = Registry::getSession()->getVariable('FatchipComputopRedirectResponse');
-        $silentCCRequest = Registry::getSession()->getVariable('FatchipComputopRedirectUrlRequestParams');
-        if ($configArray['creditCardMode'] === 'SILENT' && $silentCCResponse) {
+        $silentCCRequest = Registry::getSession()->getVariable('FatchipComputopDirectRequest');
+        if ($configArray['creditCardMode'] === 'SILENT' && $silentCCRequest) {
             return true;
         }
-        if ($silentCCRequest === null && $configArray['creditCardMode'] === 'SILENT') {
+/*        if ($silentCCRequest === null && $configArray['creditCardMode'] === 'SILENT') {
             return false;
-        }
+        }*/
         /** @var Order $oOrder */
         if ($oOrder->isFatchipComputopRedirectPayment()) {
             return  $oOrder->handleRedirectPayment($dAmount, $this);

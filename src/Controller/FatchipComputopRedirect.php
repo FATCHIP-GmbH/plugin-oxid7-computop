@@ -3,6 +3,7 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\OrderController;
@@ -49,16 +50,33 @@ class FatchipComputopRedirect extends FatchipComputopPayments
                 'Custom' => $custom,
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
+            $custom = $this->fatchipComputopPaymentService->getRequest();
         }
-
+        if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$response);
+        }
+        $stoken = '';
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         if (!empty($response)) {
-            $stoken = $response->getRefNr();
-
+            $stoken = $response->getStoken();
+        }
+        $sid = '';
+        $delAdress = '';
+        if ($custom) {
+            if (!empty($custom->getSessionId())) {
+                $sid = $custom->getSessionId();
+            }
+            if (empty($response->getStoken())) {
+                $stoken = $custom->getStoken();
+            }
+            if (!empty($custom->getDelAdress())) {
+                $delAdress = $custom->getDelAdress();
+            }
         }
 
         $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
-            . '&stoken=' . $stoken;
+            . '&stoken=' . $stoken.'&sid='.$sid.'&sDeliveryAddressMD5='.$delAdress;
 
         Registry::getUtils()->redirect($returnUrl, false, 301);
 
