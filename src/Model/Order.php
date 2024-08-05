@@ -639,19 +639,25 @@ class Order extends Order_parent
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
             $this->fatchipComputopPaymentClass = 'CreditCard';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
+
                 $response = $payment->getHTTPGetURL($params);
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
+                $this->fatchipComputopLogger->logRequestResponse($params, 'fatchip_computop_creditcard', 'REDIRECT-IFRAME', $payment);
+
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 $returnUrl = 'index.php?cl='.$this->fatchipComputopPaymentId.'&stoken='.Registry::getSession()->getSessionChallengeToken();
                 Registry::getUtils()->redirect($returnUrl);
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
+                $this->fatchipComputopLogger->logRequestResponse($params, 'fatchip_computop_creditcard', 'REDIRECT-PAYMENTPAGE', $payment);
+
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 Registry::getUtils()->redirect($response, false);
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
                 $response = $payment->getHTTPGetURL($params);
+                $this->fatchipComputopLogger->logRequestResponse($params, 'fatchip_computop_creditcard', 'REDIRECT-SILENT', $payment);
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 Registry::getUtils()->redirect($response, false);
             }

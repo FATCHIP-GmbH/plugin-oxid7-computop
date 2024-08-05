@@ -30,6 +30,7 @@ namespace Fatchip\ComputopPayments\Core;
 use Exception;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonoLogLogger;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
@@ -69,11 +70,16 @@ class Logger extends AbstractLogger
         $logMessage->setCreationDate(date('Y-m-d H-i-s'));
         $logMessage->setRequest($requestType);
         $logMessage->setRequestDetails(json_encode($requestParams));
-        $logMessage->setTransId($response->getTransID());
-        $logMessage->setPayId($response->getPayID());
-        $logMessage->setXId($response->getXID());
-        $logMessage->setResponse($response->getStatus());
-        $logMessage->setResponseDetails(json_encode($response->toArray()));
+        if ($response instanceof CreditCard) {
+            $logMessage->setTransId($response->getTransID());
+            $logMessage->setPayId($response->getPayID());
+        } else {
+            $logMessage->setXId($response->getXID());
+            $logMessage->setResponse($response->getStatus());
+            $logMessage->setResponseDetails(json_encode($response->toArray()));
+            $logMessage->setTransId($response->getTransID());
+            $logMessage->setPayId($response->getPayID());
+        }
 
         $this->repository->saveApiLog($logMessage);
     }
