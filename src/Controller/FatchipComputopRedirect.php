@@ -64,6 +64,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $sid = '';
         $delAdress = '';
         if ($custom) {
+            $this->fatchipComputopLogger->logRequestResponse([], 'fatchip_computop_creditcard', 'AUTH', $response,);
+
             if (!empty($custom->getSessionId())) {
                 $sid = $custom->getSessionId();
             }
