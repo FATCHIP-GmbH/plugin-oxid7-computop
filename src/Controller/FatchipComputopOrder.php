@@ -188,7 +188,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $payment = $this->initializePayment($ctOrder, $paymentClass);
             $currency = $this->fatchipComputopBasket->getBasketCurrency()->name;
             $request = $this->createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder);
-            $this->fatchipComputopLogger->logRequestResponse($request, 'fatchip_computop_creditcard', 'AUTH', [],);
+            $this->fatchipComputopLogger->logRequestResponse($request, 'fatchip_computop_creditcard', 'AUTH-REQUEST', []);
 
             $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest', $request);
             $jsonEncoded = $payment->getPaynowURLasJson($request);
@@ -246,13 +246,18 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
      * @throws Exception
      */
     private function createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder) {
+        if ($this->isAutoCaptureEnabled()) {
+            $captureMode = 'AUTO';
+        } else {
+            $captureMode = 'MANUAL';
+        }
         try {
             $request = $payment->getAuthorizeParams(
                 $paymentClass,
                 Registry::getSession()->getSessionChallengeToken(),
                 $amount,
                 $currency,
-                'AUTO'
+                $captureMode
             );
 
             $request = $this->addAdditionalRequestParameters($request, $payment, $ctOrder);
@@ -291,6 +296,16 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $request['template'] = 'ct_responsive';
         $request['Response'] = 'encrypt';
         return $request;
+    }
+    private function isAutoCaptureEnabled()
+    {
+        $autoCaptureConfigKey = 'creditCardCaption';
+        $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {
+            $autoCaptureConfigKey = 'amazonCaptureType';
+        }
+
+        return ($autoCaptureValue === 'AUTO');
     }
     public function execute() {
         $basket = Registry::getSession()->getBasket();

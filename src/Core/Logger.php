@@ -66,20 +66,26 @@ class Logger extends AbstractLogger
            }
          }
         $logMessage = new ApiLog();
+        if (!empty($response)) {
+           // $logMessage->loadByTransId($response->getTransID());
+            $logMessage->setTransId($response->getTransID());
+            $logMessage->setPayId($response->getPayID());
+
+            if ($response instanceof CreditCard) {
+                $logMessage->setPayId($response->getPayID());
+            } else {
+                $logMessage->setPayId($response->getPayID());
+                $logMessage->setXId($response->getXID());
+                $logMessage->setResponse($response->getStatus());
+                $logMessage->setResponseDetails(json_encode($response->toArray()));
+            }
+        } else {
+            $logMessage->setTransId($requestParams['transID']);
+        }
         $logMessage->setPaymentName($paymentName);
         $logMessage->setCreationDate(date('Y-m-d H-i-s'));
         $logMessage->setRequest($requestType);
         $logMessage->setRequestDetails(json_encode($requestParams));
-        if ($response instanceof CreditCard) {
-            $logMessage->setTransId($response->getTransID());
-            $logMessage->setPayId($response->getPayID());
-        } else {
-            $logMessage->setXId($response->getXID());
-            $logMessage->setResponse($response->getStatus());
-            $logMessage->setResponseDetails(json_encode($response->toArray()));
-            $logMessage->setTransId($response->getTransID());
-            $logMessage->setPayId($response->getPayID());
-        }
 
         $this->repository->saveApiLog($logMessage);
     }

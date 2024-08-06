@@ -28,6 +28,7 @@ namespace Fatchip\ComputopPayments\Controller;
 
 use Exception;
 use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
@@ -125,10 +126,12 @@ class FatchipComputopNotify extends FrontendController
                 } else {
                     $orderNumber = $order->getFieldData('oxordernr');
                 }
-
                 $order->updateOrderAttributes($response);
+                $order->customizeOrdernumber($response);
+                $order->autoCapture();
                 $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
-                //$this->updateRefNrWithComputop($order, $this->paymentClass);
+                $this->updateRefNrWithComputop($order);
+
             }
                 /* $this->inquireAndupdatePaymentStatus(
                         $order,
@@ -154,6 +157,40 @@ class FatchipComputopNotify extends FrontendController
         } else {
             exit;
         }
+    }
+
+    private
+    function updateRefNrWithComputop(
+        $order,
+    ) {
+        if (!$order) {
+            return null;
+        }
+        $paymentId = $order->getFieldData('oxpaymenttype');
+        if ($this->fatchipComputopPaymentClass === null) {
+            $paymentClass = Constants::getPaymentClassfromId($paymentId);
+        } else {
+            $paymentClass = $this->fatchipComputopPaymentClass;
+        }
+        $ctOrder = $order->createCTOrder();
+        if ($paymentClass !== 'PaypalExpress'
+            && $paymentClass !== 'AmazonPay'
+        ) {
+            $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->fatchipComputopConfig, $ctOrder);
+        } else {
+            $payment = $this->paymentService->getPaymentClass($paymentClass);
+        }
+        $payID = $order->getFieldData('fatchip_computop_payid');
+        $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
+        $RefNrChangeParams['EtiId'] = $this->getUserDataParam();
+
+
+        return $this->callComputopService(
+            $RefNrChangeParams,
+            $payment,
+            'REFNRCHANGE',
+            $payment->getCTRefNrChangeURL()
+        );
     }
 }
 

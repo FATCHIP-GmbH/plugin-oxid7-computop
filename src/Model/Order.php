@@ -108,8 +108,21 @@ class Order extends Order_parent
         $isFatchipComputopPayment = Constants::isFatchipComputopPayment($paymentId);
         $isFatchipComputopRedirectPayment = Constants::isFatchipComputopRedirectPayment($paymentId);
         $isFatchipComputopDirectPayment = Constants::isFatchipComputopDirectPayment($paymentId);
+        $len = Registry::getRequest()->getRequestParameter('FatchipComputopLen');
+        $data = Registry::getRequest()->getRequestParameter('FatchipComputopData');
+        $PostRequestParams = [
+            'Len' => $len,
+            'Data' => $data,
+        ];
         /** @var CTResponse $responseDirect */
-        $responseDirect = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
+        $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
+
+
+        $status = $response->getStatus();
+        $returning = false;
+        if ($status !== null) {
+            $returning = true;
+        }
         if (
             $ret < 2 &&
             !$blRecalculatingOrder &&
@@ -117,7 +130,7 @@ class Order extends Order_parent
         ) {
             $this->fatchipComputopPaymentId = $paymentId;
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
-            if ($responseDirect === null) {
+            if ($status === null) {
                 if ($isFatchipComputopDirectPayment) {
                     $this->fatchipComputopPaymentService->handleDirectPaymentResponse($response);
                 } else if ($isFatchipComputopRedirectPayment){
@@ -129,18 +142,21 @@ class Order extends Order_parent
                 $returning = true;
             }
 
-            if ($returning) {
-                $this->customizeOrdernumber($responseDirect);
-                $this->updateOrderAttributes($responseDirect);
-                $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
-                $this->autocapture($oUser, false);
-            }
+
         }
-        if ($ret === 3 || $responseDirect !== null) {
+
+        if ($ret === 3 || $response !== null) {
             // check Status and set Order appropiatelay
             $ret = $this->finalizeRedirectOrder($oBasket, $oUser, $blRecalculatingOrder);
         }
+        if ($returning) {
+            $this->fatchipComputopLogger->logRequestResponse([], 'fatchip_computop_creditcard', 'REDIRECT-BACK', $response);
 
+            $this->customizeOrdernumber($response);
+            $this->updateOrderAttributes($response);
+            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+            $this->autocapture($oUser, false);
+        }
 
         return $ret;
     }
@@ -248,6 +264,7 @@ class Order extends Order_parent
     }
     public function autoCapture($oUser = false, $force = false): void
     {
+        $type = $this->getFieldData('oxpaymenttype');
         if ($this->fatchipComputopPaymentClass === null) {
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         }
@@ -368,7 +385,11 @@ class Order extends Order_parent
 
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $oUser = $this->getUser();
-            $customerId = $oUser->getFieldData('oxcustnr');
+            if ($oUser === false) {
+                $customerId =    $this->getFieldData('oxuserid');
+            } else {
+                $customerId = $oUser->getFieldData('oxcustnr');
+            }
             $sessionID = $this->fatchipComputopSession->getId();
             $this->fatchipComputopLogger->log(
                 'DEBUG',

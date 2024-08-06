@@ -754,7 +754,7 @@ class CreditCard extends CTPaymentMethodIframe
             'merchantID' => $this->merchantID,
             'amount' => $amount,
             'currency' => $currency,
-       //     'Capture' => $capture,
+            'Capture' => $capture,
         ];
 
         return $params;

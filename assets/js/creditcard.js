@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const stokenInput = computopForm.querySelector('input[name="stoken"]');
             const lang = computopForm.querySelector('input[name="lang"]');
             const sDeliveryAddressMD5 = computopForm.querySelector('input[name="sDeliveryAddressMD5"]');
+            const silentMode = computopForm.querySelector('input[name="silentMode"]');
             const stokenValue = stokenInput ? stokenInput.value : ''; //
             const sDeliveryAddressMD5Value = sDeliveryAddressMD5 ? sDeliveryAddressMD5.value : ''; //
             const [month, year] = expiryDateValue.split('/');
@@ -76,6 +77,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'fnc': 'creditCardSilent',
                 'stoken': stokenValue,
                 'sDeliveryAddressMD5': sDeliveryAddressMD5Value,
+                'silentMode': silentMode
             });
             const fetchUrl = `${window.location.origin}/index.php?${urlParams.toString()}`;
             expiryDateInput.value = year + month;
