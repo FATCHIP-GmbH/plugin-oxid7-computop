@@ -250,7 +250,7 @@ class CTPaymentConfigForms
                         ['Omnipay', 'Omnipay'],
                     ],
                 'description' => '<p><b>GICC</b>: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service<BR><b>CAPN</b>: American Express<BR><b>Omnipay</b>: EMS payment solutions, Global Payments, Paysquare</p>',
-            ],
+            ]/*,
             'creditCardSilentModeBrandDetection' => [
                 'name' => 'creditCardSilentModeBrandDetection',
                 'type' => 'select',
@@ -270,7 +270,7 @@ class CTPaymentConfigForms
                        ]],
                     ],
                 'description' => 'Wählt anhand der eingebenen Kartennummer automatisch den Karten Typ und zeigt das Kartenlogo an.<BR>',
-            ],
+            ],*/
         ];
 
     const formCreditCardNumberElements =
