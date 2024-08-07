@@ -264,7 +264,7 @@ class Order extends Order_parent
     }
     public function autoCapture($oUser = false, $force = false): void
     {
-        $type = $this->getFieldData('oxpaymenttype');
+        $captureAmount = $this->getFieldData('fatchip_computop_amount_captured');
         if ($this->fatchipComputopPaymentClass === null) {
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         }
@@ -282,10 +282,12 @@ class Order extends Order_parent
             $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass,[], $oUser);
             return;
         }
+        if (empty($captureAmount)) {
+            $captureResponse = $this->captureOrder();
 
-        $captureResponse = $this->captureOrder();
+            $this->handleCaptureResponse($captureResponse, $oUser);
+        }
 
-        $this->handleCaptureResponse($captureResponse, $oUser);
     }
 
     private function isAutoCaptureEnabled()
