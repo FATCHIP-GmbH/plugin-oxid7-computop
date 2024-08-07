@@ -63,7 +63,6 @@ class Config
 
     protected $creditCardAcquirer = null;
 
-    protected $creditCardSilentModeBrandDetection = null;
 
     protected $creditCardTemplate = null;
 
@@ -314,29 +313,6 @@ class Config
         $moduleSettingBridge->save('creditCardAcquirer', $creditCardAcquirer, FatchipComputopModule::MODULE_ID);
     }
 
-    /**
-     * @return null
-     */
-    public function getCreditCardSilentModeBrandDetection()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('creditCardSilentModeBrandDetection', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $creditCardSilentModeBrandDetection
-     */
-    public function setCreditCardSilentModeBrandDetection($creditCardSilentModeBrandDetection): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('creditCardSilentModeBrandDetection', $creditCardSilentModeBrandDetection, FatchipComputopModule::MODULE_ID);
-    }
 
     /**
      * @return null
