@@ -446,7 +446,8 @@ class Order extends Order_parent
         $transId = $this->getFieldData('fatchip_computop_transid');
         $xid = $this->getFieldData('fatchip_computop_xid');
         $schemerefid = $this->getFieldData('fatchip_computop_creditcard_schemereferenceid');
-
+        $this->setFieldData('fatchip_computop_amount_captured',$orderSum);
+        $this->save();
         $requestParams = $payment->getCaptureParams(
             $payId,
             round($orderSum, 2),
