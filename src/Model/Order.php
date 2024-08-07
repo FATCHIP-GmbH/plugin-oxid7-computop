@@ -150,7 +150,8 @@ class Order extends Order_parent
             $ret = $this->finalizeRedirectOrder($oBasket, $oUser, $blRecalculatingOrder);
         }
         if ($returning) {
-            $this->fatchipComputopLogger->logRequestResponse([], 'fatchip_computop_creditcard', 'REDIRECT-BACK', $response);
+            $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
+            $this->fatchipComputopLogger->logRequestResponse([], $this->fatchipComputopPaymentClass, 'REDIRECT-BACK', $response);
 
             $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
@@ -679,7 +680,8 @@ class Order extends Order_parent
 
                 $response = $payment->getHTTPGetURL($params);
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
-                $this->fatchipComputopLogger->logRequestResponse($params, 'fatchip_computop_creditcard', 'REDIRECT-IFRAME', $payment);
+
+                $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-IFRAME', $payment);
 
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 $returnUrl = 'index.php?cl='.$this->fatchipComputopPaymentId.'&stoken='.Registry::getSession()->getSessionChallengeToken();
@@ -687,7 +689,7 @@ class Order extends Order_parent
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
-                $this->fatchipComputopLogger->logRequestResponse($params, 'fatchip_computop_creditcard', 'REDIRECT-PAYMENTPAGE', $payment);
+                $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-PAYMENTPAGE', $payment);
 
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 Registry::getUtils()->redirect($response, false);
@@ -765,8 +767,8 @@ class Order extends Order_parent
         }
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
-        $URLFailure = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
-        $URLCancel = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId();
+        $URLFailure = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
+        $URLCancel = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
         return [
             'UrlSuccess' => $URLSuccess,

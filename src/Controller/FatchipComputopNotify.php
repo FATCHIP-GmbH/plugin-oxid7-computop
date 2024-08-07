@@ -109,7 +109,7 @@ class FatchipComputopNotify extends FrontendController
             exit;
         }
         $paymentName = $this->getPaymentName($oOrder);
-
+        $paymentName = Constants::getPaymentClassfromId($paymentName);
         $this->fatchipComputopLogger->logRequestResponse([], $paymentName, 'NOTIFY', $response,);
 
         switch ($response->getStatus()) {
