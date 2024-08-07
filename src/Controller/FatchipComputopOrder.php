@@ -246,11 +246,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
      * @throws Exception
      */
     private function createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder) {
-        if ($this->isAutoCaptureEnabled()) {
-            $captureMode = 'AUTO';
-        } else {
-            $captureMode = 'MANUAL';
-        }
+        $captureMode = 'MANUAL';
         try {
             $request = $payment->getAuthorizeParams(
                 $paymentClass,
@@ -290,7 +286,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $request['shippingAddress'] = $payment->getShippingAddress();
         $request['billToCustomer'] = $payment->getBillToCustomer();
         $request['msgVer'] = '2.0';
-        $request['Capture'] = $payment->getCapture();
+        //$request['Capture'] = $payment->getCapture();
         $request['orderDesc'] = $payment->getOrderDesc();
         $request['credentialOnFile'] = $payment->getCredentialsOnFile();
         $request['template'] = 'ct_responsive';

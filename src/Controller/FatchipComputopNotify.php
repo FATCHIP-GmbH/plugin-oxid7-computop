@@ -118,9 +118,9 @@ class FatchipComputopNotify extends FrontendController
             case CTEnumStatus::AUTHORIZE_REQUEST:
             /** @var string $orderOxId */
             $orderOxId = $response->getSessionId();
+            /** @var Order $order */
             $order = oxNew(Order::class);
             if ($order->load($orderOxId)) {
-                /** @var \Fatchip\ComputopPayments\Model\Order $order */
                 if (empty($order->getFieldData('oxordernr'))) {
                     $orderNumber = $order->getFieldData('oxordernr');
                 } else {
@@ -129,8 +129,8 @@ class FatchipComputopNotify extends FrontendController
                 $order->updateOrderAttributes($response);
                 $order->customizeOrdernumber($response);
                 $order->autoCapture();
-                $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
                 $this->updateRefNrWithComputop($order);
+
 
             }
                 /* $this->inquireAndupdatePaymentStatus(

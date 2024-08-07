@@ -1,4 +1,16 @@
 {% capture append = "oxidBlock_content" %}
+    <style>
+        #content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: auto;
+            width: auto;
+            text-align: center;
+            position: relative !important;
+        }
+    </style>
     {# ordering steps #}
     {% include "page/checkout/inc/steps.html.twig" with {active: 4} %}
     <div style="clear:both;"></div>

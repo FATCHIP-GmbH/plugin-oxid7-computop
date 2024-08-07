@@ -264,7 +264,10 @@ class Order extends Order_parent
     }
     public function autoCapture($oUser = false, $force = false): void
     {
+        $captureAmount = 0.0;
         $captureAmount = $this->getFieldData('fatchip_computop_amount_captured');
+        $requestCapture = Registry::getRequest()->getRequestParameter('captureAmount');
+
         if ($this->fatchipComputopPaymentClass === null) {
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         }
@@ -282,10 +285,12 @@ class Order extends Order_parent
             $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass,[], $oUser);
             return;
         }
-        if (empty($captureAmount)) {
-            $captureResponse = $this->captureOrder();
+        if (empty($captureAmount) || $requestCapture !== null) {
+            $captureResponse = $this->captureOrder($requestCapture);
 
             $this->handleCaptureResponse($captureResponse, $oUser);
+        } else {
+            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
         }
 
     }
@@ -426,7 +431,7 @@ class Order extends Order_parent
      * @return CTResponse
      */
     protected
-    function captureOrder()
+    function captureOrder($amount = null)
     {
         $ctOrder = $this->createCTOrder();
         if ($this->fatchipComputopPaymentClass !== 'PaypalExpress'
@@ -440,14 +445,18 @@ class Order extends Order_parent
         } else {
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($this->fatchipComputopPaymentClass);
         }
-        $totalOrderSum =  ((double)$this->oxorder__oxtotalordersum->value);
+        if ($amount === null) {
+            $totalOrderSum =  ((double)$this->oxorder__oxtotalordersum->value);
+
+        } else {
+            $totalOrderSum =  ((double)$amount);
+        }
         $orderSum = $totalOrderSum * 100;
         $payId = $this->getFieldData('fatchip_computop_payid');
         $transId = $this->getFieldData('fatchip_computop_transid');
         $xid = $this->getFieldData('fatchip_computop_xid');
         $schemerefid = $this->getFieldData('fatchip_computop_creditcard_schemereferenceid');
-        $this->setFieldData('fatchip_computop_amount_captured',$orderSum);
-        $this->save();
+
         $requestParams = $payment->getCaptureParams(
             $payId,
             round($orderSum, 2),
@@ -457,8 +466,12 @@ class Order extends Order_parent
             'none',
             $schemerefid
         );
-
-        return $this->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
+        $response = $this->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
+        if ($response->getStatus() !== 'FAILED') {
+            $this->setFieldData('fatchip_computop_amount_captured',$orderSum);
+            $this->save();
+        }
+        return $response;
     }
 
 
