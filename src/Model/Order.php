@@ -260,9 +260,17 @@ class Order extends Order_parent
         $capturedAmount = (double) $response->getAmountCap();
         $this->assign(['fatchip_computop_amount_captured' => $capturedAmount]);
         $this->save();
-
         return oxNew(Price::class, $capturedAmount / 100)->getPrice();
     }
+    public function getRefundedAmount()
+    {
+        $capturedAmount = $this->getFieldData('fatchip_computop_amount_refunded');
+
+        if ($capturedAmount > 0.0) {
+            return oxNew(Price::class, $capturedAmount / 100)->getPrice();
+        }
+    }
+
     public function autoCapture($oUser = false, $force = false): void
     {
         $captureAmount = 0.0;

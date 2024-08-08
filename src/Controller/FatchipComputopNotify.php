@@ -30,6 +30,7 @@ use Exception;
 use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
@@ -128,8 +129,8 @@ class FatchipComputopNotify extends FrontendController
                 }
                 $order->updateOrderAttributes($response);
                 $order->customizeOrdernumber($response);
+                $responseRefNr =  $this->updateRefNrWithComputop($order);
                 $order->autoCapture();
-                $this->updateRefNrWithComputop($order);
 
 
             }
@@ -166,13 +167,15 @@ class FatchipComputopNotify extends FrontendController
         if (!$order) {
             return null;
         }
+        $config = Registry::getConfig();
+
         $paymentId = $order->getFieldData('oxpaymenttype');
         if ($this->fatchipComputopPaymentClass === null) {
             $paymentClass = Constants::getPaymentClassfromId($paymentId);
         } else {
             $paymentClass = $this->fatchipComputopPaymentClass;
         }
-        $ctOrder = $order->createCTOrder();
+        $ctOrder = $this->createCTOrder($order);
         if ($paymentClass !== 'PaypalExpress'
             && $paymentClass !== 'AmazonPay'
         ) {
@@ -181,17 +184,63 @@ class FatchipComputopNotify extends FrontendController
             $payment = $this->paymentService->getPaymentClass($paymentClass);
         }
         $payID = $order->getFieldData('fatchip_computop_payid');
+ /*       if ($order->getFieldData('oxordernr') === "0") {
+            die();
+        }*/
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
-        $RefNrChangeParams['EtiId'] = $this->getUserDataParam();
+        $RefNrChangeParams['EtiId'] = $this->getUserDataParam($config);
 
 
-        return $this->callComputopService(
+        return $order->callComputopService(
             $RefNrChangeParams,
             $payment,
             'REFNRCHANGE',
             $payment->getCTRefNrChangeURL()
         );
     }
+    protected
+    function createCTOrder($oOrder)
+    {
+        $ctOrder = new CTOrder();
+        $config = Registry::getConfig();
+
+        $oUser = $oOrder->getUser();
+
+        $ctOrder->setAmount((int)(round($oOrder->getFieldData('oxtotalordersum') * 100)));
+        $ctOrder->setCurrency($oOrder->getFieldData('oxcurrency'));
+        // try catch in case Address Splitter returns exceptions
+        try {
+            $ctOrder->setBillingAddress($oOrder->getCTAddress());
+            $delAddressExists = !empty($oOrder->getFieldData('oxdelstreet'));
+            $ctOrder->setShippingAddress($oOrder->getCTAddress($delAddressExists));
+
+        } catch (Exception $e) {
+            Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR_ADDRESS');
+            $sShopUrl = $config->getShopUrl();
+            $returnUrl = $sShopUrl . 'index.php?cl=payment';
+            Registry::getUtils()->redirect($returnUrl, false, 301);
+        }
+        $ctOrder->setEmail($oUser->oxuser__oxusername->value);
+        $ctOrder->setCustomerID($oUser->oxuser__oxcustnr->value);
+        // Mandatory for paypalStandard
+        $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' '
+            . $config->getActiveShop()->oxshops__oxversion->value;
+        $ctOrder->setOrderDesc($orderDesc);
+        return $ctOrder;
+    }
+    /**
+     * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     *
+     * @return string
+     * @throws Exception
+     */
+    public
+    function getUserDataParam($config)
+    {
+        return $config->oxshops__oxname->value . ' '
+            . $config->getActiveShop()->oxshops__oxversion->value;
+    }
+
 }
 
 

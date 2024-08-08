@@ -3,7 +3,11 @@
 namespace Fatchip\ComputopPayments\Controller\Admin;
 
 use Exception;
+use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminDetailsController;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\OrderArticle;
@@ -182,7 +186,130 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         }
         return $sType;
     }
+    public function refundSpecificArticles() {
+        $aArticleArray = Registry::getRequest()->getRequestParameter('aArtId');
+        $oOrderArticles = $this->getOrder()->getOrderArticles();
+        $aOrderArticle = $oOrderArticles->getArray();
+        $refundAmount = 0;
+        foreach ($aArticleArray as $article) {
+            if (isset($article['refundthis']) && $article['refundthis'] === 'on' ) {
+                if ($aOrderArticle[$article['oxid']]) {
+                   if ($aOrderArticle[$article['oxid']]->getFieldData('fatchip_computop_amount_refunded') !== 1) {
+                       $bruttoPrice = $aOrderArticle[$article['oxid']]->getFieldData('oxorderarticles__oxbrutprice');
+                       $refundAmount += $bruttoPrice;
+                       $aOrderArticle[$article['oxid']]->assign(['fatchip_computop_amount_refunded' => 1]);
+                       $aOrderArticle[$article['oxid']]->save();
+                   }
+                }
+            }
+        }
+        if ($refundAmount > 0.0){
+            $this->refundOrderArticles($refundAmount);
+        }
 
+    }
+    public function refundOrderArticles($amount = false) {
+        try {
+            $config = new Config();
+            $paymentService = new CTPaymentService($config->toArray());
+
+            $oOrder = $this->getOrder();
+            $ctOrder = $this->createCTOrder($oOrder, $config);
+            if ($amount === false) {
+                $amount = $this->getAmountForComputop( $oOrder->getTotalOrderSum());
+            }
+            $payId = $oOrder->getFieldData('fatchip_computop_payid');
+            $transId = $oOrder->getFieldData('fatchip_computop_transid');
+            $currency = $oOrder->getOrderCurrency()->name;
+            $orderDesc = 'Test:0000';
+
+            $params = $this->getRefundParams($payId, $amount, $currency, $transId, null, $orderDesc);
+            $paymentId = $oOrder->getFieldData('OXPAYMENTTYPE');
+            $paymentClass = Constants::getPaymentClassfromId($paymentId);
+
+            $payment = $paymentService->getIframePaymentClass(
+                $paymentClass,
+                $config->toArray(),
+                $ctOrder
+            );
+
+            $response = $this->callComputopRefundService($oOrder, $params, $payment);
+            $this->handleRefundResponse($oOrder,$response, $amount);
+        } catch (Exception $e) {
+            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
+        }
+    }
+
+    protected function handleRefundResponse($oOrder, $response, $amount) {
+        if ($response->getStatus() === 'OK') {
+            if ($oldAmount = (double)$oOrder->getFieldData('fatchip_computop_amount_refunded') / 100) {
+                $amount = $oldAmount + (double)$amount;
+            }
+            $oOrder->assign(['fatchip_computop_amount_refunded' => $this->getAmountForComputop($amount)]);
+            $oOrder->save();
+        }
+    }
+    protected function createCTOrder($oOrder) {
+        $ctOrder = new CTOrder();
+        $config = Registry::getConfig();
+        $oUser = $oOrder->getUser();
+
+        $ctOrder->setAmount((int)(round($oOrder->getFieldData('oxtotalordersum') * 100)));
+        $ctOrder->setCurrency($oOrder->getFieldData('oxcurrency'));
+
+        try {
+            $ctOrder->setBillingAddress($oOrder->getCTAddress());
+            $delAddressExists = !empty($oOrder->getFieldData('oxdelstreet'));
+            $ctOrder->setShippingAddress($oOrder->getCTAddress($delAddressExists));
+        } catch (Exception $e) {
+            $this->handleAddressError();
+        }
+
+        $ctOrder->setEmail($oUser->oxuser__oxusername->value);
+        $ctOrder->setCustomerID($oUser->oxuser__oxcustnr->value);
+        $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' ' . $config->getActiveShop()->oxshops__oxversion->value;
+        $ctOrder->setOrderDesc($orderDesc);
+
+        return $ctOrder;
+    }
+
+    protected function handleAddressError() {
+        Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR_ADDRESS');
+    }
+
+    protected function getAmountForComputop($amount) {
+        return $amount * 100;
+    }
+
+    public function getRefundParams($payId, $amount, $currency, $transId = null, $xId = null, $orderDesc = null, $klarnaInvNo = null, $schemeReferenceId = null, $orderAmount = null) {
+        $reason = $amount < $orderAmount ? 'WIDERRUF_TEILWEISE' : 'WIDERRUF_VOLLSTAENDIG';
+        return [
+            'payID' => $payId,
+            'amount' => $amount,
+            'currency' => $currency,
+            'Date' => date("Y-m-d"),
+            'transID' => $transId,
+            'xID' => $xId,
+            'orderDesc' => $orderDesc,
+            'invNo' => $klarnaInvNo,
+            'schemeReferenceID' => $schemeReferenceId,
+            'Reason' => $reason,
+            'Custom' => $this->Custom,
+        ];
+    }
+
+    protected function callComputopRefundService($oOrder, $params, $payment) {
+        try {
+            $response = $oOrder->callComputopService($params, $payment, 'REFUND', $payment->getCTRefundURL());
+
+            if (!$response) {
+                throw new Exception('Refund service call failed');
+            }
+            return $response;
+        } catch (Exception $e) {
+            throw new Exception('Error calling Computop Refund Service: ' . $e->getMessage());
+        }
+    }
     protected function getRefundItemsFromRequest()
     {
         $sSelectKey = $sSelectKey = 'refund_'.$this->getRefundType();
@@ -745,7 +872,8 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     protected function getItemsFromOrderArticles()
     {
         $aItems = array();
-
+        $refundYes = Registry::getLang()->translateString('COMPUTOP_ARTICLE_REFUNDED_YES');
+        $refundNo = Registry::getLang()->translateString('COMPUTOP_ARTICLE_REFUNDED_NO');
         $oOrderArticles = $this->getOrder()->getOrderArticles();
         /** @var OrderArticle $orderArticle */
         foreach ($oOrderArticles as $orderArticle) {
@@ -753,7 +881,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             if ($orderArticle->oxorderarticles__Compuopamountrefunded->value == $orderArticle->oxorderarticles__oxbrutprice->value) {
                 $quantityRefunded = $orderArticle->oxorderarticles__oxamount->value;
             }*/
-
+            $refund = $orderArticle->oxorderarticles__fatchip_computop_amount_refunded->value === 1 ? $refundYes : $refundNo;
             $aItems[] = array(
                 'id' => $orderArticle->getId(),
                 'type' => 'product',
@@ -765,8 +893,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
                 'totalPrice' => $orderArticle->oxorderarticles__oxbrutprice->value,
                 'vat' => $orderArticle->oxorderarticles__oxvat->value,
                 'quantity' => $orderArticle->oxorderarticles__oxamount->value,
-                'quantityRefunded' => 0,
-                'amountRefunded' => 0,
+                'refunded' => $refund,
                 'isOrderarticle' => true,
                 'isPartialAllowed' => true
             );

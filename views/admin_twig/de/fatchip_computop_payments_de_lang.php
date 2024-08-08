@@ -40,4 +40,10 @@ $aLang = [
     'FATCHIP_COMPUTOP_PAYMENT_DETAILS' => 'Computop Bestelldetails',
     'FATCHIP_COMPUTOP_ORDER_CAPTURED_AMOUNT' => 'Eingezogener Betrag',
     'FATCHIP_COMPUTOP_ORDER_PAYID' => 'PayId',
+    'FATCHIP_COMPUTOP_ORDER_REFUND_AMOUNT' => 'Gutgeschriebener Betrag:',
+    'FATCHIP_COMPUTOP_REFUND_SUBMIT' => 'Bestellung komplett gutschreiben',
+    'FATCHIP_COMPUTOP_REFUND_ARTICLES_SUBMIT' => 'Ausgewählte Artikel gutschreiben',
+    'COMPUTOP_ARTICLE_REFUNDED' => 'Ist gutgeschrieben ?',
+    'COMPUTOP_ARTICLE_REFUNDED_YES' => 'Ja',
+    'COMPUTOP_ARTICLE_REFUNDED_NO' => 'Nein',
 ];
