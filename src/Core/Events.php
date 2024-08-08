@@ -48,6 +48,7 @@ class Events
     public static $sQueryAlterOxorderAmountCaptured = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_amount_captured DOUBLE DEFAULT '0.0' NOT NULL;";
     public static $sQueryAlterOxorderAmountRefunded = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_amount_refunded DOUBLE DEFAULT '0.0' NOT NULL;";
     public static $sQueryAlterOxorderArticlesAmountRefunded = "ALTER TABLE oxorderarticles ADD COLUMN fatchip_computop_amount_refunded TINYINT(1) DEFAULT '0' NOT NULL;";
+    public static $sQueryAlterOxorderShippingAmountRefunded = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_shipping_amount_refunded TINYINT(1) DEFAULT '0' NOT NULL;";
     public static $sQueryAlterOxorderOrderRemark = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_remark VARCHAR(128) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
 
     /**
@@ -92,6 +93,8 @@ class Events
             'fatchip_computop_remark', self::$sQueryAlterOxorderOrderRemark);
         self::addColumnIfNotExists('oxorderarticles',
             'fatchip_computop_amount_refunded', self::$sQueryAlterOxorderArticlesAmountRefunded);
+        self::addColumnIfNotExists('oxorder',
+            'fatchip_computop_shipping_amount_refunded', self::$sQueryAlterOxorderShippingAmountRefunded);
     }
 
     /**
