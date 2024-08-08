@@ -364,7 +364,9 @@
             </fieldset>
             {% endif %}
         {% else %}
-            <p>{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_SUBMIT" }) }}</p>
+            <fieldset class="refundNotice message">
+                {{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_SUBMIT_COMPLETE" }) }}
+            </fieldset>
         {% endif %}
 
     {% endif %}
