@@ -63,9 +63,6 @@ class Config
 
     protected $creditCardAcquirer = null;
 
-    protected $creditCardAccVerify = null;
-
-    protected $creditCardSilentModeBrandDetection = null;
 
     protected $creditCardTemplate = null;
 
@@ -316,53 +313,6 @@ class Config
         $moduleSettingBridge->save('creditCardAcquirer', $creditCardAcquirer, FatchipComputopModule::MODULE_ID);
     }
 
-    /**
-     * @return null
-     */
-    public function getCreditCardAccVerify()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('creditCardAccVerify', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $creditCardAccVerify
-     */
-    public function setCreditCardAccVerify($creditCardAccVerify): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('creditCardAccVerify', $creditCardAccVerify, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getCreditCardSilentModeBrandDetection()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('creditCardSilentModeBrandDetection', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $creditCardSilentModeBrandDetection
-     */
-    public function setCreditCardSilentModeBrandDetection($creditCardSilentModeBrandDetection): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('creditCardSilentModeBrandDetection', $creditCardSilentModeBrandDetection, FatchipComputopModule::MODULE_ID);
-    }
 
     /**
      * @return null

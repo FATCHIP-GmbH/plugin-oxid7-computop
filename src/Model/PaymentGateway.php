@@ -26,6 +26,9 @@
 
 namespace Fatchip\ComputopPayments\Model;
 
+use Fatchip\ComputopPayments\Core\Config;
+use OxidEsales\Eshop\Core\Registry;
+
 class PaymentGateway extends PaymentGateway_parent
 {
 
@@ -55,10 +58,18 @@ class PaymentGateway extends PaymentGateway_parent
         if (!$oOrder->isFatchipComputopOrder()) {
             return null;
         }
-
+        $config = new Config();
+        $configArray =  $config->toArray();
         $this->_iLastErrorNo = null;
         $this->_sLastError = null;
-
+        $silentCCResponse = Registry::getSession()->getVariable('FatchipComputopRedirectResponse');
+        $silentCCRequest = Registry::getSession()->getVariable('FatchipComputopDirectRequest');
+        if ($configArray['creditCardMode'] === 'SILENT' && $silentCCRequest) {
+            return true;
+        }
+/*        if ($silentCCRequest === null && $configArray['creditCardMode'] === 'SILENT') {
+            return false;
+        }*/
         /** @var Order $oOrder */
         if ($oOrder->isFatchipComputopRedirectPayment()) {
             return  $oOrder->handleRedirectPayment($dAmount, $this);

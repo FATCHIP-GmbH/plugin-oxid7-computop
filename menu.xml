@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OX>
     <OXMENU id="NAVIGATION_ESHOPADMIN">
+        <MAINMENU id="mxorders">
+            <SUBMENU id="mxdisplayorders" cl="admin_order" list="order_list">
+                <TAB id="FATCHIP_COMPUTOP_ORDER_SETTINGS" cl="fatchip_computop_order_settings" />
+            </SUBMENU>
+        </MAINMENU>
         <MAINMENU id="fatchip-computop-payments">
             <SUBMENU id="FATCHIP_COMPUTOP_PAYMENTS_CONFIG" cl="fatchip_computop_config"/>
             <SUBMENU id="FATCHIP_COMPUTOP_PAYMENTS_APILOG" cl="fatchip_computop_apilog" list="fatchip_computop_apilog_list">>

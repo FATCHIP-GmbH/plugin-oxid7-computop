@@ -47,6 +47,13 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
 
     public function render()
     {
+        if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse')) {
+            $this->unsetSessionVars();
+         //   Registry::getSession()->regenerateSessionId();
+        }
+
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
         if (!empty(Registry::getSession()->getVariable('FatchipComputopErrorCode'))) {
             $errorCode = Registry::getSession()->getVariable('FatchipComputopErrorCode');
             $errorMessage = Registry::getSession()->getVariable('FatchipComputopErrorMessage');
@@ -89,6 +96,10 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
        Registry::getSession()->deleteVariable('FatchipComputopErrorMessage');
        Registry::getSession()->deleteVariable('paymentid');
        Registry::getSession()->deleteVariable('sess_challenge');
+       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
+       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
     }
 
 

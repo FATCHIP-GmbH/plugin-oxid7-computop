@@ -526,7 +526,9 @@ class CTResponse
 
     protected $buttonpayload;
 
-    protected $buttonpublickeyid;
+    protected     $buttonpublickeyid;
+    protected     $stoken;
+    protected $delAdress;
 
     /**
      * CTResponse constructor
@@ -1947,5 +1949,32 @@ class CTResponse
     public function setButtonpublickeyid($buttonpublickeyid)
     {
         $this->buttonpublickeyid = $buttonpublickeyid;
+    }
+
+    public function setStoken(mixed $param)
+    {
+        $this->stoken = $param;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStoken()
+    {
+        return $this->stoken;
+    }
+
+    public function setDelAdress(mixed $param)
+    {
+        $this->delAdress = $param;
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDelAdress()
+    {
+        return $this->delAdress;
     }
 }

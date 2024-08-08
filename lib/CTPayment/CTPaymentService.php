@@ -163,6 +163,8 @@ class CTPaymentService extends Encryption
         $response->setShopTransId($rawRequest['TransId']);
         $response->setType($requestArray['Type']);
         $response->setSessionId(($rawRequest['SessionId']));
+        $response->setStoken(($rawRequest['Stoken']));
+        $response->setDelAdress(($rawRequest['delAdress']));
         return $response;
     }
 
@@ -183,12 +185,16 @@ class CTPaymentService extends Encryption
         $customParams = explode('&', base64_decode($custom));
         $session = explode('=', $customParams[0])[1];
         $transId = explode('=', $customParams[1])[1];
+        $stoken = explode('=', $customParams[2])[1];
+        $delAdress = explode('=', $customParams[3])[1];
 
         $PostRequestParams = [
             'Len' => $len,
             'Data' => $data,
             'SessionId' => $session,
             'TransId' => $transId,
+            'Stoken' => $stoken,
+            'delAdress' => $delAdress
         ];
 
         if (!empty($len) && !empty($data)) {
@@ -228,20 +234,28 @@ class CTPaymentService extends Encryption
         $redirectRequest = $this->fatchipComputopSession->getVariable(
             Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams'
         );
+       $directSilent =  $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+       if ($directSilent) {
+           $redirectRequest = $directSilent;
+       }
+
         $this->fatchipComputopLogger->logRequestResponse(
             $redirectRequest,
             $this->fatchipComputopPaymentClass,
             'REDIRECT',
             $response
         );
+       if ( Registry::getSession()->getUser()) {
+           $encodedDeliveryAdress =  Registry::getSession()->getUser()->getEncodedDeliveryAddress();
 
+       }
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
             $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
                 . 'index.php?cl=order&fnc=execute&action=result&stoken='
-                . Registry::getSession()->getSessionChallengeToken();
+                . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
                 break;
             case CTEnumStatus::FAILED:
                 $this->fatchipComputopSession->setVariable('FatchipComputopErrorCode', $response->getCode());

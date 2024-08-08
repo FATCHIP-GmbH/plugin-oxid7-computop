@@ -1,129 +1,99 @@
-<div class="payment-option">
-    {% set dynvalue = oView.getDynValue() %}
-    <div class="payment-option-form">
-        <input class="form-check-input" id="payment_{{ sPaymentID }}" type="radio" name="paymentid"
-               value="{{ sPaymentID }}"{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} checked{% endif %}>
-        <label
-                for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
+<style>
+    .credit-card-form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f9f9f9;
+    }
+    .credit-card-form h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .form-group .form-control {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .form-group .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+    .form-group .form-error {
+        color: red;
+        font-size: 0.875em;
+    }
+    .submit-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .submit-btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+{{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/creditcard.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
 
-        <div class="payment-option-info{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} activePayment{% endif %}">
-            <div class="form-floating mb-3">
-                <select class="form-select" name="dynvalue[creditcardbrand]">
-                    <option value="VISA" {% if dynvalue.creditcardbrand == 'VISA' %} selected {% endif %}>Visa</option>
-                    <option value="MasterCard" {% if dynvalue.creditcardbrand == 'MasterCard' %} selected {% endif %}>
-                        MasterCard
-                    </option>
-                    <option value="AMEX" {% if dynvalue.creditcardbrand == 'AMEX' %} selected {% endif %}>American
-                        Express
-                    </option>
-                </select>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" size="20" maxlength="64" name="dynvalue[creditcardholder]"
-                       placeholder="{{ translate({ ident: "CREDITCARD_HOLDER" }) }}"
-                       value="{{ dynvalue.creditcardholder }}" required>
-                <label>{{ translate({ ident: "CREDITCARD_HOLDER" }) }}</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" size="20" maxlength="64" name="dynvalue[creditcardnumber]"
-                       placeholder="{{ translate({ ident: "CREDITCARD_NUMBER" }) }}"
-                       value="{{ dynvalue.creditcardnumber }}" required>
-                <label>{{ translate({ ident: "CREDITCARD_NUMBER" }) }}</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" size="20" maxlength="64" name="dynvalue[creditcardexpirymonth]"
-                       placeholder="{{ translate({ ident: "CREDITCARD_EXPIRY_MONTH" }) }}"
-                       value="{{ dynvalue.creditcardexpirymonth }}" required>
-                <label>{{ translate({ ident: "CREDITCARD_EXPIRY_MONTH" }) }}</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" size="20" maxlength="64" name="dynvalue[creditcardexpiryyear]"
-                       placeholder="{{ translate({ ident: "CREDITCARD_EXPIRY_YEAR" }) }}"
-                       value="{{ dynvalue.creditcardexpiryyear }}" required>
-                <label>{{ translate({ ident: "CREDITCARD_EXPIRY_YEAR" }) }}</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" size="20" maxlength="64" name="dynvalue[creditcardcvc]"
-                       placeholder="{{ translate({ ident: "CREDITCARD_CVC" }) }}"
-                       value="{{ dynvalue.creditcardcvc }}" required>
-                <label>{{ translate({ ident: "CREDITCARD_CVC" }) }}</label>
-            </div>
-            <div class="hidden">
-                <input id="payment_{{ sPaymentID }}_javascriptEnabled" type="hidden" maxlength="64"
-                       name="dynvalue[{{ sPaymentID }}_javascriptEnabled]" value="">
-                <input id="payment_{{ sPaymentID }}_javaEnabled" type="hidden" maxlength="64"
-                       name="dynvalue[{{ sPaymentID }}_javaEnabled]" value="">
-                <input id="payment_{{ sPaymentID }}_screenHeight" type="hidden" maxlength="64"
-                       name="dynvalue[{{ sPaymentID }}_screenHeight]" value="">
-                <input id="payment_{{ sPaymentID }}_screenWidth" type="hidden" maxlength="64"
-                       name="dynvalue[{{ sPaymentID }}_screenWidth]" value="">
-                <input id="payment_{{ sPaymentID }}_colorDepth" type="hidden" maxlength="64"
-                       name="dynvalue[{{ sPaymentID }}_colorDepth]" value="">
-                <input id="payment_{{ sPaymentID }}_timeZoneOffset" type="hidden" maxlength="64"
-                       name="dynvalue[{{ sPaymentID }}_timeZoneOffset]" value="">
-            </div>
-
-
-        {% block checkout_payment_longdesc %}
-            {% if paymentmethod.oxpayments__oxlongdesc.value %}
-                <div class="alert alert-info desc">
-                    {{ paymentmethod.oxpayments__oxlongdesc.value }}
-                </div>
-
-            {% endif %}
-        {% endblock %}
-    </div>
-    {% if paymentmethod.getPrice() %}
-        <div class="payment-option-price">
-            {% set oPaymentPrice = paymentmethod.getPrice() %}
-            {% if oViewConf.isFunctionalityEnabled('blShowVATForPayCharge') %}
-                {{ format_price(oPaymentPrice.getNettoPrice(), { currency: currency }) }}
-                {% if oPaymentPrice.getVatValue() > 0 %}
-                    {{ translate({ ident: "PLUS_VAT" }) }} {{ format_price(oPaymentPrice.getVatValue(), { currency: currency }) }}
-                {% endif %}
-            {% else %}
-                {{ format_price(oPaymentPrice.getBruttoPrice(), { currency: currency }) }}
-            {% endif %}
+<div class="credit-card-form">
+    <h2>Kreditkarte</h2>
+    <form id="computopSilentPostForm" action="https://www.computop-paygate.com/paynow.aspx" method="post">
+        {{ oViewConf.getHiddenSid()|raw }}
+        <input type="hidden" name="sDeliveryAddressMD5" value="{{ oView.getDeliveryAddressMD5() }}">
+        <input type="hidden" id="MerchantID" name="MerchantID" value="fatchip_oxid7">
+        <input type="hidden" id="Len" name="Len" value="">
+        <input type="hidden" id="Data" name="Data" value="">
+        <input type="hidden" id="silentMode" name="SilentMode" value="1">
+        <div class="form-group">
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" name="number" class="form-control" placeholder="1234 5678 9012 3456" required>
+            <div class="card-type-icon"></div>
+            <div class="form-error" id="card-number-error"></div>
         </div>
-    {% endif %}
+        <div class="form-group">
+            <label for="card-brand">Card Brand</label>
+            <select id="card-brand" name="brand" class="form-control" required>
+                <option value="">Select Card Brand</option>
+                <option value="VISA">Visa</option>
+                <option value="MasterCard">Mastercard</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="card-holder">Card Holder Name</label>
+            <input type="text" id="card-holder" name="cardholder" class="form-control" placeholder="John Doe" required>
+            <div class="form-error" id="card-holder-error"></div>
+        </div>
+        <div class="form-group">
+            <label for="expiry-date">Expiry Date</label>
+            <input type="text" id="expiry-date" name="expiryDate" class="form-control" placeholder="YYYYMM" pattern="\d{2}/\d{4}" required>
+            <div class="form-error" id="expiry-date-error"></div>
+        </div>
+        <div class="form-group">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" name="securityCode" class="form-control" placeholder="123" required>
+            <div class="form-error" id="cvv-error"></div>
+        </div>
+        <button type="submit" class="btn btn-highlight btn-lg w-100" onclick="document.getElementById('orderConfirmAgbBottom').submit();">
+            Zahlungspflichtig bestellen
+        </button>
+    </form>
 </div>
-<script>
-    var javaScriptEnabled = true;
-    var javaEnabled=navigator.javaEnabled();
-    var screenHeight = screen.height;
-    var screenWidth = screen.width;
-    var colorDepth = screen.colorDepth;
-    var date = new Date();
-    var timeZoneOffset = date.getTimezoneOffset();
-
-    console.log('JavaScriptEnabled:');
-    console.log(javaScriptEnabled);
-    console.log('JavaEnabled:');
-    console.log(javaEnabled);
-    console.log('screenHeight:');
-    console.log(screenHeight);
-    console.log('screenWidth:');
-    console.log(screenWidth);
-    console.log('ColorDepth:');
-    console.log(colorDepth);
-    console.log('timeZoneOffset:');
-    console.log(timeZoneOffset);
-
-    var javascriptEnabledInput = document.getElementById('payment_{{ sPaymentID }}_javascriptEnabled');
-    javascriptEnabledInput.setAttribute('value', javaScriptEnabled);
-
-    var javaEnabledInput = document.getElementById('payment_{{ sPaymentID }}_javaEnabled');
-    javaEnabledInput.setAttribute('value', javaEnabled);
-
-    var screenHeightInput = document.getElementById('payment_{{ sPaymentID }}_screenHeight');
-    screenHeightInput.setAttribute('value', screenHeight);
-
-    var screenWidthInput = document.getElementById('payment_{{ sPaymentID }}_screenWidth');
-    screenWidthInput.setAttribute('value', screenWidth);
-
-    var colorDepthInput = document.getElementById('payment_{{ sPaymentID }}_colorDepth');
-    colorDepthInput.setAttribute('value', colorDepth);
-
-    var timeZoneOffsetInput = document.getElementById('payment_{{ sPaymentID }}_timeZoneOffset');
-    timeZoneOffsetInput.setAttribute('value', timeZoneOffset);
-</script>
