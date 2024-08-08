@@ -353,7 +353,7 @@
                                     <input type="hidden" name="fnc" value="refundOrderArticles">
                                     <input type="hidden" name="capture_description" value="" class="capture_description">
                                     <input type="text" name="captureAmount"
-                                           value="{{ order.oxorder__oxtotalordersum.value }}" class="listedit">
+                                           value="{{ order.oxorder__oxtotalordersum.value }}" class="listedit" readonly>
                                     <input type="submit"
                                            value="{{ translate({ ident: "FATCHIP_COMPUTOP_REFUND_SUBMIT" }) }}">
                                 </form>
