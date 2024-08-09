@@ -197,6 +197,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             }
         }
         if ($refundAmount > 0.0){
+            $refundAmount = $this->getAmountForComputop($refundAmount);
             $this->refundOrderArticles($refundAmount);
         } else {
             $msg = Registry::getLang()->translateString('COMPUTOP_ARTICLE_REFUNDED_NO_ARTICLES_TO_REFUND');
@@ -206,9 +207,9 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     }
     public function refundOrderArticles($amount = false) {
         try {
+
             $config = new Config();
             $paymentService = new CTPaymentService($config->toArray());
-
             $oOrder = $this->getOrder();
             $ctOrder = $this->createCTOrder($oOrder, $config);
             if ($amount === false) {
