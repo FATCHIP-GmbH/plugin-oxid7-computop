@@ -188,7 +188,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $payment = $this->initializePayment($ctOrder, $paymentClass);
             $currency = $this->fatchipComputopBasket->getBasketCurrency()->name;
             $request = $this->createAuthorizeRequest($payment, $paymentClass, $amount, $currency, $ctOrder);
-            $this->fatchipComputopLogger->logRequestResponse($request, 'fatchip_computop_creditcard', 'AUTH-REQUEST', []);
+            $this->fatchipComputopLogger->logRequestResponse($request, $paymentClass, 'AUTH-REQUEST', []);
 
             $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest', $request);
             $jsonEncoded = $payment->getPaynowURLasJson($request);

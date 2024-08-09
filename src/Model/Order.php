@@ -704,7 +704,7 @@ class Order extends Order_parent
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
                 $response = $payment->getHTTPGetURL($params);
-                $this->fatchipComputopLogger->logRequestResponse($params, 'fatchip_computop_creditcard', 'REDIRECT-SILENT', $payment);
+                $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-SILENT', $payment);
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
                 Registry::getUtils()->redirect($response, false);
             }
