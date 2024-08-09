@@ -141,5 +141,5 @@ $aModule = [
     'events'      => [
         'onActivate'   => 'Fatchip\ComputopPayments\Core\Events::onActivate',
         'onDeactivate' => 'Fatchip\ComputopPayments\Core\Events::onDeactivate',
-    ],
+    ]
 ];
