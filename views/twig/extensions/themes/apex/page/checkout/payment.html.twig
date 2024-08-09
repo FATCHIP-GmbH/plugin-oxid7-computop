@@ -18,8 +18,6 @@
         {% include "@fatchip_computop_payments/payments/fatchip_computop_ideal" %}
     {% elseif sPaymentID == 'fatchip_computop_easycredit' %}
         {% include "@fatchip_computop_payments/payments/fatchip_computop_easycredit" %}
-    {% elseif sPaymentID == 'fatchip_computopcreditcard' and fatchipcomutopoptions.creditCardMode == 'SILENT'  %}
-        {% include "@fatchip_computop_payments/payments/fatchip_computop_creditcard_silentmode" %}
     {% elseif sPaymentID == 'fatchip_computop_creditcard' %}
         {% include "@fatchip_computop_payments/payments/fatchip_computop_creditcard_iframe" %}
     {% else %}

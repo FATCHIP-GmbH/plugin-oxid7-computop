@@ -27,8 +27,11 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
+use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopPayments extends FrontendController
 {
@@ -60,6 +63,8 @@ class FatchipComputopPayments extends FrontendController
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
         $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopLogger = new Logger();
+        $this->fatchipComputopSession = Registry::getSession();
     }
 
     /**
@@ -71,7 +76,10 @@ class FatchipComputopPayments extends FrontendController
     public function render()
     {
         $response = $this->fatchipComputopPaymentService->getRequest();
-
+        if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$response);
+        }
         if ($response) {
             $this->fatchipComputopPaymentService->handleRedirectResponse($response);
         }

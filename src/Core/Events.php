@@ -46,7 +46,9 @@ class Events
     public static $sQueryAlterOxorderDos = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_lastschrift_dos VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
     public static $sQueryAlterOxorderSchemereferenceid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_creditcard_schemereferenceid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
     public static $sQueryAlterOxorderAmountCaptured = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_amount_captured DOUBLE DEFAULT '0.0' NOT NULL;";
-    public static $sQueryAlterOxorderAmountRefunded = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_amount_refunded DOUBLE iiii DEFAULT '0.0' NOT NULL;";
+    public static $sQueryAlterOxorderAmountRefunded = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_amount_refunded DOUBLE DEFAULT '0.0' NOT NULL;";
+    public static $sQueryAlterOxorderArticlesAmountRefunded = "ALTER TABLE oxorderarticles ADD COLUMN fatchip_computop_amount_refunded TINYINT(1) DEFAULT '0' NOT NULL;";
+    public static $sQueryAlterOxorderShippingAmountRefunded = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_shipping_amount_refunded TINYINT(1) DEFAULT '0' NOT NULL;";
     public static $sQueryAlterOxorderOrderRemark = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_remark VARCHAR(128) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
 
     /**
@@ -89,6 +91,10 @@ class Events
             'fatchip_computop_amount_refunded', self::$sQueryAlterOxorderAmountRefunded);
         self::addColumnIfNotExists('oxorder',
             'fatchip_computop_remark', self::$sQueryAlterOxorderOrderRemark);
+        self::addColumnIfNotExists('oxorderarticles',
+            'fatchip_computop_amount_refunded', self::$sQueryAlterOxorderArticlesAmountRefunded);
+        self::addColumnIfNotExists('oxorder',
+            'fatchip_computop_shipping_amount_refunded', self::$sQueryAlterOxorderShippingAmountRefunded);
     }
 
     /**
@@ -105,7 +111,14 @@ class Events
             self::createPaymentMethod($paymentMethod['name'], $descriptions);
         }
     }
-
+    protected static function deactivatePaymentMethod(string $paymentId) {
+        $payment = oxNew(Payment::class);
+        $paymentLoaded = $payment->load($paymentId);
+        if ($paymentLoaded) {
+            $payment->assign( ['oxpayments__oxactive' => false]);
+            $payment->save();
+        }
+    }
     /**
      * @param string[][] $paymentDescription
      *
@@ -248,22 +261,7 @@ class Events
                 WHERE 1';
 
         $rows = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll($sql);
-        if (empty($rows)) {
 
-        $content = '
-            INSERT INTO `fatchip_computop_ideal_issuers` (`id`, `issuer_id`, `name`, `land`) VALUES
-                (1, "ABNANL2A", "ABN AMRO", "DE"),
-                (2, "ASNBNL21", "ASN Bank", "DE"),
-                (3, "BUNQNL2A", "Bunq", "DE"),
-                (4, "INGBNL2A", "INGING", "DE"),
-                (5, "KNABNL2H", "Knab", "DE"),
-                (6, "RABONL2U", "Rabo", "DE"),
-                (7, "RBRBNL21", "RegioBank", "DE"),
-                (8, "SNSBNL2A", "SNS Bank", "DE"),
-                (9, "TRIONL2U", "Triodos Bank", "DE"),
-                (10, "FVLBNL22", "van Lanschot", "DE");
-        ';
-        }
     }
 
     /**
@@ -273,7 +271,9 @@ class Events
      */
     public static function onDeactivate()
     {
-        $test = 1;
+        foreach (CTPaymentMethods::paymentMethods AS $paymentMethod) {
+            self::deactivatePaymentMethod($paymentMethod['name']);
+        }
     }
 
     /**

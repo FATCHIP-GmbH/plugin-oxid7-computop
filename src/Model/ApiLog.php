@@ -26,7 +26,10 @@
 
 namespace Fatchip\ComputopPayments\Model;
 
+use Fatchip\ComputopPayments\Core\Constants;
 use OxidEsales\Eshop\Core\Model\BaseModel;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 
 class ApiLog extends BaseModel
 {
@@ -285,6 +288,22 @@ class ApiLog extends BaseModel
     public function setXId($xId)
     {
         $this->xId = $xId;
+    }
+    public function loadByTransId($transId) {
+        $container = ContainerFactory::getInstance()->getContainer();
+        $queryBuilderFactory = $container->get(QueryBuilderFactoryInterface::class);
+        $queryBuilder = $queryBuilderFactory->create();
+        $builder =         $queryBuilder
+            ->select('oxid')
+            ->from(Constants::APILOG_TABLE)
+            ->where('trans_id = :transid')->setParameter('transid', $transId);
+        $result = $builder->execute()->fetchOne();
+        if ($result !== false) {
+            return $this->load($result);
+        } else {
+            return false;
+        }
+
     }
 }
 

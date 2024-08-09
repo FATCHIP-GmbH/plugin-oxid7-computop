@@ -30,6 +30,7 @@ namespace Fatchip\ComputopPayments\Core;
 use Exception;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonoLogLogger;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
@@ -60,17 +61,31 @@ class Logger extends AbstractLogger
     {
         if ($paymentName === '' || $paymentName === null) {
            $paymentName = Registry::getSession()->getVariable('paymentid');
+           if($paymentName !== null) {
+               $paymentName = Constants::getPaymentClassfromId($paymentName);
+           }
          }
         $logMessage = new ApiLog();
+        if (!empty($response)) {
+           // $logMessage->loadByTransId($response->getTransID());
+            $logMessage->setTransId($response->getTransID());
+            $logMessage->setPayId($response->getPayID());
+
+            if ($response instanceof CreditCard) {
+                $logMessage->setPayId($response->getPayID());
+            } else {
+                $logMessage->setPayId($response->getPayID());
+                $logMessage->setXId($response->getXID());
+                $logMessage->setResponse($response->getStatus());
+                $logMessage->setResponseDetails(json_encode($response->toArray()));
+            }
+        } else {
+            $logMessage->setTransId($requestParams['transID']);
+        }
         $logMessage->setPaymentName($paymentName);
         $logMessage->setCreationDate(date('Y-m-d H-i-s'));
         $logMessage->setRequest($requestType);
         $logMessage->setRequestDetails(json_encode($requestParams));
-        $logMessage->setTransId($response->getTransID());
-        $logMessage->setPayId($response->getPayID());
-        $logMessage->setXId($response->getXID());
-        $logMessage->setResponse($response->getStatus());
-        $logMessage->setResponseDetails(json_encode($response->toArray()));
 
         $this->repository->saveApiLog($logMessage);
     }

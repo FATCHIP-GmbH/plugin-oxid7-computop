@@ -156,7 +156,7 @@ class FatchipComputopConfig extends AdminController
             $oModuleActivationBridge = ContainerFactory::getInstance()->getContainer()->get(
                 ModuleActivationBridgeInterface::class
             );
-            $oModuleActivationBridge->deactivate(Constants::MODULE_ID, $shopId);
+            //$oModuleActivationBridge->deactivate(Constants::MODULE_ID, $shopId);
 
             /** @var ModuleConfigurationDaoBridgeInterface $oModuleConfigurationDaoBridge */
             $oModuleConfigurationDaoBridge = ContainerFactory::getInstance()->getContainer()->get(
