@@ -72,15 +72,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const stokenValue = stokenInput ? stokenInput.value : '';
             const sDeliveryAddressMD5Value = sDeliveryAddressMD5 ? sDeliveryAddressMD5.value : '';
 
-// Überprüfen, ob das Format MM/YY ist
-            const [month, year] = expiryDateValue.split('/');
-            let fullYear;
-
-// Annehmen, dass Jahr im Format YY ist (für z.B. '23' -> '2023')
-            if (parseInt(year, 10) < 50) { // Angenommen, 50 Jahre als Schwelle für 2000er
-                fullYear = '20' + year;
-            } else {
-                fullYear = '19' + year;
+            let [month, year] = expiryDateValue.split('/');
+            if (year.length === 2) {
+                if (parseInt(year, 10) < 50) { // Angenommen, 50 Jahre als Schwelle für 2000er
+                    year = '20' + year;
+                } else {
+                    year = '19' + year;
+                }
             }
             const urlParams = new URLSearchParams({
                 'cl': 'order',
@@ -90,7 +88,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'silentMode': silentMode
             });
             const fetchUrl = `${window.location.origin}/index.php?${urlParams.toString()}`;
-            expiryDateInput.value = fullYear + month;
+            expiryDateInput.value = year + month;
             fetch(fetchUrl)
                 .then(response => response.json())
                 .then(data => {
