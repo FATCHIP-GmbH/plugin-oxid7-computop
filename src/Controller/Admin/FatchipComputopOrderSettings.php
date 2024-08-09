@@ -901,7 +901,8 @@ class FatchipComputopOrderSettings extends AdminDetailsController
                 'isPartialAllowed' => true
             );
         }
-
+        $shippingCost = $oOrder->getFormattedDeliveryCost();
+        if ($shippingCost !== "0,00") {
             $aItems[] = array(
                 'id' => $deliverySet->getId(),
                 'type' => $deliverySet->getFieldData('oxtitle'),
@@ -917,6 +918,8 @@ class FatchipComputopOrderSettings extends AdminDetailsController
                 'isOrderarticle' => false,
                 'isPartialAllowed' => true
             );
+
+        }
 
         return $aItems;
     }
