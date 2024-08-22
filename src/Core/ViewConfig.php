@@ -3,6 +3,10 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Exception;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentMethods;
+use Fatchip\CTPayment\CTPaymentService;
+use Fatchip\CTPayment\Encryption;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
@@ -12,7 +16,7 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class ViewConfig extends ViewConfig_parent
 {
-
+    private $b  = [];
     protected $fatchipComputopConfig;
     protected $fatchipComputopBasket;
     protected $fatchipComputopSession;
@@ -65,7 +69,7 @@ class ViewConfig extends ViewConfig_parent
      */
     public function isLastCheckoutStep(): bool
     {
-        return  $this->getTopActionClassName() === 'order';
+        return $this->getTopActionClassName() === 'order';
     }
 
     /**
@@ -74,7 +78,7 @@ class ViewConfig extends ViewConfig_parent
      */
     public function isPaymentCheckoutStep(): bool
     {
-        return  $this->getTopActionClassName() === 'payment';
+        return $this->getTopActionClassName() === 'payment';
     }
 
     /**
@@ -158,4 +162,81 @@ class ViewConfig extends ViewConfig_parent
     {
         return 'de_DE';
     }
+
+    /**
+     * Liefert die PayPal Express Parameter.
+     *
+     * @return array
+     */
+    public function getPayPalExpressParams()
+    {
+        /** @var CTPaymentMethods\PaypalExpress $payment */
+        $payment = $this->fatchipComputopPaymentService->getPaymentClass('PaypalExpress');
+
+        $session = Registry::getSession();
+        $basket = $session->getBasket();
+
+        //$order = $this->createOrderFromBasket($basket); //Pseudo
+
+        $tmpOrder = new CTOrder(); // In the moment CTOrder is not overloading the oxorder Model, this has to be added/made - maybe not, because in that case the order is not set yet, because first in the express-button to PayPal happening.
+        $tmpOrder->setAmount(10);
+        $tmpOrder->setCurrency('EUR');
+        $tmpOrder->setTransID('123456789');
+        $tmpOrder->setPayId('123456789');
+
+        $params = $payment->getPaypalExpressShortcutParams(
+            $tmpOrder,
+            $this->fatchipComputopConfig['urlSuccess'],
+            $this->fatchipComputopConfig['urlFailure'],
+            $this->fatchipComputopConfig['urlBack'],
+            '',
+            'de_DE',
+        );
+
+        return $payment->prepareComputopRequest($params, $payment->getCTPaymentShortcut(), '', true); // this attempt finishes direct on that point, because the former prepareComputopRequest seems to make it totally wron;
+    }
+
+    public function getPayPalExpressConfig(){
+        //ToDo: Has to be taken from the Module Configuration
+        return [
+            'clientId' => 'AUeU8a0ihEF4KCezWdehyi7IbSSrVjr7cis1dKM2jeoX2MZ-bTDwnTQv75_n8ZAbnOJHpFd1Rc6PGO4H',
+            'merchantId' => 'YA9TB6DNRNNUW',
+        ];
+    }
+
+    public function toto()
+    {
+        if(empty($this->b)){
+            $this->b = PaypalExpressCore::gr();
+        }else return $this->b;
+    }
+    //public function toto()
+    //{
+    //    $oCTPaypalExpress = new CTPaymentMethods\PaypalExpress();
+    //    return $oCTPaypalExpress->prepareComputopRequest([
+    //        'TransID' => mt_rand(100000, 999999),
+    //        'refnr' => 6412312312195680452123123,
+    //        'Amount' => 10,
+    //        'Currency' => 'EUR',
+    //        'Capture' => 'Auto',
+    //        'OrderDesc' => 'Just a simple description',
+    //        'ItemTotal' => 1,
+    //        'URLSuccess' => '',
+    //        'URLFailure' => '',
+    //        'Response' => 'encrypt',
+    //        'URLNotify' => '',
+    //        'UserData' => 'HeyIts333222',
+    //        'ReqId' => 'as342xdfqterqtqweopqwoeqw23232324j2lk34j2kl34',
+    //        'Language' => 'DE',
+    //        'FirstName' => 'Hasan',
+    //        'LastName' => 'Kara',
+    //        'AddrStreet' => 'Street 1',
+    //        'AddrStreet2' => '',
+    //        'AddrCity' => 'Emmendingen',
+    //        'AddrState' => 'BW',
+    //        'AddrZip' => '79312',
+    //        'AddrCountryCode' => 'DE',
+    //        'Phone' => '',
+    //    ], 'https://www.computop-paygate.com/ExternalServices/paypalorders.aspx');
+    //}
 }
