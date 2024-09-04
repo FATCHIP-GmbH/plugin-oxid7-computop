@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (computopForm) {
         computopForm.addEventListener('submit', (event) => {
             event.preventDefault();
+
             const expiryDateInput = document.getElementById('expiry-date');
             const expiryDateValue = expiryDateInput.value;
             const stokenInput = computopForm.querySelector('input[name="stoken"]');
@@ -71,13 +72,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const silentMode = computopForm.querySelector('input[name="silentMode"]');
             const stokenValue = stokenInput ? stokenInput.value : '';
             const sDeliveryAddressMD5Value = sDeliveryAddressMD5 ? sDeliveryAddressMD5.value : '';
-
+            if (!expiryDateInput.checkValidity() || !cardNumberInput.checkValidity()) {
+                console.error('Form validation failed.');
+                return;
+            }
             let [month, year] = expiryDateValue.split('/');
             if (year.length === 2) {
-                if (parseInt(year, 10) < 50) { // Angenommen, 50 Jahre als Schwelle für 2000er
+                if (parseInt(year, 10) < 50) {
                     year = '20' + year;
                 } else {
-                    year = '19' + year;
+                    return;
                 }
             }
             const urlParams = new URLSearchParams({

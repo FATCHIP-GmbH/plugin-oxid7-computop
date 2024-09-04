@@ -57,7 +57,6 @@
 <div class="credit-card-form">
     <h2>Kreditkarte</h2>
     <form id="computopSilentPostForm" action="https://www.computop-paygate.com/paynow.aspx" method="post">
-        {{ oViewConf.getHiddenSid()|raw }}
         <input type="hidden" name="sDeliveryAddressMD5" value="{{ oView.getDeliveryAddressMD5() }}">
         <input type="hidden" id="MerchantID" name="MerchantID" value="fatchip_oxid7">
         <input type="hidden" id="Len" name="Len" value="">
@@ -84,8 +83,7 @@
         </div>
         <div class="form-group">
             <label for="expiry-date">Expiry Date</label>
-            <input type="text" id="expiry-date" name="expiryDate" class="form-control" placeholder="MM/YY oder MM/YYYY" pattern="(0[1-9]|1[0-2])\/(\d{2}|\d{4})" required>
-
+            <input type="text" id="expiry-date" name="expiryDate" class="form-control" placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\/\d{2}" required>
             <div class="form-error" id="expiry-date-error"></div>
         </div>
         <div class="form-group">
@@ -93,8 +91,34 @@
             <input type="text" id="cvv" name="securityCode" class="form-control" placeholder="123" required>
             <div class="form-error" id="cvv-error"></div>
         </div>
-        <button type="submit" class="btn btn-highlight btn-lg w-100" onclick="document.getElementById('orderConfirmAgbBottom').submit();">
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-highlight btn-lg w-100">
             Zahlungspflichtig bestellen
         </button>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const computopForm = document.getElementById('computopSilentPostForm');
+
+        computopForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await fetch(computopForm.action, {
+                    method: 'POST',
+                    body: new FormData(computopForm)
+                });
+
+                if (response.ok) {
+                    document.getElementById('orderConfirmAgbBottom').submit();
+                } else {
+                    console.error('Error during the first form submission.');
+                }
+            } catch (error) {
+                console.error('Form submission failed:', error);
+            }
+        });
+    });
+</script>

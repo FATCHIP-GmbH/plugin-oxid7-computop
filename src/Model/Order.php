@@ -477,7 +477,17 @@ class Order extends Order_parent
         );
         $response = $this->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
         if ($response->getStatus() !== 'FAILED') {
-            $this->setFieldData('fatchip_computop_amount_captured',$orderSum);
+            $payId = $this->getFieldData('fatchip_computop_payid');
+            $param = $payment->getInquireParams($payId);
+
+            try {
+                $response = $payment->callComputop($param, $payment->getCTInquireURL());
+            } catch (StandardException $e) {
+                return 0.0;
+            }
+
+            $capturedAmount = (double) $response->getAmountCap();
+            $this->assign(['fatchip_computop_amount_captured' => $capturedAmount]);
             $this->save();
         }
         return $response;
