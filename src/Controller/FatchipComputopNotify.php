@@ -202,7 +202,8 @@ class FatchipComputopNotify extends FrontendController
     function createCTOrder($oOrder)
     {
         $ctOrder = new CTOrder();
-        $config = oxNew(Config::class);
+        $configCt = oxNew(Config::class);
+        $config = Registry::getConfig();
         $oUser = $oOrder->getUser();
 
         $ctOrder->setAmount((int)(round($oOrder->getFieldData('oxtotalordersum') * 100)));
@@ -224,7 +225,7 @@ class FatchipComputopNotify extends FrontendController
         // Mandatory for paypalStandard
         $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' '
             . $config->getActiveShop()->oxshops__oxversion->value;
-        if($config->getCreditCardTestMode()) {
+        if($configCt->getCreditCardTestMode()) {
             $ctOrder->setOrderDesc('Test:0000');
         } else {
             $ctOrder->setOrderDesc($orderDesc);
