@@ -206,6 +206,7 @@
         </fieldset>
     {% endif %}
     {% if order.getCapturedAmount() == "0.0" %}
+        <fieldset>
         <legend>{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_TITLE" }) }}</legend>
             {{ translate({ ident: "FATCHIP_COMPUTOP_NO_COMPUTOP_PAYMENT" }) }}
             <table cellspacing="0" cellpadding="0" border="0" width="98%" class="refundTable">

@@ -41,4 +41,5 @@ $aLang = [
     'FATCHIP_COMPUTOP_PAYMENT_DETAILS' => 'Computop Order Details',
     'FATCHIP_COMPUTOP_ORDER_CAPTURED_AMOUNT' => 'Captured Amount',
     'FATCHIP_COMPUTOP_ORDER_PAYID' => 'PayId',
+    'FATCHIP_COMPUTOP_PAYMENTS_APILOG_MAIN' => 'API Logs Details',
 ];

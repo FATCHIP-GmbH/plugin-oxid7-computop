@@ -51,4 +51,5 @@ $aLang = [
     'COMPUTOP_REFUND_SUCCESS' => 'Gutschrift erfolgreich erstellt.',
     'FATCHIP_COMPUTOP_REFUND' => 'Gutschrift:',
     'FATCHIP_COMPUTOP_REFUND_ALL' => 'Gutschrift komplett:',
+    'FATCHIP_COMPUTOP_PAYMENTS_APILOG_MAIN' => 'API Logs Details',
 ];
