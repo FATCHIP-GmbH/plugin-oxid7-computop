@@ -495,7 +495,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     {
         $ctOrder = new CTOrder();
         $oUser = $this->getUser();
-
+        $config = oxNew(Config::class);
         $ctOrder->setAmount((int)($this->fatchipComputopBasket->getBruttoSum() * 100));
         $ctOrder->setCurrency($this->fatchipComputopBasket->getBasketCurrency()->name);
         // try catch in case Address Splitter retrun exceptions
@@ -522,7 +522,12 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         // Mandatory for paypalStandard
         $orderDesc = $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxname->value . ' '
             . $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxversion->value;
-        $ctOrder->setOrderDesc($orderDesc);
+        if($config->getCreditCardTestMode()) {
+            $ctOrder->setOrderDesc('Test:0000');
+        } else {
+            $ctOrder->setOrderDesc($orderDesc);
+
+        }
         return $ctOrder;
     }
 

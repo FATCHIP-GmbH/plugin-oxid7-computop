@@ -208,8 +208,9 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     public function refundOrderArticles($amount = false) {
         try {
 
-            $config = new Config();
-            $paymentService = new CTPaymentService($config->toArray());
+            $configCT = new Config();
+            $config = Registry::getConfig();
+            $paymentService = new CTPaymentService($configCT->toArray());
             $oOrder = $this->getOrder();
             $ctOrder = $this->createCTOrder($oOrder, $config);
             if ($amount === false) {
@@ -218,15 +219,20 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             $payId = $oOrder->getFieldData('fatchip_computop_payid');
             $transId = $oOrder->getFieldData('fatchip_computop_transid');
             $currency = $oOrder->getOrderCurrency()->name;
-            $orderDesc = 'Test:0000';
+            $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' ' . $config->getActiveShop()->oxshops__oxversion->value;
+            if($configCT->getCreditCardTestMode()) {
+                $ctOrder->setOrderDesc('Test:0000');
+            } else {
+                $ctOrder->setOrderDesc($orderDesc);
 
+            }
             $params = $this->getRefundParams($payId, $amount, $currency, $transId, null, $orderDesc);
             $paymentId = $oOrder->getFieldData('OXPAYMENTTYPE');
             $paymentClass = Constants::getPaymentClassfromId($paymentId);
 
             $payment = $paymentService->getIframePaymentClass(
                 $paymentClass,
-                $config->toArray(),
+                $configCT->toArray(),
                 $ctOrder
             );
 
@@ -253,6 +259,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $ctOrder = new CTOrder();
         $config = Registry::getConfig();
         $oUser = $oOrder->getUser();
+        $configCT = oxNew(Config::class);
 
         $ctOrder->setAmount((int)(round($oOrder->getFieldData('oxtotalordersum') * 100)));
         $ctOrder->setCurrency($oOrder->getFieldData('oxcurrency'));
@@ -268,8 +275,12 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $ctOrder->setEmail($oUser->oxuser__oxusername->value);
         $ctOrder->setCustomerID($oUser->oxuser__oxcustnr->value);
         $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' ' . $config->getActiveShop()->oxshops__oxversion->value;
-        $ctOrder->setOrderDesc($orderDesc);
+        if($configCT->getCreditCardTestMode()) {
+            $ctOrder->setOrderDesc('Test:0000');
+        } else {
+            $ctOrder->setOrderDesc($orderDesc);
 
+        }
         return $ctOrder;
     }
 
