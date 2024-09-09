@@ -308,10 +308,13 @@ class Order extends Order_parent
     private function isAutoCaptureEnabled()
     {
         $autoCaptureConfigKey = 'creditCardCaption';
-        $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {
             $autoCaptureConfigKey = 'amazonCaptureType';
         }
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_paypal_standard') {
+            $autoCaptureConfigKey = 'paypalCaption';
+        }
+        $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
 
         return ($autoCaptureValue === 'AUTO');
     }
