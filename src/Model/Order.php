@@ -36,6 +36,7 @@ use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethod;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Model\Basket;
@@ -671,6 +672,9 @@ class Order extends Order_parent
         $ctOrder = $this->createCTOrder();
         $redirectParams = $payment->getRedirectUrlParams();
         $payment->setBillToCustomer($ctOrder);
+        if ($payment instanceof PaypalStandard) {
+         //   $payment->setPayPalMethod('shortcut');
+        }
         $paymentParams = $this->getPaymentParams($oUser, $dynValue);
         $paymentParams['billToCustomer'] = $payment->getBillToCustomer();
         $customParam = $this->getCustomParam($payment->getTransID());
@@ -720,6 +724,8 @@ class Order extends Order_parent
             }
         }
         $response = $payment->getHTTPGetURL($params);
+       // $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-STANDARD', $payment);
+
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
         Registry::getUtils()->redirect($response, false);
 
@@ -875,8 +881,8 @@ class Order extends Order_parent
 
             case "fatchip_computop_paypal_standard":
                 return [
-                    'TxType' => 'Order',
-                    'Account' => '',
+                    'TxType' => 'Auth',
+                    'mode' => 'redirect',
                 ];
 
             case "fatchip_computop_ideal":

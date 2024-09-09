@@ -101,7 +101,14 @@ class PaypalStandard extends CTPaymentMethodIframe
      * @var string
      */
     protected $AddrState;
+    /**
+     * Rechnungsadresse
+     *
+     * @var string
+     */
+    protected $billingAddress;
 
+    protected $billToCustomer;
     /**
      * optional, plficht für USA und Canada:
      * Postleitzahl der Lieferadresse
@@ -316,6 +323,14 @@ class PaypalStandard extends CTPaymentMethodIframe
     }
 
     /**
+     * @return string
+     */
+    public function getBillToCustomer()
+    {
+        return $this->billToCustomer;
+    }
+
+    /**
      * @ignore <description>
      * @param string $lastName
      */
@@ -366,7 +381,33 @@ class PaypalStandard extends CTPaymentMethodIframe
     public function getNoShipping() {
         return $this->NoShipping;
     }
+    /**
+     * @param CTAddress $CTAddress
+     * @return array
+     */
+    protected function declareAddress($CTAddress)
+    {
+        $address['city'] = $CTAddress->getCity();
+        $address['country']['countryA3'] = $CTAddress->getCountryCodeIso3();
+        $address['addressLine1']['street'] = $CTAddress->getStreet();
+        $address['addressLine1']['streetNumber'] = $CTAddress->getStreetNr();
+        $address['postalCode'] = $CTAddress->getZip();
+        return $address;
+    }
 
+    public function setBillingAddress($CTAddress)
+    {
+        $this->billingAddress = base64_encode(json_encode($this->declareAddress($CTAddress)));
+    }
+
+    public function setBillToCustomer($ctOrder)
+    {
+        #$customer['consumer']['salutation'] = $ctOrder->getBillingAddress()->getSalutation();
+        $customer['consumer']['firstName'] = $ctOrder->getBillingAddress()->getFirstName();
+        $customer['consumer']['lastName'] = $ctOrder->getBillingAddress()->getLastName();
+        $customer['email'] = $ctOrder->getEmail();
+        $this->billToCustomer = base64_encode(json_encode($customer));
+    }
     /**
      * sets all addressfields for shipping address
      * @param $shippingAddress CTAddress

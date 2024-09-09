@@ -1213,7 +1213,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     ) {
         $repository = oxNew(ApiLogRepository::class);
         $paymentName = $payment::paymentClass;
-        $paymentName = Constants::getPaymentClassfromId($paymentName);
+       // $paymentName = Constants::getPaymentClassfromId($paymentName);
         $response = $payment->callComputop($requestParams, $url);
         $logMessage = oxNew(ApiLog::class);
         $logMessage->setPaymentName($paymentName);
