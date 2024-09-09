@@ -308,6 +308,7 @@ class Order extends Order_parent
     private function isAutoCaptureEnabled()
     {
         $autoCaptureConfigKey = false;
+        $autoCaptureValue = 'none';
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {
             $autoCaptureConfigKey = 'amazonCaptureType';
         }
@@ -317,7 +318,9 @@ class Order extends Order_parent
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
             $autoCaptureConfigKey = 'creditCardCaption';
         }
-        $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
+        if ($autoCaptureConfigKey !== false) {
+            $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
+        }
 
         return ($autoCaptureValue === 'AUTO');
     }
