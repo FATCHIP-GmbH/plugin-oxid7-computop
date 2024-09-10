@@ -175,35 +175,62 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     public function refundSpecificArticles() {
         $oOrder = $this->getOrder();
         $aArticleArray = Registry::getRequest()->getRequestParameter('aArtId');
-        $oOrderArticles = $oOrder->getOrderArticles();
-        $aOrderArticle = $oOrderArticles->getArray();
+        $oOrderArticles = $oOrder->getOrderArticles()->getArray();
         $refundAmount = 0;
+        $articleChecked = false;
 
         foreach ($aArticleArray as $article) {
-            if (isset($article['refundthis']) && $article['refundthis'] === 'on' ) {
-                if ($aOrderArticle[$article['oxid']]) {
-                   if ($aOrderArticle[$article['oxid']]->getFieldData('fatchip_computop_amount_refunded') !== 1) {
-                       $bruttoPrice = $aOrderArticle[$article['oxid']]->getFieldData('oxorderarticles__oxbrutprice');
-                       $refundAmount += $bruttoPrice;
-                       $aOrderArticle[$article['oxid']]->assign(['fatchip_computop_amount_refunded' => 1]);
-                       $aOrderArticle[$article['oxid']]->save();
-                   }
-                }
-                if ($article['shipping'] === '1' && $article['refundthis'] === 'on') {
-                    $refundAmount += $oOrder->getFormattedDeliveryCost();
-                    $oOrder->assign(['fatchip_computop_shipping_amount_refunded' => 1]);
-                    $oOrder->save();
+            if ($this->isArticleSelectedForRefund($article)) {
+                $articleChecked = true;
+                $refundAmount += $this->processArticleRefund($oOrderArticles, $article);
+
+                if ($this->shouldRefundShipping($article)) {
+                    $refundAmount += $this->processShippingRefund($oOrder);
                 }
             }
         }
-        if ($refundAmount > 0.0){
+
+        $this->handleRefundOutcome($articleChecked, $refundAmount);
+    }
+
+    private function isArticleSelectedForRefund($article) {
+        return isset($article['refundthis']) && $article['refundthis'] === 'on';
+    }
+
+    private function shouldRefundShipping($article) {
+        return $article['shipping'] === '1' && $article['refundthis'] === 'on';
+    }
+
+    private function processArticleRefund($aOrderArticle, $article) {
+        $refundAmount = 0;
+
+        if (isset($aOrderArticle[$article['oxid']])) {
+            $orderArticle = $aOrderArticle[$article['oxid']];
+            if ($orderArticle->getFieldData('fatchip_computop_amount_refunded') != 1) {
+                $refundAmount = $orderArticle->getFieldData('oxorderarticles__oxbrutprice');
+                $orderArticle->assign(['fatchip_computop_amount_refunded' => 1]);
+                $orderArticle->save();
+            }
+        }
+
+        return $refundAmount;
+    }
+
+    private function processShippingRefund($oOrder) {
+        $oOrder->assign(['fatchip_computop_shipping_amount_refunded' => 1]);
+        $oOrder->save();
+        return $oOrder->getFormattedDeliveryCost();
+    }
+
+    private function handleRefundOutcome($articleChecked, $refundAmount) {
+        if (!$articleChecked) {
+            $this->setErrorMessage(Registry::getLang()->translateString('COMPUTOP_ARTICLE_REFUNDED_NO_ARTICLES_CHECKED'));
+        } elseif ($refundAmount > 0) {
             $refundAmount = $this->getAmountForComputop($refundAmount);
             $this->refundOrderArticles($refundAmount);
         } else {
-            $msg = Registry::getLang()->translateString('COMPUTOP_ARTICLE_REFUNDED_NO_ARTICLES_TO_REFUND');
-            $this->setErrorMessage($msg);
+            $this->setErrorMessage(Registry::getLang()->translateString('COMPUTOP_ARTICLE_REFUNDED_NO_ARTICLES_TO_REFUND'));
         }
-
     }
     public function refundOrderArticles($amount = false) {
         try {

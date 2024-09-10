@@ -47,6 +47,7 @@ $aLang = [
     'COMPUTOP_ARTICLE_REFUNDED_YES' => 'Ja',
     'COMPUTOP_ARTICLE_REFUNDED_NO' => 'Nein',
     'COMPUTOP_ARTICLE_REFUNDED_NO_ARTICLES_TO_REFUND' => 'Alle Artikel bereit gutgeschrieben',
+    'COMPUTOP_ARTICLE_REFUNDED_NO_ARTICLES_CHECKED'   => 'Bitte Artikel auswählen',
     'FATCHIP_COMPUTOP_CAPTURE_SUBMIT_COMPLETE' => 'Bestellung komplett gutgeschrieben.',
     'COMPUTOP_REFUND_SUCCESS' => 'Gutschrift erfolgreich erstellt.',
     'FATCHIP_COMPUTOP_REFUND' => 'Gutschrift:',

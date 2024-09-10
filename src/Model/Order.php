@@ -274,7 +274,6 @@ class Order extends Order_parent
 
     public function autoCapture($oUser = false, $force = false): void
     {
-        $captureAmount = 0.0;
         $captureAmount = $this->getFieldData('fatchip_computop_amount_captured');
         $requestCapture = Registry::getRequest()->getRequestParameter('captureAmount');
 
