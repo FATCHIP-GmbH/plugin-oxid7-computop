@@ -313,7 +313,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         if (Constants::isFatchipComputopRedirectPayment($paymentId)) {
             $ret = parent::execute();
             // if order is validated and finalized complete Order on thankyou
-            if ($ret === 'thankyou') {
+            if ($ret === 'thankyou' || $ret === 'thankyou?mailerror=1') {
                 $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
                 if ($response) {
                     $orderOxId = $response->getSessionId();
