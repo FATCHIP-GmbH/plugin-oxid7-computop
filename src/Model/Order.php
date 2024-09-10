@@ -304,24 +304,28 @@ class Order extends Order_parent
         }
 
     }
-
-    private function isAutoCaptureEnabled()
+    public function isAutoCaptureEnabled()
     {
         $autoCaptureConfigKey = false;
-        $autoCaptureValue = 'none';
-        if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {
-            $autoCaptureConfigKey = 'amazonCaptureType';
+        $autoCaptureValue = null;
+
+        switch ($this->fatchipComputopPaymentId) {
+            case 'fatchip_computop_amazonpay':
+                $autoCaptureConfigKey = 'amazonCaptureType';
+                break;
+            case 'fatchip_computop_paypal_standard':
+                $autoCaptureConfigKey = 'paypalCaption';
+                break;
+            case 'fatchip_computop_creditcard':
+                $autoCaptureConfigKey = 'creditCardCaption';
+                break;
+            default:
+                break;
         }
-        if ($this->fatchipComputopPaymentId === 'fatchip_computop_paypal_standard') {
-            $autoCaptureConfigKey = 'paypalCaption';
-        }
-        if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
-            $autoCaptureConfigKey = 'creditCardCaption';
-        }
+
         if ($autoCaptureConfigKey !== false) {
             $autoCaptureValue = $this->fatchipComputopConfig[$autoCaptureConfigKey] ?? null;
         }
-
         return ($autoCaptureValue === 'AUTO');
     }
 
