@@ -916,6 +916,11 @@ class Order extends Order_parent
                     'UserData' => Registry::getSession()->getId()
                     ];
 
+            case "fatchip_computop_paypal_express":
+                return [
+                    'NONE YET',
+                ];
+
 
         }
         return [];

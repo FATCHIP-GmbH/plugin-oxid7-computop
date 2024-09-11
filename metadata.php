@@ -16,6 +16,7 @@ use Fatchip\ComputopPayments\Controller\FatchipComputopOrder;
 use Fatchip\ComputopPayments\Controller\FatchipComputopPayment;
 use Fatchip\ComputopPayments\Controller\FatchipComputopPayments;
 use Fatchip\ComputopPayments\Controller\FatchipComputopNotify;
+use Fatchip\ComputopPayments\Controller\FatchipComputopPaypalExpress;
 use Fatchip\ComputopPayments\Controller\FatchipComputopPaypalStandard;
 use Fatchip\ComputopPayments\Controller\FatchipComputopRedirect;
 use Fatchip\ComputopPayments\Controller\FatchipComputopTwint;
@@ -89,6 +90,7 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'lastschrift' => FatchipComputopLastschrift::class,
         Constants::GENERAL_PREFIX . 'creditcard' => FatchipComputopCreditcard::class,
         Constants::GENERAL_PREFIX . 'paypal_standard' => FatchipComputopPaypalStandard::class,
+        Constants::GENERAL_PREFIX . 'paypal_express' => FatchipComputopPaypalExpress::class,
         Constants::GENERAL_PREFIX . 'klarna' => FatchipComputopKlarna::class,
         Constants::GENERAL_PREFIX . 'easycredit' => FatchipComputopEasycredit::class,
         Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
