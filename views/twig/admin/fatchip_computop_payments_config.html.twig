@@ -70,6 +70,15 @@
             'currentBlock': 'paypal'
         } %}
 
+        {# PayPalExpress Settings #}
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+            'headingId': 'headingPayPalExpress',
+            'collapseId': 'collapsePayPalExpress',
+            'title': translate({ ident: "FATCHIP_COMPUTOP_PAYPALEXPRESS_SETTINGS" }),
+            'formFields': payPalExpressFormFields,
+            'currentBlock': 'paypalExpress'
+        } %}
+
         {# Direct Debit (Lastschrift) Settings #}
         {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
             'headingId': 'headingLastschrift',

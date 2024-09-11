@@ -150,12 +150,12 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     public function hasHadFreeAmountRefund()
     {
         $oOrder = $this->getOrder();
-     /*   foreach ($oOrder->getOrderArticles() as $oOrderArticle) {
-            if (((double)$oOrderArticle->oxorderarticles__Compuopamountrefunded->value > 0 && $oOrderArticle->oxorderarticles__Compuopquantityrefunded->value == 0)
-                || ($oOrderArticle->oxorderarticles__Compuopquantityrefunded->value * $oOrderArticle->oxorderarticles__oxbprice->value != $oOrderArticle->oxorderarticles__Compuopamountrefunded->value)) {
-                return true;
-            }
-        }*/
+        /*   foreach ($oOrder->getOrderArticles() as $oOrderArticle) {
+               if (((double)$oOrderArticle->oxorderarticles__Compuopamountrefunded->value > 0 && $oOrderArticle->oxorderarticles__Compuopquantityrefunded->value == 0)
+                   || ($oOrderArticle->oxorderarticles__Compuopquantityrefunded->value * $oOrderArticle->oxorderarticles__oxbprice->value != $oOrderArticle->oxorderarticles__Compuopamountrefunded->value)) {
+                   return true;
+               }
+           }*/
         return false;
     }
 
@@ -262,7 +262,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
                 $configCT->toArray(),
                 $ctOrder
             );
-
+            
             $response = $this->callComputopRefundService($oOrder, $params, $payment);
             $this->handleRefundResponse($oOrder,$response, $amount);
         } catch (Exception $e) {
@@ -696,11 +696,11 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             return false;
         }
 
-      //  $oApiOrder = $this->getCompuopApiOrder();
+        //  $oApiOrder = $this->getCompuopApiOrder();
 
-   //  if (empty($oApiOrder->amountRefunded) || $oApiOrder->amountRefunded->value != $oApiOrder->amount->value) {
-     //       return true;
-      //  }
+        //  if (empty($oApiOrder->amountRefunded) || $oApiOrder->amountRefunded->value != $oApiOrder->amount->value) {
+        //       return true;
+        //  }
         return false;
     }
 
@@ -794,20 +794,20 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     protected function getAmountRefundedByType($sType)
     {
         $oOrder = $this->getOrder();
-    /*    switch ($sType) {
-            case 'shipping_fee':
-                return $oOrder->oxorder__Compuopdelcostrefunded->value;
-            case 'payment_fee':
-                return $oOrder->oxorder__Compuoppaycostrefunded->value;
-            case 'wrapping':
-                return $oOrder->oxorder__Compuopwrapcostrefunded->value;
-            case 'giftcard':
-                return $oOrder->oxorder__Compuopgiftcardrefunded->value;
-            case 'voucher':
-                return $oOrder->oxorder__Compuopvoucherdiscountrefunded->value;
-            case 'discount':
-                return $oOrder->oxorder__Compuopdiscountrefunded->value;
-        }*/
+        /*    switch ($sType) {
+                case 'shipping_fee':
+                    return $oOrder->oxorder__Compuopdelcostrefunded->value;
+                case 'payment_fee':
+                    return $oOrder->oxorder__Compuoppaycostrefunded->value;
+                case 'wrapping':
+                    return $oOrder->oxorder__Compuopwrapcostrefunded->value;
+                case 'giftcard':
+                    return $oOrder->oxorder__Compuopgiftcardrefunded->value;
+                case 'voucher':
+                    return $oOrder->oxorder__Compuopvoucherdiscountrefunded->value;
+                case 'discount':
+                    return $oOrder->oxorder__Compuopdiscountrefunded->value;
+            }*/
         return 0;
     }
 
@@ -858,7 +858,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $aItems = array();
 
         $oOrder = $this->getOrder();
-       // $oRequestModel = $oOrder->CompuopGetPaymentModel()->getApiRequestModel($oOrder);
+        // $oRequestModel = $oOrder->CompuopGetPaymentModel()->getApiRequestModel($oOrder);
         $aBasketItems = $oOrder->getOrderArticles()->getArray();
         foreach ($aBasketItems as $aBasketItem) {
             if (in_array($aBasketItem['type'], array('physical', 'digital'))) {
@@ -918,10 +918,10 @@ class FatchipComputopOrderSettings extends AdminDetailsController
 
         /** @var OrderArticle $orderArticle */
         foreach ($oOrderArticles as $orderArticle) {
-           /* $quantityRefunded = $orderArticle->oxorderarticles__Compuopquantityrefunded->value;
-            if ($orderArticle->oxorderarticles__Compuopamountrefunded->value == $orderArticle->oxorderarticles__oxbrutprice->value) {
-                $quantityRefunded = $orderArticle->oxorderarticles__oxamount->value;
-            }*/
+            /* $quantityRefunded = $orderArticle->oxorderarticles__Compuopquantityrefunded->value;
+             if ($orderArticle->oxorderarticles__Compuopamountrefunded->value == $orderArticle->oxorderarticles__oxbrutprice->value) {
+                 $quantityRefunded = $orderArticle->oxorderarticles__oxamount->value;
+             }*/
             $refund = $orderArticle->getFieldData('fatchip_computop_amount_refunded') === 1 ? $refundYes : $refundNo;
             $refundDel = $oOrder->getFieldData('fatchip_computop_shipping_amount_refunded') === 1 ? $refundYes : $refundNo;
             $aItems[] = array(

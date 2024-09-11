@@ -115,6 +115,7 @@ class CTPaymentService extends Encryption
         }
 
         $class = 'Fatchip\\CTPayment\\CTPaymentMethodsIframe\\' . $className;
+
         return new $class(
             $config,
             $ctOrder,

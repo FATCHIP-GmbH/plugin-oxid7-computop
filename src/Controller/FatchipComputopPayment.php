@@ -32,6 +32,8 @@ use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
 use Fatchip\ComputopPayments\Service\ModuleSettings;
 use OxidEsales\Eshop\Application\Controller\PaymentController;
+use OxidEsales\Eshop\Application\Model\Payment;
+use OxidEsales\Eshop\Application\Model\PaymentList;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Core\Model\ListModel;
@@ -44,12 +46,13 @@ use Symfony\Component\String\UnicodeString;
 class FatchipComputopPayment extends FatchipComputopPayment_parent
 {
     protected $fatchipComputopConfig;
+    protected array $frontendHiddenPayments = ['fatchip_computop_paypal_express'];
 
     public function render()
     {
         if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse')) {
             $this->unsetSessionVars();
-         //   Registry::getSession()->regenerateSessionId();
+            //   Registry::getSession()->regenerateSessionId();
         }
 
         Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
@@ -74,7 +77,25 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         return parent::render();
     }
 
-     public function getFatchipComputopConfig() {
+    public function getPaymentList()
+    {
+        /** @var PaymentList $oPaymentList */
+        $oPaymentList = parent::getPaymentList();
+
+        $oValidPaymentList = oxNew(PaymentList::class);
+
+        /** @var Payment $oPayment */
+        foreach ($oPaymentList as $oPayment) {
+            if (!in_array($oPayment->getId(), $this->frontendHiddenPayments)) {
+                $oValidPaymentList->add($oPayment);
+            }
+        }
+
+        return $oValidPaymentList;
+    }
+
+    public function getFatchipComputopConfig()
+    {
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
         return $this->fatchipComputopConfig;
@@ -91,15 +112,16 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         return $returnValue;
     }
 
-    public function unsetSessionVars() {
-       Registry::getSession()->deleteVariable('FatchipComputopErrorCode');
-       Registry::getSession()->deleteVariable('FatchipComputopErrorMessage');
-       Registry::getSession()->deleteVariable('paymentid');
-       Registry::getSession()->deleteVariable('sess_challenge');
-       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
-       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
-       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
-       Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+    public function unsetSessionVars()
+    {
+        Registry::getSession()->deleteVariable('FatchipComputopErrorCode');
+        Registry::getSession()->deleteVariable('FatchipComputopErrorMessage');
+        Registry::getSession()->deleteVariable('paymentid');
+        Registry::getSession()->deleteVariable('sess_challenge');
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
     }
 
 
@@ -196,7 +218,8 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
      * List for PaymentView
      * @return array|false
      */
-    public function getIdealIssuers() {
+    public function getIdealIssuers()
+    {
         $oIdealIssuers = oxNew(IdealIssuers::class);
         $sql = $oIdealIssuers->buildSelectString();
         $oList = oxNew(ListModel::class);
@@ -212,7 +235,8 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
     /**
      * @return UnicodeString
      */
-    public function idealDirektOderUeberSofort() {
+    public function idealDirektOderUeberSofort()
+    {
         /** @var ModuleSettings $moduleSettings */
         $moduleSettingService = ContainerFacade::get(ModuleSettingServiceInterface::class);
         return $moduleSettingService->getString('idealDirektOderUeberSofort', Constants::MODULE_ID);

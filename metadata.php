@@ -123,6 +123,11 @@ $aModule = [
 
         ['name' => 'lastschriftAnon', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'paypalCaption', 'type' => 'str', 'value' => '', 'group' => null],
+        ['name' => 'paypalExpressCaption', 'type' => 'str', 'value' => '', 'group' => null],
+        ['name' => 'paypalExpressClientID', 'type' => 'str', 'value' => '', 'group' => null],
+        ['name' => 'paypalExpressMerchantID', 'type' => 'str', 'value' => '', 'group' => null],
+        ['name' => 'paypalExpressFunding', 'type' => 'str', 'value' => '', 'group' => null],
+        ['name' => 'paypalExpressFundingExcluded', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'amazonpayMerchantId', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'amazonpayPrivKey', 'type' => 'str', 'value' => '', 'group' => null],

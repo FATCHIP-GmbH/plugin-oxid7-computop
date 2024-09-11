@@ -33,7 +33,7 @@ use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInt
 
 class ApiLog extends BaseModel
 {
-    public static $sTableName = "fatchip_computop_api_log";
+        public static $sTableName = "fatchip_computop_api_log";
 
     /**
      * Class constructor

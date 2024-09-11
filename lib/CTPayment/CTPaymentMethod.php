@@ -72,15 +72,12 @@ abstract class CTPaymentMethod extends Encryption
 
     public function __construct()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-
-
-        // $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->config = new Config();
     }
 
     /**
-     * @ignore <description>
      * @param string $PayID
+     * @ignore <description>
      */
     public function setPayID($PayID)
     {
@@ -88,8 +85,8 @@ abstract class CTPaymentMethod extends Encryption
     }
 
     /**
-     * @ignore <description>
      * @return string
+     * @ignore <description>
      */
     public function getPayID()
     {
@@ -97,18 +94,20 @@ abstract class CTPaymentMethod extends Encryption
     }
 
     /**
-     * @ignore <description>
      * @param string $EtiId
+     * @ignore <description>
      */
-    public function setEtiId($EtiId) {
+    public function setEtiId($EtiId)
+    {
         $this->EtiId = $EtiId;
     }
 
     /**
-     * @ignore <description>
      * @return string
+     * @ignore <description>
      */
-    public function getEtiId() {
+    public function getEtiId()
+    {
         return $this->EtiId;
     }
 
@@ -119,7 +118,7 @@ abstract class CTPaymentMethod extends Encryption
      */
     protected function ctHMAC($params)
     {
-        $data = $params['payID'].'*'.$params['transID'].'*'.$this->merchantID.'*'.$params['amount'].'*'.$params['currency'];
+        $data = $params['payID'] . '*' . $params['transID'] . '*' . $this->merchantID . '*' . $params['amount'] . '*' . $params['currency'];
         return hash_hmac("sha256", $data, $this->mac);
     }
 
@@ -129,10 +128,10 @@ abstract class CTPaymentMethod extends Encryption
      * @param $params
      * @param $url
      * @param string $addTemplate
-     * @return string
      */
     public function prepareComputopRequest($params, $url, $addTemplate = '')
     {
+        $additionFlag = false;
         $config = new Config();
         $this->config = $config->toArray();
 
@@ -156,16 +155,16 @@ abstract class CTPaymentMethod extends Encryption
         $len = mb_strlen($request);  // Length of the plain text string
         $data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
 
-        $url .=
-            '?MerchantID=' . $this->merchantID .
-            '&Len=' . $len .
-            '&Data=' . $data;
+            $url .=
+                '?MerchantID=' . $this->merchantID .
+                '&Len=' . $len .
+                '&Data=' . $data;
 
-        if($addTemplate) {
-            $url .= '&template=' . $addTemplate;
-        }
+            if ($addTemplate) {
+                $url .= '&template=' . $addTemplate;
+            }
 
-        return $url;
+            return $url;
     }
 
     /**
@@ -187,7 +186,7 @@ abstract class CTPaymentMethod extends Encryption
         $len = mb_strlen($request);  // Length of the plain text string
         $data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
 
-        return ['MerchantID' => $this->merchantID , 'Len' => $len, 'Data' => $data];
+        return ['MerchantID' => $this->merchantID, 'Len' => $len, 'Data' => $data];
     }
 
     /**
@@ -195,18 +194,18 @@ abstract class CTPaymentMethod extends Encryption
      *
      * uses curl for api communication
      *
-     * @see prepareComputopRequest()
-     *
      * @param $ctRequest
      * @param $url
      * @return CTResponse
+     * @see prepareComputopRequest()
+     *
      */
     public function callComputop($ctRequest, $url)
     {
         $curl = curl_init();
 
         curl_setopt_array($curl,
-            [ CURLOPT_RETURNTRANSFER => 1,
+            [CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_URL => $this->prepareComputopRequest($ctRequest, $url)
             ]);
         try {
@@ -230,7 +229,7 @@ abstract class CTPaymentMethod extends Encryption
         $arr = [];
         // Paypal Special:
         $resp = strstr($resp, 'Len=');
-        $resp = str_replace('amp;','',$resp );
+        $resp = str_replace('amp;', '', $resp);
         parse_str($resp, $arr);
         $plaintext = $this->ctDecrypt($arr['Data'], $arr['Len'], $this->blowfishPassword);
         $response = new CTResponse($this->ctSplit(explode('&', $plaintext), '='));
@@ -259,7 +258,8 @@ abstract class CTPaymentMethod extends Encryption
      * returns InquireURL
      * @return string
      */
-    public function getCTInquireURL() {
+    public function getCTInquireURL()
+    {
         return 'https://www.computop-paygate.com/inquire.aspx';
     }
 
@@ -267,7 +267,8 @@ abstract class CTPaymentMethod extends Encryption
      * returns RefNrChangeURL, used to set the refNr for a transaction in CT-Analytics
      * @return string
      */
-    public function getCTRefNrChangeURL() {
+    public function getCTRefNrChangeURL()
+    {
         return 'https://www.computop-paygate.com/RefNrChange.aspx';
     }
 
@@ -284,14 +285,15 @@ abstract class CTPaymentMethod extends Encryption
      * @param null $schemeReferenceID
      * @return array
      */
-    public function getRefundParams($PayID, $Amount, $Currency, $transID = null, $xID = null, $orderDesc = null, $klarnaInvNo = null, $schemeReferenceID = null, $orderAmount = null ) {
-        $reason = $Amount < $orderAmount ? 'WIDERRUF_TEILWEISE':'WIDERRUF_VOLLSTAENDIG';
+    public function getRefundParams($PayID, $Amount, $Currency, $transID = null, $xID = null, $orderDesc = null, $klarnaInvNo = null, $schemeReferenceID = null, $orderAmount = null)
+    {
+        $reason = $Amount < $orderAmount ? 'WIDERRUF_TEILWEISE' : 'WIDERRUF_VOLLSTAENDIG';
         $params = [
             'payID' => $PayID,
             'amount' => $Amount,
             'currency' => $Currency,
             // used by easyCredit
-            'Date' =>  date("Y-m-d"),
+            'Date' => date("Y-m-d"),
             // used by amazonpay
             'transID' => $transID,
             'xID' => $xID,
@@ -301,8 +303,8 @@ abstract class CTPaymentMethod extends Encryption
             // used by creditcard 3DS 2
             'schemeReferenceID' => $schemeReferenceID,
             // used by easyCredit refunds. possible values: WIDERRUF_VOLLSTAENDIG, WIDERRUF_TEILWEISE, RUECKGABE_GARANTIE_GEWAEHRLEISTUNG, MINDERUNG_GARANTIE_GEWAEHRLEISTUNG
-             'Reason' => $reason,
-            'Custom'  => $this->Custom,
+            'Reason' => $reason,
+            'Custom' => $this->Custom,
         ];
 
         return $params;
@@ -320,13 +322,14 @@ abstract class CTPaymentMethod extends Encryption
      * @param null $schemeReferenceID
      * @return array
      */
-    public function getCaptureParams($PayID, $Amount, $Currency, $transID = null, $xID = null, $orderDesc = null, $schemeReferenceID = null) {
+    public function getCaptureParams($PayID, $Amount, $Currency, $transID = null, $xID = null, $orderDesc = null, $schemeReferenceID = null)
+    {
         $params = [
             'payID' => $PayID,
             'amount' => $Amount,
             'currency' => $Currency,
             // used by easyCredit
-            'Date' =>  date("Y-m-d"),
+            'Date' => date("Y-m-d"),
             // used by amazonpay
             'transID' => $transID,
             'xID' => $xID,
@@ -345,7 +348,8 @@ abstract class CTPaymentMethod extends Encryption
      * @param $PayID
      * @return array
      */
-    public function getInquireParams($PayID) {
+    public function getInquireParams($PayID)
+    {
         $params = [
             'payID' => $PayID,
         ];
@@ -360,7 +364,8 @@ abstract class CTPaymentMethod extends Encryption
      * @param $RefNr
      * @return array
      */
-    public function getRefNrChangeParams($PayID, $RefNr) {
+    public function getRefNrChangeParams($PayID, $RefNr)
+    {
         $params = [
             'payID' => $PayID,
             'RefNr' => $RefNr,
@@ -385,5 +390,13 @@ abstract class CTPaymentMethod extends Encryption
             }
         }
         return $requestParams;
+    }
+
+    /**
+     * Format amount
+     */
+    public function formatAmount($amount)
+    {
+        return number_format($amount * 100, 0, '.', '');
     }
 }

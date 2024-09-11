@@ -3,6 +3,8 @@
 namespace Fatchip\ComputopPayments\Core;
 
 use Exception;
+use Fatchip\CTPayment\CTPaymentMethods;
+use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
@@ -12,7 +14,7 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class ViewConfig extends ViewConfig_parent
 {
-
+    private $b = [];
     protected $fatchipComputopConfig;
     protected $fatchipComputopBasket;
     protected $fatchipComputopSession;
@@ -21,6 +23,7 @@ class ViewConfig extends ViewConfig_parent
     protected $fatchipComputopPaymentClass;
     protected $fatchipComputopShopUtils;
     protected $fatchipComputopLogger;
+    protected $fatchipComputopPaymentService;
     public $fatchipComputopSilentParams;
     public $signature = '';
 
@@ -39,6 +42,7 @@ class ViewConfig extends ViewConfig_parent
         $this->fatchipComputopPaymentId = $this->fatchipComputopBasket->getPaymentId() ?: '';
         $this->fatchipComputopShopUtils = Registry::getUtils();
         $this->fatchipComputopLogger = new Logger();
+        $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
     }
 
     /**
@@ -65,7 +69,7 @@ class ViewConfig extends ViewConfig_parent
      */
     public function isLastCheckoutStep(): bool
     {
-        return  $this->getTopActionClassName() === 'order';
+        return $this->getTopActionClassName() === 'order';
     }
 
     /**
@@ -74,7 +78,7 @@ class ViewConfig extends ViewConfig_parent
      */
     public function isPaymentCheckoutStep(): bool
     {
-        return  $this->getTopActionClassName() === 'payment';
+        return $this->getTopActionClassName() === 'payment';
     }
 
     /**
@@ -158,4 +162,19 @@ class ViewConfig extends ViewConfig_parent
     {
         return 'de_DE';
     }
+
+    public function getPayPalExpressConfig(): array
+    {
+        /** @var CTPaymentMethods\PaypalExpress $oPaypalExpressPaypment */
+        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
+        return $oPaypalExpressPaypment->getPayPalExpressConfig();
+    }
+
+    public function isPaypalActive(): bool
+    {
+        /** @var CTPaymentMethods\PayPalExpress $oPaypalExpressPaypment */
+        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
+        return $oPaypalExpressPaypment->isActive();
+    }
+
 }
