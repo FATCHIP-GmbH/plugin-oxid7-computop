@@ -134,6 +134,7 @@ abstract class CTPaymentMethod extends Encryption
      */
     public function prepareComputopRequest($params, $url, $addTemplate = '')
     {
+        $additionFlag = false;
         $config = new Config();
         $this->config = $config->toArray();
 
@@ -404,5 +405,13 @@ abstract class CTPaymentMethod extends Encryption
             }
         }
         return $requestParams;
+    }
+
+    /**
+     * Format amount
+     */
+    public function formatAmount($amount)
+    {
+        return number_format($amount * 100, 0, '.', '');
     }
 }

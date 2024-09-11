@@ -1112,4 +1112,11 @@ class Order extends Order_parent
 
         return $iRet;
     }
+
+    public function validateDelivery($oBasket)
+    {
+        if ($oBasket->getPaymentId() == 'fatchip_computop_paypal_express') {
+            return;
+        }else return parent::validateDelivery($oBasket);
+    }
 }

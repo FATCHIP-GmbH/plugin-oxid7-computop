@@ -27,6 +27,7 @@
  */
 
 namespace Fatchip\CTPayment\CTOrder;
+
 use Fatchip\CTPayment\CTAddress\CTAddress;
 
 /**
@@ -90,8 +91,8 @@ class CTOrder
 
 
     /**
-     * @ignore <description>
      * @param mixed $Amount
+     * @ignore <description>
      */
     public function setAmount($Amount)
     {
@@ -99,8 +100,8 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @return mixed
+     * @ignore <description>
      */
     public function getAmount()
     {
@@ -108,8 +109,8 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @param mixed $Currency
+     * @ignore <description>
      */
     public function setCurrency($Currency)
     {
@@ -117,8 +118,8 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @return mixed
+     * @ignore <description>
      */
     public function getCurrency()
     {
@@ -126,8 +127,8 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @param mixed $PayId
+     * @ignore <description>
      */
     public function setPayId($PayId)
     {
@@ -135,8 +136,8 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @return mixed
+     * @ignore <description>
      */
     public function getPayId()
     {
@@ -144,8 +145,8 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @param mixed $orderDescription
+     * @ignore <description>
      */
     public function setOrderDesc($orderDescription)
     {
@@ -153,8 +154,8 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @return mixed
+     * @ignore <description>
      */
     public function getOrderDesc()
     {
@@ -162,66 +163,74 @@ class CTOrder
     }
 
     /**
-     * @ignore <description>
      * @param \Fatchip\CTPayment\CTAddress\CTAddress $billingAddress
+     * @ignore <description>
      */
-    public function setBillingAddress($billingAddress) {
+    public function setBillingAddress($billingAddress)
+    {
         $this->billingAddress = $billingAddress;
     }
 
     /**
-     * @ignore <description>
      * @return \Fatchip\CTPayment\CTAddress\CTAddress
+     * @ignore <description>
      */
-    public function getBillingAddress() {
+    public function getBillingAddress()
+    {
         return $this->billingAddress;
     }
 
     /**
-     * @ignore <description>
      * @param \Fatchip\CTPayment\CTAddress\CTAddress $shippingAddress
+     * @ignore <description>
      */
-    public function setShippingAddress($shippingAddress) {
+    public function setShippingAddress($shippingAddress)
+    {
         $this->shippingAddress = $shippingAddress;
     }
 
     /**
-     * @ignore <description>
      * @return \Fatchip\CTPayment\CTAddress\CTAddress
+     * @ignore <description>
      */
-    public function getShippingAddress() {
+    public function getShippingAddress()
+    {
         return $this->shippingAddress;
     }
 
     /**
-     * @ignore <description>
      * @param mixed $email
+     * @ignore <description>
      */
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
     }
 
     /**
-     * @ignore <description>
      * @return mixed
+     * @ignore <description>
      */
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
     /**
-     * @ignore <description>
      * @param mixed $customerID
+     * @ignore <description>
      */
-    public function setCustomerID($customerID) {
+    public function setCustomerID($customerID)
+    {
         $this->customerID = $customerID;
     }
 
     /**
-     * @ignore <description>
      * @return mixed
+     * @ignore <description>
      */
-    public function getCustomerID() {
+    public function getCustomerID()
+    {
         return $this->customerID;
     }
 

@@ -58,6 +58,11 @@ class PaymentGateway extends PaymentGateway_parent
         if (!$oOrder->isFatchipComputopOrder()) {
             return null;
         }
+        //special handling for fatchip_computop_paypal_express
+        if($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_paypal_express'){
+            return true;
+        }
+
         $config = new Config();
         $configArray =  $config->toArray();
         $this->_iLastErrorNo = null;
