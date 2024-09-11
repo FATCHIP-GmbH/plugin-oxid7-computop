@@ -32,6 +32,7 @@ use Fatchip\CTPayment\CTAddress\CTAddress;
 
 /**
  * Class CTOrder
+ * @property mixed $transID
  * @package Fatchip\CTOrder
  */
 class CTOrder
@@ -58,6 +59,11 @@ class CTOrder
      * @var string
      */
     protected $payId;
+
+    /**
+     * @var
+     */
+    protected $transID;
 
     /**
      * Emailaddress
@@ -133,6 +139,20 @@ class CTOrder
     public function setPayId($PayId)
     {
         $this->payId = $PayId;
+    }
+
+    /**
+     * @param mixed $TransID
+     * @ignore <description>
+     */
+    public function setTransID($TransID)
+    {
+        $this->transID = $TransID;
+    }
+
+    public function getTransID()
+    {
+        return $this->transID;
     }
 
     /**
