@@ -40,9 +40,9 @@ use OxidEsales\Eshop\Core\Registry;
  * Class PaypalExpress
  * @package Fatchip\CTPayment\CTPaymentMethods
  */
-class PaypalExpress extends CTPaymentMethod
+class PayPalExpress extends CTPaymentMethod
 {
-    const paymentClass = 'PaypalExpress';
+    const paymentClass = 'PayPalExpress';
 
     const CREATE_ORDER_URL = 'https://www.computop-paygate.com/ExternalServices/paypalorders.aspx';
     const ON_APPROVE_URL = 'https://www.computop-paygate.com/cbPayPal.aspx';
@@ -213,12 +213,17 @@ class PaypalExpress extends CTPaymentMethod
     public function generateFrontendRequestParams(CTOrder $oOrder)
     {
         $params = [];
-        $params['Capture'] = 'Auto';
+        $params['Capture'] = $this->config->getPaypalExpressCaption() === 'AUTO' ?  'Auto' : 'Manual';
         $params['Currency'] = $oOrder->getCurrency();
         $params['Amount'] = $this->formatAmount($oOrder->getAmount());
         $params['TransID'] = $oOrder->getTransID();
         $params['ReqId'] = $this->generateRequestId();
         $params['EtiID'] = $this->getEtiID();
+
+        if($this->config->getPaypalExpressCaption() === 'MANUAL'){
+            $params['TxType'] = 'Auth';
+        }
+
         /**
          * Referenznummer des Händlers: hier kann eine separate Referenznummer übertragen werden, z.B. eine Rechnungsnummer
          */
@@ -252,20 +257,17 @@ class PaypalExpress extends CTPaymentMethod
 
     public function getComputopMerchantId(): ?string
     {
-        //TODO: make it configurable
-        return 'fatchip_oxid7';
+        return $this->config->getMerchantID();
     }
 
     public function getPaypalClientId(): ?string
     {
-        //TODO: make it configurable
-        return 'AUeU8a0ihEF4KCezWdehyi7IbSSrVjr7cis1dKM2jeoX2MZ-bTDwnTQv75_n8ZAbnOJHpFd1Rc6PGO4H';
+        return $this->config->getPaypalExpressClientID();
     }
 
     public function getPaypalMerchantId(): ?string
     {
-        //TODO: make it configurable
-        return 'KP89GMC7465RA';
+        return $this->config->getPaypalExpressMerchantID();
     }
 
     public function generateRequestId(): string
@@ -298,6 +300,11 @@ class PaypalExpress extends CTPaymentMethod
     {
         $oBasket = Registry::getSession()->getBasket();
         $oPayment = oxNew(Payment::class);
+
+        if ($oPayment->oxpayments__oxactive->value === 0) {
+            return false;
+        }
+
         try {
             $oPayment->load('fatchip_computop_paypal_express');
             $bIsPaymentValid = $oPayment->isValidPayment(
@@ -317,6 +324,17 @@ class PaypalExpress extends CTPaymentMethod
         return false;
     }
 
+
+    public function getIntent(): string
+    {
+        $sIntent = 'capture';
+        $sCaption = $this->config->getPaypalExpressCaption();
+        if ($sCaption === 'MANUAL') {
+            $sIntent = 'authorize';
+        }
+        return $sIntent;
+    }
+
     public function getPayPalExpressConfig(): array
     {
         return [
@@ -332,6 +350,7 @@ class PaypalExpress extends CTPaymentMethod
             ],
             'paypal' => [
                 'active' => $this->isActive(),
+                'intent' => $this->getIntent(),
                 'clientId' => $this->getPaypalClientId(),
                 'merchantId' => $this->getPaypalMerchantId(),
             ]

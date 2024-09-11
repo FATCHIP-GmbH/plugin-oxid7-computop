@@ -31,7 +31,7 @@ use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTPaymentMethods\PaypalExpress;
+use Fatchip\CTPayment\CTPaymentMethods\PayPalExpress;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
@@ -144,7 +144,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             'request' => 'SUCCESS_HOOK',
             'response' => 'SUCCESS_HOOK',
             'creation_date' => date('Y-m-d H:i:s', time()),
-            'payment_name' => PaypalExpress::paymentClass
+            'payment_name' => PayPalExpress::paymentClass
         ];
 
         $aResponseLog = [
@@ -275,7 +275,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             'request' => 'NOTIFY_HOOK',
             'response' => 'NOTIFY_HOOK',
             'creation_date' => date('Y-m-d H:i:s', time()),
-            'payment_name' => PaypalExpress::paymentClass,
+            'payment_name' => PayPalExpress::paymentClass,
             'response_details' => json_encode($aRequestParams)
         ];
 
@@ -445,7 +445,7 @@ class FatchipComputopPayPalExpress extends FrontendController
     public function createOrder()
     {
         /** @var PaypalExpress $oPaypalExpressPaypment */
-        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PaypalExpress');
+        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
         $oApiLog = oxNew(ApiLog::class);
         $aLog = [
             'payment_name' => $oPaypalExpressPaypment::paymentClass,

@@ -76,6 +76,11 @@ class Config
 
     protected $paypalCaption = null;
 
+    protected $paypalExpressCaption = null;
+
+    protected $paypalExpressClientID = null;
+
+    protected $paypalExpressMerchantID = null;
 
     protected $amazonpayPrivKey = null;
 
@@ -451,6 +456,72 @@ class Config
     /**
      * @return null
      */
+    public function getPaypalExpressCaption()
+    {
+        $moduleSettingBridge
+            = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $value = $moduleSettingBridge->get('paypalExpressCaption', FatchipComputopModule::MODULE_ID);
+        return $value;
+    }
+
+    /**
+     * @param null $paypalExpressCaption
+     */
+    public function setPaypalExpressCaption($paypalExpressCaption): void
+    {
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $moduleSettingBridge->save('paypalExpressCaption', $paypalExpressCaption, FatchipComputopModule::MODULE_ID);
+    }
+
+    public function getPaypalExpressClientID()
+    {
+        $moduleSettingBridge
+            = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $value = $moduleSettingBridge->get('paypalExpressClientID', FatchipComputopModule::MODULE_ID);
+        return $value;
+    }
+
+    /**
+     * @param null $paypalExpressClientID
+     */
+    public function setPaypalExpressClientID($paypalExpressClientID): void
+    {
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $moduleSettingBridge->save('paypalExpressClientID', $paypalExpressClientID, FatchipComputopModule::MODULE_ID);
+    }
+
+    public function getPaypalExpressMerchantID()
+    {
+        $moduleSettingBridge
+            = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $value = $moduleSettingBridge->get('paypalExpressMerchantID', FatchipComputopModule::MODULE_ID);
+        return $value;
+    }
+
+    /**
+     * @param null $paypalExpressMerchantID
+     */
+    public function setPaypalExpressMerchantID($paypalExpressMerchantID): void
+    {
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $moduleSettingBridge->save('paypalExpressMerchantID', $paypalExpressMerchantID, FatchipComputopModule::MODULE_ID);
+    }
+
+    /**
+     * @return null
+     */
     public function getAmazonLiveMode()
     {
         $moduleSettingBridge
@@ -519,6 +590,7 @@ class Config
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('amazonButtonType', $amazonButtonType, FatchipComputopModule::MODULE_ID);
     }
+
     /**
      * @return null
      */
@@ -775,10 +847,10 @@ class Config
         $moduleSettingBridge->save('amazonpayStoreId', $value, FatchipComputopModule::MODULE_ID);
     }
 
-    public function toArray($mergable = false) {
+    public function toArray($mergable = false)
+    {
         $return = [];
-        foreach ( $this as $key => $value )
-        {
+        foreach ($this as $key => $value) {
             $getter = 'get' . ucwords($key);
             if ($mergable) {
                 $return[$key]['current_value'] = $this->$getter();

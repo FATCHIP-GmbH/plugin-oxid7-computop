@@ -242,12 +242,17 @@ class Order extends Order_parent
 
         $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
         $ctOrder = $this->createCTOrder();
+        if($this->fatchipComputopPaymentClass === 'PayPalExpress'){
+            $payment = $this->fatchipComputopPaymentService->getPaymentClass(
+                $this->fatchipComputopPaymentClass
+            );
+        }else{
         $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
             $this->fatchipComputopPaymentClass,
             $this->fatchipComputopConfig,
             $ctOrder
         );
-
+        }
         $payId = $this->getFieldData('fatchip_computop_payid');
         $param = $payment->getInquireParams($payId);
 
@@ -443,7 +448,7 @@ class Order extends Order_parent
     function captureOrder($amount = null)
     {
         $ctOrder = $this->createCTOrder();
-        if ($this->fatchipComputopPaymentClass !== 'PaypalExpress'
+        if ($this->fatchipComputopPaymentClass !== 'PayPalExpress'
             && $this->fatchipComputopPaymentClass !== 'AmazonPay'
         ) {
             $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(

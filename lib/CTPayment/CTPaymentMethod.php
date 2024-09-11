@@ -72,10 +72,7 @@ abstract class CTPaymentMethod extends Encryption
 
     public function __construct()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-
-
-        // $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->config = new Config();
     }
 
     /**
@@ -158,13 +155,6 @@ abstract class CTPaymentMethod extends Encryption
         $len = mb_strlen($request);  // Length of the plain text string
         $data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
 
-        if ($additionFlag) {
-            return [
-                'MerchantID' => $this->merchantID,
-                'Len' => $len,
-                'Data' => $data
-            ];
-        } else {
             $url .=
                 '?MerchantID=' . $this->merchantID .
                 '&Len=' . $len .
@@ -174,12 +164,7 @@ abstract class CTPaymentMethod extends Encryption
                 $url .= '&template=' . $addTemplate;
             }
 
-            return [
-                'url' => base64_encode($url),
-                'len' => $len
-            ];
-
-        }
+            return $url;
     }
 
     /**

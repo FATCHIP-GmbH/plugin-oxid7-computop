@@ -100,7 +100,7 @@ class CTPaymentConfigForms
                         ]],
                     ],
                 'description' => 'Erzeugt eine Log Datei <FatchipCTPayment_.log> mit Debug Ausgaben im Shopware Protokollverzeichnis.<BR>',
-           ],
+            ],
             'encryption' => [
                 'name' => 'encryption',
                 'type' => 'select',
@@ -148,16 +148,16 @@ class CTPaymentConfigForms
                 'required' => false,
                 'editable' => false,
                 'store' =>
-                [
-                    [0, [
-                        'de_DE' => 'inaktiv',
-                        'en_GB' => 'disabled',
-                    ]],
-                    [1, [
-                        'de_DE' => 'aktiv',
-                        'en_GB' => 'enabled',
-                    ]],
-                ],
+                    [
+                        [0, [
+                            'de_DE' => 'inaktiv',
+                            'en_GB' => 'disabled',
+                        ]],
+                        [1, [
+                            'de_DE' => 'aktiv',
+                            'en_GB' => 'enabled',
+                        ]],
+                    ],
             ],
             'creditCardSilentModeBrandsVisa' => [
                 'name' => 'creditCardSilentModeBrandsVisa',
@@ -175,7 +175,7 @@ class CTPaymentConfigForms
                         [1, [
                             'de_DE' => 'aktiv',
                             'en_GB' => 'enabled',
-                       ]],
+                        ]],
                     ],
             ],
             'creditCardSilentModeBrandsMaster' => [
@@ -330,7 +330,7 @@ class CTPaymentConfigForms
                         ['MANUAL', [
                             'de_DE' => 'Manuell',
                             'en_GB' => 'manual',
-                       ]],
+                        ]],
                     ],
                 'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
             ],
@@ -763,4 +763,50 @@ class CTPaymentConfigForms
                 ],
             ],
         ];
+
+    const formPayPalExpressSelectElements =
+        [
+            'paypalExpressCaption' => [
+                'name' => 'paypalExpressCaption',
+                'type' => 'select',
+                'value' => 'AUTO',
+                'label' => 'PaypalExpress - Capture Modus',
+                'required' => false,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['AUTO', [
+                            'de_DE' => 'Automatisch',
+                            'en_GB' => 'automatic',
+                        ]],
+                        ['MANUAL', [
+                            'de_DE' => 'Manuell',
+                            'en_GB' => 'manual',
+                        ]],
+                    ],
+                'description' => '<p>Bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br><b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b></p>',
+            ],
+        ];
+
+    const formPayPalExpressTextElementClientID = [
+        'paypalExpressClientID' => [
+            'name' => 'paypalExpressClientID',
+            'type' => 'text',
+            'value' => '',
+            'label' => 'PaypalExpress - Client-ID',
+            'required' => true,
+            'description' => '<p>PaypalExpress Client-ID.</p>',
+        ]
+    ];
+
+    const formPayPalExpressTextElementMerchantID = [
+        'paypalExpressMerchantID' => [
+            'name' => 'paypalExpressMerchantID',
+            'type' => 'text',
+            'value' => '',
+            'label' => 'PaypalExpress - Merchant-ID',
+            'required' => true,
+            'description' => '<p>PaypalExpress Merchant-ID.</p>',
+        ]
+    ];
 }

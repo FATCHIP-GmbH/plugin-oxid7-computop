@@ -166,14 +166,14 @@ class ViewConfig extends ViewConfig_parent
     public function getPayPalExpressConfig(): array
     {
         /** @var CTPaymentMethods\PaypalExpress $oPaypalExpressPaypment */
-        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PaypalExpress');
+        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
         return $oPaypalExpressPaypment->getPayPalExpressConfig();
     }
 
     public function isPaypalActive(): bool
     {
-        /** @var CTPaymentMethods\PaypalExpress $oPaypalExpressPaypment */
-        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PaypalExpress');
+        /** @var CTPaymentMethods\PayPalExpress $oPaypalExpressPaypment */
+        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
         return $oPaypalExpressPaypment->isActive();
     }
 
