@@ -80,6 +80,10 @@ class Config
 
     protected $paypalExpressClientID = null;
 
+    protected $paypalExpressFunding = null;
+
+    protected $paypalExpressFundingExcluded = null;
+
     protected $paypalExpressMerchantID = null;
 
     protected $amazonpayPrivKey = null;
@@ -517,6 +521,48 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('paypalExpressMerchantID', $paypalExpressMerchantID, FatchipComputopModule::MODULE_ID);
+    }
+
+    public function getPaypalExpressFunding()
+    {
+        $moduleSettingBridge
+            = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $value = $moduleSettingBridge->get('paypalExpressFunding', FatchipComputopModule::MODULE_ID);
+        return $value;
+    }
+
+    /**
+     * @param null $paypalExpressFunding
+     */
+    public function setPaypalExpressFunding($paypalExpressFunding): void
+    {
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $moduleSettingBridge->save('paypalExpressFunding', $paypalExpressFunding, FatchipComputopModule::MODULE_ID);
+    }
+
+    public function getPaypalExpressFundingExcluded()
+    {
+        $moduleSettingBridge
+            = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $value = $moduleSettingBridge->get('paypalExpressFundingExcluded', FatchipComputopModule::MODULE_ID);
+        return $value;
+    }
+
+    /**
+     * @param null $paypalExpressFundingExcluded
+     */
+    public function setPaypalExpressFundingExcluded($paypalExpressFundingExcluded): void
+    {
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $moduleSettingBridge->save('paypalExpressFundingExcluded', $paypalExpressFundingExcluded, FatchipComputopModule::MODULE_ID);
     }
 
     /**

@@ -257,12 +257,17 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             $paymentId = $oOrder->getFieldData('OXPAYMENTTYPE');
             $paymentClass = Constants::getPaymentClassfromId($paymentId);
 
-            $payment = $paymentService->getIframePaymentClass(
-                $paymentClass,
-                $configCT->toArray(),
-                $ctOrder
-            );
-
+            $payment = null;
+            if($paymentClass === 'PayPalExpress'){
+                $payment = $paymentService->getPaymentClass($paymentClass);
+            }else{
+                $payment = $paymentService->getIframePaymentClass(
+                    $paymentClass,
+                    $configCT->toArray(),
+                    $ctOrder
+                );
+            }
+            
             $response = $this->callComputopRefundService($oOrder, $params, $payment);
             $this->handleRefundResponse($oOrder,$response, $amount);
         } catch (Exception $e) {

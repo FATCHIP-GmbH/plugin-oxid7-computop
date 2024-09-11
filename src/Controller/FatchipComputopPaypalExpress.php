@@ -367,7 +367,6 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oOrder->oxorder__oxdelfax = new Field('');
         $oOrder->oxorder__oxdelsal = new Field('');
         $oOrder->oxorder__oxdelstateid = new Field('');
-        $oOrder->oxorder__oxpaid = new Field(date('Y-m-d H:i:s', time()));
         $bOrderSaveState = $oOrder->save();
 
         return $bUserSaveState && $bOrderSaveState;

@@ -809,4 +809,38 @@ class CTPaymentConfigForms
             'description' => '<p>PaypalExpress Merchant-ID.</p>',
         ]
     ];
+
+    const formPayPalExpressSelectElementFunding = [
+        'paypalExpressFunding' => [
+            'name' => 'paypalExpressFunding',
+            'type' => 'select',
+            'value' => 'OFF',
+            'label' => 'PaypalExpress - Funding',
+            'required' => false,
+            'editable' => false,
+            'store' =>
+                [
+                    ['An', [
+                        'de_DE' => 'An',
+                        'en_GB' => 'active',
+                    ]],
+                    ['Aus', [
+                        'de_DE' => 'Aus',
+                        'en_GB' => 'disabled',
+                    ]],
+                ],
+            'description' => '<p>FUNDING</p>',
+        ],
+    ];
+
+    const formPayPalExpressTextElementFundingExcluded = [
+        'paypalExpressFundingExcluded' => [
+            'name' => 'paypalExpressFundingExcluded',
+            'type' => 'text',
+            'value' => 'giropay,sofort,sepa,card',
+            'label' => 'PaypalExpress - Funding Excluded',
+            'required' => true,
+            'description' => '<p>PaypalExpress Funding Excluded Example: giropay,sofort,sepa,card</p>',
+        ]
+    ];
 }

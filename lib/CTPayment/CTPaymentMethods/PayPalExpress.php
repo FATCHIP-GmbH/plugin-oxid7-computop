@@ -213,14 +213,14 @@ class PayPalExpress extends CTPaymentMethod
     public function generateFrontendRequestParams(CTOrder $oOrder)
     {
         $params = [];
-        $params['Capture'] = $this->config->getPaypalExpressCaption() === 'AUTO' ?  'Auto' : 'Manual';
+        $params['Capture'] = $this->config->getPaypalExpressCaption() === 'AUTO' ? 'Auto' : 'Manual';
         $params['Currency'] = $oOrder->getCurrency();
         $params['Amount'] = $this->formatAmount($oOrder->getAmount());
         $params['TransID'] = $oOrder->getTransID();
         $params['ReqId'] = $this->generateRequestId();
         $params['EtiID'] = $this->getEtiID();
 
-        if($this->config->getPaypalExpressCaption() === 'MANUAL'){
+        if ($this->config->getPaypalExpressCaption() === 'MANUAL') {
             $params['TxType'] = 'Auth';
         }
 
@@ -335,6 +335,23 @@ class PayPalExpress extends CTPaymentMethod
         return $sIntent;
     }
 
+    public function isFundingEnabled(): bool
+    {
+        return $this->config->getPaypalExpressFunding() === 'An';
+    }
+
+    public function getFundingActivationString(): ?string
+    {
+        if ($this->isFundingEnabled()) {
+            return 'enable-funding=paylater';
+        } else return '';
+    }
+
+    public function getFundingExcludedString(): ?string
+    {
+        return $this->config->getPaypalExpressFundingExcluded();
+    }
+
     public function getPayPalExpressConfig(): array
     {
         return [
@@ -353,6 +370,11 @@ class PayPalExpress extends CTPaymentMethod
                 'intent' => $this->getIntent(),
                 'clientId' => $this->getPaypalClientId(),
                 'merchantId' => $this->getPaypalMerchantId(),
+                'funding' => [
+                    'active' => $this->isFundingEnabled(),
+                    'activation_string' => $this->getFundingActivationString(),
+                    'excluded' => $this->getFundingExcludedString()
+                ]
             ]
         ];
     }
