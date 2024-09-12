@@ -262,12 +262,20 @@ class PayPalExpress extends CTPaymentMethod
 
     public function getPaypalClientId(): ?string
     {
-        return $this->config->getPaypalExpressClientID();
+        if (!$this->isTestModeActive()) {
+            return $this->config->getPaypalExpressClientID();
+        }
+
+        return 'AUeU8a0ihEF4KCezWdehyi7IbSSrVjr7cis1dKM2jeoX2MZ-bTDwnTQv75_n8ZAbnOJHpFd1Rc6PGO4H';
     }
 
     public function getPaypalMerchantId(): ?string
     {
-        return $this->config->getPaypalExpressMerchantID();
+        if (!$this->isTestModeActive()) {
+            return $this->config->getPaypalExpressMerchantID();
+        }
+
+        return 'KP89GMC7465RA';
     }
 
     public function generateRequestId(): string
@@ -337,7 +345,16 @@ class PayPalExpress extends CTPaymentMethod
 
     public function getPartnerAttributionId()
     {
-        return $this->config->getPaypalExpressPartnerAttributionID();
+        if (!$this->isTestModeActive()) {
+            return $this->config->getPaypalExpressPartnerAttributionID();
+        }
+
+        return 'Computop_PSP_PCP_Test';
+    }
+
+    public function isTestModeActive(): bool
+    {
+        return $this->config->getPaypalExpressTestMode() === 'An';
     }
 
     public function getPayPalExpressConfig(): array

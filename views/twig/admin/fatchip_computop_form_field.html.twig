@@ -4,7 +4,7 @@
     {% set currentBlock = 'general' %}
 {% endif %}
 
-<div class="form-group row mb-3 {% if currentBlock == 'creditcard' %}creditcard-block{% else %}general-block{% endif %}">
+<div id="{{ value.name }}_block" class="form-group row mb-3 {% if currentBlock == 'creditcard' %}creditcard-block{% else %}general-block{% endif %}">
     <div class="col-md-4">
         <label for="{{ value.name }}" class="control-label">{{ value.label|raw }}</label>
         <div class="help-button-container">
@@ -32,3 +32,14 @@
     </div>
 </div>
 
+{% if value.when is defined %}
+<script type="application/javascript">
+    window.addEventListener('load',() => {
+        document.querySelector('#{{ value.name }}').addEventListener('change',function(){
+            handle(this,{{ value.when|json_encode|raw }});
+        });
+
+        handle(document.querySelector('#{{ value.name }}'),{{ value.when|json_encode|raw }});
+    })
+</script>
+{% endif %}

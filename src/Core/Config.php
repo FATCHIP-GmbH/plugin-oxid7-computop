@@ -84,6 +84,8 @@ class Config
 
     protected $paypalExpressPartnerAttributionID = null;
 
+    protected $paypalExpressTestMode = null;
+
     protected $amazonpayPrivKey = null;
 
     protected $amazonpayPubKeyId = null;
@@ -540,6 +542,27 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('paypalExpressPartnerAttributionID', $paypalExpressPartnerAttributionID, FatchipComputopModule::MODULE_ID);
+    }
+
+    public function getPaypalExpressTestMode()
+    {
+        $moduleSettingBridge
+            = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $value = $moduleSettingBridge->get('paypalExpressTestMode', FatchipComputopModule::MODULE_ID);
+        return $value;
+    }
+
+    /**
+     * @param null $paypalExpressTestMode
+     */
+    public function setPaypalExpressTestMode($paypalExpressTestMode): void
+    {
+        $moduleSettingBridge = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingBridgeInterface::class);
+        $moduleSettingBridge->save('paypalExpressTestMode', $paypalExpressTestMode, FatchipComputopModule::MODULE_ID);
     }
 
 

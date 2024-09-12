@@ -1,3 +1,24 @@
+<script type="application/javascript">
+    function handle(element,whenConditions){
+        let currentValue = element.value;
+        if(whenConditions !== null){
+            for(let condition of whenConditions){
+                if(condition.value == currentValue){
+                    if(condition.do.hide !== undefined){
+                        for(let toHideElement of condition.do.hide){
+                            document.getElementById(toHideElement).classList.add('hidden');
+                        }
+                    }
+                    if(condition.do.show !== undefined){
+                        for(let toHideElement of condition.do.show){
+                            document.getElementById(toHideElement).classList.remove('hidden');
+                        }
+                    }
+                }
+            }
+        }
+    }
+</script>
 <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="{{ headingId }}">
         <h4 class="panel-title">

@@ -764,6 +764,52 @@ class CTPaymentConfigForms
             ],
         ];
 
+    const formPayPalExpressSelectElementTestMode =
+        [
+            'paypalExpressTestMode' => [
+                'name' => 'paypalExpressTestMode',
+                'type' => 'select',
+                'value' => 'An',
+                'label' => 'PaypalExpress - Test Modus',
+                'required' => false,
+                'editable' => false,
+                'when' => [
+                    [
+                        'value' => 'An',
+                        'do' => [
+                            'hide' => [
+                                'paypalExpressClientID_block',
+                                'paypalExpressMerchantID_block',
+                                'paypalExpressPartnerAttributionID_block'
+                            ]
+                        ]
+                    ],
+                    [
+                        'value' => 'Aus',
+                        'do' => [
+                            'show' => [
+                                'paypalExpressClientID_block',
+                                'paypalExpressMerchantID_block',
+                                'paypalExpressPartnerAttributionID_block'
+                            ]
+                        ]
+                    ]
+                ],
+                'store' =>
+                    [
+                        ['An', [
+                            'de_DE' => 'An',
+                            'en_GB' => 'active',
+                        ]],
+                        ['Aus', [
+                            'de_DE' => 'Aus',
+                            'en_GB' => 'inactive',
+                        ]],
+                    ],
+                'description' => '<p>Test Mode</p>',
+            ],
+        ];
+
     const formPayPalExpressSelectElements =
         [
             'paypalExpressCaption' => [

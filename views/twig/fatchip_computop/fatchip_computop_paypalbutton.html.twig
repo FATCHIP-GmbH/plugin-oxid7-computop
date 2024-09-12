@@ -17,7 +17,6 @@
                     return fetch('{{ aPaypalConfig.computop.actions.urls.createOrder | raw }}').then(function(res){
                         return res.text();
                     }).then(function (orderData) {
-                        console.log("createOrder: " + orderData);
                         let qData = new URLSearchParams(orderData);
                         payid = qData.get('PayID');
                         return qData.get('orderid');
@@ -42,24 +41,22 @@
                     **/
                 },
                 onCancel: function (data, actions) {
-                    console.log("onCancel: " + data);
                     var rd = "MerchantId=" + mid + "&PayId=" + payid + "&OrderId=" + data.orderID;
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = "https://www.computop-paygate.com/cbPayPal.aspx?rd=" + window.btoa(rd) + "&ua=cancel&token=" + data.orderID;
                     form.style.display = 'none';
                     document.body.appendChild(form);
-                    //form.submit();
+                    form.submit();
                 },
                 onError: function (data, actions) {
-                    console.log("onError: " + data);
                     var rd = "MerchantId=" + mid + "&PayId=" + payid + "&OrderId=" + data.orderID;
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = "https://www.computop-paygate.com/cbPayPal.aspx?rd=" + window.btoa(rd) + "&ua=cancel&token=" + data.orderID;
                     form.style.display = 'none';
                     document.body.appendChild(form);
-                    //form.submit();
+                    form.submit();
                 }
              }).render('#{{ buttonId }}'); // Adjusted to render in the correct container
         }
