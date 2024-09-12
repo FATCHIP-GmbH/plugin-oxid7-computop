@@ -96,6 +96,9 @@ class Constants
             case "fatchip_computop_easycredit":
                 return 'EasyCredit';
 
+            case "fatchip_computop_paypal_express":
+                return 'PayPalExpress';
+
             case "fatchip_computop_ideal":
                 return 'Ideal';
 
