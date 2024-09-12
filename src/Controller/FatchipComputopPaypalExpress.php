@@ -466,8 +466,8 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oBasket->setShipping('oxidstandard');
 
         if (!$oBasket->getProductsCount()) {
-            //TODO: json error frontend
-            die('EMPTY BASKET');
+            Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
+            Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
         }
 
         //load user in case one is logged in
@@ -540,12 +540,12 @@ class FatchipComputopPayPalExpress extends FrontendController
                 if ((int)$aResponse['status_code'] === 200) {
                     die($aResponse['response']);
                 } else {
-                    print_r($aResponse);
-                    //TODO: handle
-                    die('request error');
+                    Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
+                    Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
                 }
             } else {
-                die('ORDER: error');
+                Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
+                Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
             }
 
         } catch (\OxidEsales\Eshop\Core\Exception\OutOfStockException $oEx) {
@@ -559,7 +559,8 @@ class FatchipComputopPayPalExpress extends FrontendController
             Registry::getLogger()->error($oEx->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($oEx);
         }
-        die('END_OF_LINE');
+
+        exit;
     }
 
     /**
