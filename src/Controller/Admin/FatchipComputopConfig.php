@@ -186,7 +186,7 @@ class FatchipComputopConfig extends AdminController
         }
         if ($this->useDaoBridge()) {
             $oModuleConfigurationDaoBridge->save($oModuleConfiguration);
-            $oModuleActivationBridge->activate(Constants::MODULE_ID, $shopId);
+            //$oModuleActivationBridge->activate(Constants::MODULE_ID, $shopId);
         }
     }
 

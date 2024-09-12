@@ -28,6 +28,7 @@ namespace Fatchip\ComputopPayments\Core;
 
 use Exception;
 use OxidEsales\Eshop\Application\Model\Payment;
+use OxidEsales\Eshop\Application\Model\SeoEncoderArticle;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\DbMetaDataHandler;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
@@ -63,9 +64,24 @@ class Events
         self::createFatchipComputopApiLogTable();
         self::createFatchipComputopIdealBankTable();
         self::updateFatchipComputopOrderAttributes();
+        self::addFatchipComputopPayPalExpressSeoHooks();
 
         $dbMetaDataHandler = oxNew(DbMetaDataHandler::class);
         $dbMetaDataHandler->updateViews();
+    }
+
+    protected static function addFatchipComputopPayPalExpressSeoHooks()
+    {
+        $aSeoHooksUrlsListSql = [
+            "INSERT INTO `oxseo` (`OXOBJECTID`, `OXIDENT`, `OXSHOPID`, `OXLANG`, `OXSTDURL`, `OXSEOURL`, `OXTYPE`, `OXFIXED`, `OXEXPIRED`, `OXPARAMS`, `OXTIMESTAMP`) VALUES ('a8593b90adc6ef6af7c070527153c604', '1bc4f3f6a2190fb495d2b558eef4cfb0', '1', '0', 'index.php?cl=fatchip_computop_paypal_express&amp;fnc=notify', 'computop/paypalexpress/notify/', 'static', '0', '0', '', current_timestamp())",
+            "INSERT INTO `oxseo` (`OXOBJECTID`, `OXIDENT`, `OXSHOPID`, `OXLANG`, `OXSTDURL`, `OXSEOURL`, `OXTYPE`, `OXFIXED`, `OXEXPIRED`, `OXPARAMS`, `OXTIMESTAMP`) VALUES ('f55e9978dfb93515132380ae749fe96b', '718de06e3629b409a501e09824371360', '1', '0', 'index.php?cl=fatchip_computop_paypal_express&amp;fnc=failure', 'computop/paypalexpress/failure/', 'static', '0', '0', '', current_timestamp())",
+            "INSERT INTO `oxseo` (`OXOBJECTID`, `OXIDENT`, `OXSHOPID`, `OXLANG`, `OXSTDURL`, `OXSEOURL`, `OXTYPE`, `OXFIXED`, `OXEXPIRED`, `OXPARAMS`, `OXTIMESTAMP`) VALUES ('c2f7f63d3ffd7427bcbdf31198127f8b', 'b4335f47ec152fb0e634a8addf1429b9', '1', '0', 'index.php?cl=fatchip_computop_paypal_express&amp;fnc=success', 'computop/paypalexpress/success/', 'static', '0', '0', '', current_timestamp())"
+        ];
+
+        foreach ($aSeoHooksUrlsListSql as $sSeoHookSql) {
+            DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sSeoHookSql);
+        }
+
     }
 
     /**
@@ -102,7 +118,7 @@ class Events
      */
     protected static function addFatchipComputopPaymentMethods()
     {
-        foreach (CTPaymentMethods::paymentMethods AS $paymentMethod) {
+        foreach (CTPaymentMethods::paymentMethods as $paymentMethod) {
             $descriptions = [];
             $descriptions['de']['title'] = $paymentMethod['description'];
             $descriptions['de']['desc'] = $paymentMethod['description'];
@@ -111,14 +127,17 @@ class Events
             self::createPaymentMethod($paymentMethod['name'], $descriptions);
         }
     }
-    protected static function deactivatePaymentMethod(string $paymentId) {
+
+    protected static function deactivatePaymentMethod(string $paymentId)
+    {
         $payment = oxNew(Payment::class);
         $paymentLoaded = $payment->load($paymentId);
         if ($paymentLoaded) {
-            $payment->assign( ['oxpayments__oxactive' => false]);
+            $payment->assign(['oxpayments__oxactive' => false]);
             $payment->save();
         }
     }
+
     /**
      * @param string[][] $paymentDescription
      *
@@ -185,8 +204,8 @@ class Events
         $object2Payment->assign(
             [
                 'oxpaymentid' => $paymentId,
-                'oxobjectid'  => $deliverySetId,
-                'oxtype'      => 'oxdelset'
+                'oxobjectid' => $deliverySetId,
+                'oxtype' => 'oxdelset'
             ]
         );
         $object2Payment->save();
@@ -271,7 +290,7 @@ class Events
      */
     public static function onDeactivate()
     {
-        foreach (CTPaymentMethods::paymentMethods AS $paymentMethod) {
+        foreach (CTPaymentMethods::paymentMethods as $paymentMethod) {
             self::deactivatePaymentMethod($paymentMethod['name']);
         }
     }
@@ -279,9 +298,9 @@ class Events
     /**
      * Add a column to a database table.
      *
-     * @param string $sTableName  table name
+     * @param string $sTableName table name
      * @param string $sColumnName column name
-     * @param string $sQuery      sql-query to add column to table
+     * @param string $sQuery sql-query to add column to table
      *
      * @return boolean true or false
      */
