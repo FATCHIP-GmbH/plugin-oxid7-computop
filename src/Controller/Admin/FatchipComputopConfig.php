@@ -69,7 +69,7 @@ class FatchipComputopConfig extends AdminController
         $payPalFormFields = CTPaymentConfigForms::formPayPalSelectElements;
         $amazonFormFields = array_merge(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
         $klarnaFormFields = CTPaymentConfigForms::formKlarnaTextElements;
-        $payPalExpressFormFields = array_merge(CTPaymentConfigForms::formPayPalExpressSelectElements,CTPaymentConfigForms::formPayPalExpressTextElementClientID,CTPaymentConfigForms::formPayPalExpressTextElementMerchantID,CTPaymentConfigForms::formPayPalExpressSelectElementFunding,CTPaymentConfigForms::formPayPalExpressTextElementFundingExcluded);
+        $payPalExpressFormFields = array_merge(CTPaymentConfigForms::formPayPalExpressSelectElements,CTPaymentConfigForms::formPayPalExpressTextElementClientID,CTPaymentConfigForms::formPayPalExpressTextElementMerchantID,CTPaymentConfigForms::formPayPalExpressTextElementPartnerAttributionID);
         $mergedFormFields = array_replace_recursive(
             $generalFormFields,
             $creditCardFormFields,

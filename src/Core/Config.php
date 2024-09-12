@@ -80,11 +80,9 @@ class Config
 
     protected $paypalExpressClientID = null;
 
-    protected $paypalExpressFunding = null;
-
-    protected $paypalExpressFundingExcluded = null;
-
     protected $paypalExpressMerchantID = null;
+
+    protected $paypalExpressPartnerAttributionID = null;
 
     protected $amazonpayPrivKey = null;
 
@@ -523,47 +521,27 @@ class Config
         $moduleSettingBridge->save('paypalExpressMerchantID', $paypalExpressMerchantID, FatchipComputopModule::MODULE_ID);
     }
 
-    public function getPaypalExpressFunding()
+    public function getPaypalExpressPartnerAttributionID()
     {
         $moduleSettingBridge
             = ContainerFactory::getInstance()
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('paypalExpressFunding', FatchipComputopModule::MODULE_ID);
+        $value = $moduleSettingBridge->get('paypalExpressPartnerAttributionID', FatchipComputopModule::MODULE_ID);
         return $value;
     }
 
     /**
-     * @param null $paypalExpressFunding
+     * @param null $paypalExpressPartnerAttributionID
      */
-    public function setPaypalExpressFunding($paypalExpressFunding): void
+    public function setPaypalExpressPartnerAttributionID($paypalExpressPartnerAttributionID): void
     {
         $moduleSettingBridge = ContainerFactory::getInstance()
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('paypalExpressFunding', $paypalExpressFunding, FatchipComputopModule::MODULE_ID);
+        $moduleSettingBridge->save('paypalExpressPartnerAttributionID', $paypalExpressPartnerAttributionID, FatchipComputopModule::MODULE_ID);
     }
 
-    public function getPaypalExpressFundingExcluded()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('paypalExpressFundingExcluded', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $paypalExpressFundingExcluded
-     */
-    public function setPaypalExpressFundingExcluded($paypalExpressFundingExcluded): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('paypalExpressFundingExcluded', $paypalExpressFundingExcluded, FatchipComputopModule::MODULE_ID);
-    }
 
     /**
      * @return null

@@ -335,21 +335,9 @@ class PayPalExpress extends CTPaymentMethod
         return $sIntent;
     }
 
-    public function isFundingEnabled(): bool
+    public function getPartnerAttributionId()
     {
-        return $this->config->getPaypalExpressFunding() === 'An';
-    }
-
-    public function getFundingActivationString(): ?string
-    {
-        if ($this->isFundingEnabled()) {
-            return 'enable-funding=paylater';
-        } else return '';
-    }
-
-    public function getFundingExcludedString(): ?string
-    {
-        return $this->config->getPaypalExpressFundingExcluded();
+        return $this->config->getPaypalExpressPartnerAttributionID();
     }
 
     public function getPayPalExpressConfig(): array
@@ -357,6 +345,7 @@ class PayPalExpress extends CTPaymentMethod
         return [
             'computop' => [
                 'merchantId' => $this->getComputopMerchantId(),
+                'partnerAttributionId' => $this->getPartnerAttributionId(),
                 'actions' => [
                     'urls' => [
                         'createOrder' => $this->getCreateOrderActionUrl(),
@@ -369,12 +358,7 @@ class PayPalExpress extends CTPaymentMethod
                 'active' => $this->isActive(),
                 'intent' => $this->getIntent(),
                 'clientId' => $this->getPaypalClientId(),
-                'merchantId' => $this->getPaypalMerchantId(),
-                'funding' => [
-                    'active' => $this->isFundingEnabled(),
-                    'activation_string' => $this->getFundingActivationString(),
-                    'excluded' => $this->getFundingExcludedString()
-                ]
+                'merchantId' => $this->getPaypalMerchantId()
             ]
         ];
     }

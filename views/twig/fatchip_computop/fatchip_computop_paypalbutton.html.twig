@@ -2,7 +2,7 @@
 {% set sCurrency = oViewConf.getLedgerCurrency() %}
 {% set sMerchantId = aPaypalConfig.computop.merchantId %}
 <div class="paypal_button {{ buttonclass }} nonexpress" id="{{ buttonId }}"></div>
-<script type="text/javascript" src="https://www.paypal.com/sdk/js?client-id={{ aPaypalConfig.paypal.clientId }}&merchant-id={{ aPaypalConfig.paypal.merchantId }}&currency={{ sCurrency }}&intent={{ aPaypalConfig.paypal.intent }}{% if aPaypalConfig.paypal.funding.active %}&{{ aPaypalConfig.paypal.funding.activation_string  }}{% if aPaypalConfig.paypal.funding.excluded %}&disable-funding={{ aPaypalConfig.paypal.funding.excluded  }}{% endif %}{% endif %}" data-partner-attribution-id="Computop_PSP_PCP_Test"></script>
+<script type="text/javascript" src="https://www.paypal.com/sdk/js?client-id={{ aPaypalConfig.paypal.clientId }}&merchant-id={{ aPaypalConfig.paypal.merchantId }}&currency={{ sCurrency }}&intent={{ aPaypalConfig.paypal.intent }}&disable-funding=giropay,sofort,sepa,card" data-partner-attribution-id="{{ aPaypalConfig.computop.partnerAttributionId }}"></script>
 
 {% capture assign = "fatchip_computop_script_paypalbutton" %}
     if (typeof {{ buttonId }}_is_rendered === "undefined" || {{ buttonId }}_is_rendered !== true) {
