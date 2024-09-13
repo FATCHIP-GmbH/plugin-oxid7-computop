@@ -340,6 +340,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         if (!$ret) {
             $ret = parent::execute();
         }
+        if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing')) {
+            Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing');
+        }
         return $ret;
     }
 

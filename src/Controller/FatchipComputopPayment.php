@@ -32,6 +32,7 @@ use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Model\IdealIssuers;
 use Fatchip\ComputopPayments\Service\ModuleSettings;
 use OxidEsales\Eshop\Application\Controller\PaymentController;
+use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Payment;
 use OxidEsales\Eshop\Application\Model\PaymentList;
 use OxidEsales\Eshop\Core\Registry;
@@ -54,7 +55,12 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
             $this->unsetSessionVars();
             //   Registry::getSession()->regenerateSessionId();
         }
+        if (Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing')) {
 
+            $this->cleanUpPPEOrder();
+            $this->unsetSessionVars();
+            Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL');
+        }
         Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
         Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
         if (!empty(Registry::getSession()->getVariable('FatchipComputopErrorCode'))) {
@@ -124,7 +130,13 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
         Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
     }
 
-
+    public function cleanUpPPEOrder() {
+        $orderId = Registry::getSession()->getVariable('sess_challenge');
+        $oOrder = oxNew(Order::class);
+        $oOrder->delete($orderId);
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing');
+        Registry::getSession()->initNewSession();
+    }
     /**
      * Returns an array with range of given numbers as pad formatted string
      *

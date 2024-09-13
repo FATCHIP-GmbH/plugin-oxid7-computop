@@ -27,7 +27,9 @@
 
 namespace Fatchip\ComputopPayments\Controller;
 
+use Exception;
 use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -35,11 +37,16 @@ use Fatchip\CTPayment\CTPaymentMethods\PayPalExpress;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
+use OxidEsales\Eshop\Application\Model\Address;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
+use OxidEsales\Eshop\Core\Exception\ArticleInputException;
+use OxidEsales\Eshop\Core\Exception\NoArticleException;
+use OxidEsales\Eshop\Core\Exception\OutOfStockException;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Registry;
+use VIISON\AddressSplitter\AddressSplitter;
 
 class FatchipComputopPayPalExpress extends FrontendController
 {
@@ -171,9 +178,9 @@ class FatchipComputopPayPalExpress extends FrontendController
                 if ($oOrder->load($sOrderId)) {
                     if (!$this->updateUserAndOrderInfo($oResponse, $oOrder)) {
                         //TODO: handle in case it's required
-                    };
+                    }
 
-                  //  $oOrder->oxorder__oxtransstatus = new Field('OK');
+                    //  $oOrder->oxorder__oxtransstatus = new Field('OK');
                     if (!$oOrder->save()) {
                         $aLog['request_details'] = 'NOT ABLE TO CHANGE ORDER STATUS TO OK';
                         Registry::getLogger()->error('paypal_express_success_hook: not able to change associated order\'s status, log dump: ' . print_r($aLog, true));
@@ -182,8 +189,9 @@ class FatchipComputopPayPalExpress extends FrontendController
                     $oApiLog->assign($aLog);
                     $oApiLog->save();
                     //set the sess_challenge is needed for the ThankYouController
-                    \OxidEsales\Eshop\Core\Registry::getSession()->setVariable('sess_challenge', $oOrder->getId());
-                    //redirect to the thankyou page
+                    Registry::getSession()->setVariable('sess_challenge', $oOrder->getId());
+                    Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing', $oResponse->getTransID());
+                    //redirect to the order page
                     Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=order');
                 } else {
                     $aLog['request_details'] = 'NOT ABL TO LOAD ASSOCIATED ORDER ' . $sOrderId;
@@ -300,7 +308,7 @@ class FatchipComputopPayPalExpress extends FrontendController
      * @param CTResponse $oResponse
      * @param Order $oOrder
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     protected function updateUserAndOrderInfo(CTResponse $oResponse, Order &$oOrder): bool
     {
@@ -313,15 +321,21 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oCountry = oxNew(Country::class);
         $code = $oResponse->getAddrCountryCode();
         $sCountryId = $oCountry->getIdByCode($oResponse->getAddrCountryCode());
+        if (empty($oResponse->getAddrStreetNr())) {
+            $address =  $oResponse->getAddrStreet();
+            $streetNr = $this->extractStreetNr($address);
+            $oResponse->setAddrStreetNr($streetNr);
 
+        }
         //this condition if true indicate the user has been tmp created during the PaypalExpress createOrder action
         if ($this->stringStartWith($oUser->oxuser__oxusername->value, 'PAYPAL_TMP_USER')) {
             $sResponseEmailId = $oUser->getIdByUserName($oResponse->getEMail());
             if (!empty($sResponseEmailId)) {
                 $oOrder->oxorder__oxuserid = new Field($sResponseEmailId);
+                $oUser->delete();
                 $oUser->load($sResponseEmailId);
-            }
-                $oUser->assign([
+            } else {
+                $billAddress = [
                     'oxuser__oxusername' => $oResponse->getEMail(),
                     'oxuser__oxfname' => $oResponse->getFirstName(),
                     'oxuser__oxlname' => $oResponse->getLastName(),
@@ -330,10 +344,28 @@ class FatchipComputopPayPalExpress extends FrontendController
                     'oxuser__oxcity' => $oResponse->getAddrCity(),
                     'oxuser__oxcountryid' => $sCountryId,
                     'oxuser__oxzip' => $oResponse->getAddrZIP(),
-                    ]
-                );
+                ];
+                $oUser->assign($billAddress);
+            }
         }
-
+        $delAdressPayPal = [
+            'oxaddress__oxaddressuserid' => $oUser->getId(),
+            'oxaddress__oxcompany' => '',
+            'oxaddress__oxfname' => $oResponse->getFirstName(),
+            'oxaddress__oxlname' => $oResponse->getLastName(),
+            'oxaddress__oxstreet' => $oResponse->getAddrStreet(),
+            'oxaddress__oxstreetnr' =>  $oResponse->getAddrStreetNr(),
+            'oxaddress__oxcity' => $oResponse->getAddrCity(),
+            'oxaddress__oxcountryid' => $sCountryId,
+            'oxaddress__oxzip' => $oResponse->getAddrZIP(),
+        ];
+        $oAddress = oxNew(Address::class);
+        $oAddress->setUser($oUser);
+        $oAddress->assign($delAdressPayPal);
+        $addressId = $oAddress->save();
+        $oUser->setSelectedAddressId($addressId);
+        Registry::getSession()->setVariable('deladrid',$addressId);
+        Registry::getSession()->setVariable('blshowshipaddress','1');
         $bUserSaveState = $oUser->save();
 
         $oOrder->oxorder__fatchip_computop_xid = new Field($oResponse->getXID());
@@ -376,17 +408,16 @@ class FatchipComputopPayPalExpress extends FrontendController
         Registry::getSession()->setUser($oUser);
         $oUser->login($oResponse->getEMail(),'',true);
 
-        if(isset($this->fatchipComputopConfig['paypalExpressCaption'])){
-            if($this->fatchipComputopConfig['paypalExpressCaption'] === 'AUTO'){
-                $oOrder->oxorder__oxpaid = new Field(date('Y-m-d H:i:s',time()));
-            }
-        }
-
         $bOrderSaveState = $oOrder->save();
 
         return $bUserSaveState && $bOrderSaveState;
     }
+    protected function extractStreetNr($address) {
+            // Regex für eine Hausnummer (Zahlen + optionaler Buchstabe oder Zeichen)
+            preg_match('/(\d+[\s]*[a-zA-Z]?)$/', $address, $matches);
+        return $matches[1] ?? null;
 
+    }
     protected function stringStartWith($haystack, $needle): bool
     {
         return strncmp($haystack, $needle, strlen($needle)) === 0;
@@ -454,7 +485,7 @@ class FatchipComputopPayPalExpress extends FrontendController
      * Create PaypalExpress order
      * @ref fatchip_computop_paypalbutton.html.twig[createOrder]
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function createOrder()
     {
@@ -558,14 +589,14 @@ class FatchipComputopPayPalExpress extends FrontendController
                 Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
             }
 
-        } catch (\OxidEsales\Eshop\Core\Exception\OutOfStockException $oEx) {
+        } catch (OutOfStockException $oEx) {
             Registry::getLogger()->error($oEx->getMessage());
             $oEx->setDestination('basket');
             Registry::getUtilsView()->addErrorToDisplay($oEx, false, true, 'basket');
-        } catch (\OxidEsales\Eshop\Core\Exception\NoArticleException $oEx) {
+        } catch (NoArticleException $oEx) {
             Registry::getLogger()->error($oEx->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($oEx);
-        } catch (\OxidEsales\Eshop\Core\Exception\ArticleInputException $oEx) {
+        } catch (ArticleInputException $oEx) {
             Registry::getLogger()->error($oEx->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($oEx);
         }
@@ -576,7 +607,7 @@ class FatchipComputopPayPalExpress extends FrontendController
     /**
      * Handle onApprove action
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function onApprove()
     {
