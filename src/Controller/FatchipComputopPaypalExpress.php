@@ -173,7 +173,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                         //TODO: handle in case it's required
                     };
 
-                    $oOrder->oxorder__oxtransstatus = new Field('OK');
+                  //  $oOrder->oxorder__oxtransstatus = new Field('OK');
                     if (!$oOrder->save()) {
                         $aLog['request_details'] = 'NOT ABLE TO CHANGE ORDER STATUS TO OK';
                         Registry::getLogger()->error('paypal_express_success_hook: not able to change associated order\'s status, log dump: ' . print_r($aLog, true));
@@ -184,7 +184,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                     //set the sess_challenge is needed for the ThankYouController
                     \OxidEsales\Eshop\Core\Registry::getSession()->setVariable('sess_challenge', $oOrder->getId());
                     //redirect to the thankyou page
-                    Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=thankyou');
+                    Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=order');
                 } else {
                     $aLog['request_details'] = 'NOT ABL TO LOAD ASSOCIATED ORDER ' . $sOrderId;
                     Registry::getLogger()->error('paypal_express_success_hook: not able to load associated order, log dump: ' . print_r($aLog, true));
@@ -309,8 +309,9 @@ class FatchipComputopPayPalExpress extends FrontendController
         if (!$oUser->load($oOrder->oxorder__oxuserid->value)) {
             $blOrderUserFound = false;
         }
-
+        $orderUser = $oOrder->getUser();
         $oCountry = oxNew(Country::class);
+        $code = $oResponse->getAddrCountryCode();
         $sCountryId = $oCountry->getIdByCode($oResponse->getAddrCountryCode());
 
         //this condition if true indicate the user has been tmp created during the PaypalExpress createOrder action
@@ -318,18 +319,19 @@ class FatchipComputopPayPalExpress extends FrontendController
             $sResponseEmailId = $oUser->getIdByUserName($oResponse->getEMail());
             if (!empty($sResponseEmailId)) {
                 $oOrder->oxorder__oxuserid = new Field($sResponseEmailId);
-            } else {
-                $oUser->oxuser__oxusername = new Field($oResponse->getEMail());
-                //update user's infos
-                $oUser->oxuser__oxfname = new Field($oResponse->getFirstName());
-                $oUser->oxuser__oxlname = new Field($oResponse->getLastName());
-                $oUser->oxuser__oxstreet = new Field($oResponse->getAddrStreet());
-                $oUser->oxuser__oxstreetnr = new Field($oResponse->getAddrStreetNr());
-                $oUser->oxuser__oxcity = new Field($oResponse->getAddrCity());
-                $oUser->oxuser__oxcountryid = new Field($sCountryId);
-                $oUser->oxuser__oxzip = new Field($oResponse->getAddrZIP());
+                $oUser->load($sResponseEmailId);
             }
-
+                $oUser->assign([
+                    'oxuser__oxusername' => $oResponse->getEMail(),
+                    'oxuser__oxfname' => $oResponse->getFirstName(),
+                    'oxuser__oxlname' => $oResponse->getLastName(),
+                    'oxuser__oxstreet' => $oResponse->getAddrStreet(),
+                    'oxuser__oxstreetnr' => $oResponse->getAddrStreetNr(),
+                    'oxuser__oxcity' => $oResponse->getAddrCity(),
+                    'oxuser__oxcountryid' => $sCountryId,
+                    'oxuser__oxzip' => $oResponse->getAddrZIP(),
+                    ]
+                );
         }
 
         $bUserSaveState = $oUser->save();
@@ -367,6 +369,12 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oOrder->oxorder__oxdelfax = new Field('');
         $oOrder->oxorder__oxdelsal = new Field('');
         $oOrder->oxorder__oxdelstateid = new Field('');
+        $paymentType = $oOrder->getPaymentType();
+        $basket = Registry::getSession()->getBasket();
+        $basket->setUser($oUser);
+        $basket->setPayment($paymentType->getId());
+        Registry::getSession()->setUser($oUser);
+        $oUser->login($oResponse->getEMail(),'',true);
 
         if(isset($this->fatchipComputopConfig['paypalExpressCaption'])){
             if($this->fatchipComputopConfig['paypalExpressCaption'] === 'AUTO'){
@@ -480,16 +488,18 @@ class FatchipComputopPayPalExpress extends FrontendController
             $oUser->oxuser__oxstreetnr = new Field('PAYPAL_TMP');
             $oUser->oxuser__oxzip = new Field('PAYPAL_TMP');
             $oUser->oxuser__oxcity = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxcountryid = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxcompany = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxaddinfo = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxustid = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxstateid = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxfon = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxfax = new Field('PAYPAL_TMP');
-            $oUser->oxuser__oxsal = new Field('PAYPAL_TMP');
+            $oUser->oxuser__oxcountryid = new Field('a7c40f631fc920687.20179984');
+            $oUser->oxuser__oxcompany = new Field(' ');
+            $oUser->oxuser__oxaddinfo = new Field(' ');
+            $oUser->oxuser__oxustid = new Field(' ');
+            $oUser->oxuser__oxstateid = new Field(' ');
+            $oUser->oxuser__oxfon = new Field(' ');
+            $oUser->oxuser__oxfax = new Field(' ');
+            $oUser->oxuser__oxsal = new Field(' ');
             $oUser->save();
             $oBasket->setUser($oUser);
+            Registry::getSession()->setUser($oUser);
+            $oOrder->setUser($oUser);
         }
 
         try {
