@@ -770,7 +770,7 @@ class CTPaymentConfigForms
                 'name' => 'paypalExpressTestMode',
                 'type' => 'select',
                 'value' => 'An',
-                'label' => 'PaypalExpress - Test Modus',
+                'label' => 'PayPal Express - Test Modus',
                 'required' => false,
                 'editable' => false,
                 'when' => [
@@ -816,7 +816,7 @@ class CTPaymentConfigForms
                 'name' => 'paypalExpressCaption',
                 'type' => 'select',
                 'value' => 'AUTO',
-                'label' => 'PaypalExpress - Capture Modus',
+                'label' => 'PayPal Express - Capture Modus',
                 'required' => false,
                 'editable' => false,
                 'store' =>
@@ -839,7 +839,7 @@ class CTPaymentConfigForms
             'name' => 'paypalExpressClientID',
             'type' => 'text',
             'value' => '',
-            'label' => 'PaypalExpress - Client-ID',
+            'label' => 'PayPal Express - Client-ID',
             'required' => true,
             'description' => '<p>PaypalExpress Client-ID.</p>',
         ]
@@ -850,7 +850,7 @@ class CTPaymentConfigForms
             'name' => 'paypalExpressMerchantID',
             'type' => 'text',
             'value' => '',
-            'label' => 'PaypalExpress - Merchant-ID',
+            'label' => 'PayPal Express - Merchant-ID',
             'required' => true,
             'description' => '<p>PaypalExpress Merchant-ID.</p>',
         ]
