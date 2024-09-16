@@ -30,3 +30,30 @@
         {{  parent() }}
     {% endif %}
 {% endblock %}
+{% block checkout_order_billing_address_button %}
+    {% set payment = oView.getPayment() %}
+    {% if payment.oxpayments__oxid.value != 'fatchip_computop_paypal_express'  %}
+        {{  parent() }}
+    {% endif %}
+{% endblock %}
+{% block checkout_order_shipping_address_button %}
+    {% set payment = oView.getPayment() %}
+    {% if payment.oxpayments__oxid.value != 'fatchip_computop_paypal_express'  %}
+        {{  parent() }}
+    {% endif %}
+{% endblock %}
+{% block checkout_order_shipping_carrier_button %}
+    {% set payment = oView.getPayment() %}
+    {% if payment.oxpayments__oxid.value != 'fatchip_computop_paypal_express'  %}
+        {{  parent() }}
+    {% endif %}
+{% endblock %}
+{% block checkout_order_payment_method_button %}
+    {% set payment = oView.getPayment() %}
+    {% if payment.oxpayments__oxid.value != 'fatchip_computop_paypal_express'  %}
+        {{  parent() }}
+    {% endif %}
+{% endblock %}
+
+
+
