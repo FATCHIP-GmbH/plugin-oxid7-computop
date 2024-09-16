@@ -334,7 +334,6 @@ class FatchipComputopPayPalExpress extends FrontendController
             $sResponseEmailId = $oUser->getIdByUserName($oResponse->getEMail());
             if (!empty($sResponseEmailId)) {
                 $oOrder->oxorder__oxuserid = new Field($sResponseEmailId);
-                $oUser->delete();
                 $oUser->load($sResponseEmailId);
             } else {
                 $notApplicableFields = [
@@ -523,9 +522,10 @@ class FatchipComputopPayPalExpress extends FrontendController
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
             Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
         }
-
+        $isLoaded = $oUser->loadActiveUser();
         //load user in case one is logged in
-        if (!$oUser->loadActiveUser()) {
+        $test = Registry::getSession()->getUser();
+        if (!$isLoaded) {
             //create a temp user [paypal_guest]
             $oUser->oxuser__oxusername = new Field('PAYPAL_TMP_USER_' . $oSession->getId());
             $oUser->oxuser__oxfname = new Field('PAYPAL_TMP');
@@ -550,6 +550,10 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         try {
             $encodedDeliveryAdress = $oUser->getEncodedDeliveryAddress();
+            $oDeliveryAddress = $oOrder->getDelAddressInfo();
+            if ($oDeliveryAddress) {
+                $encodedDeliveryAdress .= $oDeliveryAddress->getEncodedDeliveryAddress();
+            }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
             //TODO: account for the possible error states
