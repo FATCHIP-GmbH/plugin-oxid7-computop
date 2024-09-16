@@ -42,6 +42,7 @@ use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Model\Basket;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\PaymentGateway;
+use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Price;
 use OxidEsales\Eshop\Core\Registry;
@@ -323,6 +324,9 @@ class Order extends Order_parent
             case 'fatchip_computop_creditcard':
                 $autoCaptureConfigKey = 'creditCardCaption';
                 break;
+            case 'fatchip_computop_paypal_express':
+                    $autoCaptureConfigKey = 'paypalExpressCaption';
+                    break;
             default:
                 break;
         }
@@ -1161,4 +1165,19 @@ class Order extends Order_parent
             return;
         }else return parent::validateDelivery($oBasket);
     }
+
+    public function loadByTransId(string $transID) : bool
+    {
+        $aResult = DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)
+            ->select('SELECT `OXID` FROM `oxorder` WHERE `fatchip_computop_transid` = :transID',[
+                'transID' => $transID
+            ])->fetchAll();
+
+        if(empty($aResult)){
+            return false;
+        }else{
+            return $this->load($aResult[0]['OXID']);
+        }
+    }
+
 }

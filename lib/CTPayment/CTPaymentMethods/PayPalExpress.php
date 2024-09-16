@@ -213,16 +213,13 @@ class PayPalExpress extends CTPaymentMethod
     public function generateFrontendRequestParams(CTOrder $oOrder)
     {
         $params = [];
-        $params['Capture'] = $this->config->getPaypalExpressCaption() === 'AUTO' ? 'Auto' : 'Manual';
+        $params['Capture'] = 'Manual';//$this->config->getPaypalExpressCaption() === 'AUTO' ? 'Auto' : 'Manual';
         $params['Currency'] = $oOrder->getCurrency();
         $params['Amount'] = $this->formatAmount($oOrder->getAmount());
         $params['TransID'] = $oOrder->getTransID();
         $params['ReqId'] = $this->generateRequestId();
         $params['EtiID'] = $this->getEtiID();
-
-        if ($this->config->getPaypalExpressCaption() === 'MANUAL') {
-            $params['TxType'] = 'Auth';
-        }
+        $params['TxType'] = 'Auth';
 
         /**
          * Referenznummer des Händlers: hier kann eine separate Referenznummer übertragen werden, z.B. eine Rechnungsnummer
@@ -304,6 +301,18 @@ class PayPalExpress extends CTPaymentMethod
         return Registry::getConfig()->getShopUrl() . 'index.php?cl=fatchip_computop_paypal_express&fnc=onCancel';
     }
 
+    public function getIntent(): string
+    {
+        return 'authorize';
+        //$sIntent = 'capture';
+        //$sCaption = $this->config->getPaypalExpressCaption();
+        //if ($sCaption === 'MANUAL') {
+        //    $sIntent = 'authorize';
+        //}
+        //return $sIntent;
+    }
+
+
     public function isActive(): bool
     {
         $oBasket = Registry::getSession()->getBasket();
@@ -330,17 +339,6 @@ class PayPalExpress extends CTPaymentMethod
         }
 
         return false;
-    }
-
-
-    public function getIntent(): string
-    {
-        $sIntent = 'capture';
-        $sCaption = $this->config->getPaypalExpressCaption();
-        if ($sCaption === 'MANUAL') {
-            $sIntent = 'authorize';
-        }
-        return $sIntent;
     }
 
     public function getPartnerAttributionId()

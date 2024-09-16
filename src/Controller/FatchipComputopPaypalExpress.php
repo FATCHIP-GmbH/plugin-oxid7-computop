@@ -167,15 +167,17 @@ class FatchipComputopPayPalExpress extends FrontendController
                 'Data' => $sData,
             ]);
 
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$oResponse);
+
             $aResponseLog['raw'] = $oResponse->toArray();
             $aLog['trans_id'] = $oResponse->getTransID();
             $aLog['pay_id'] = $oResponse->getPayID();
             $aLog['response_details'] = json_encode($aResponseLog);
 
             if ($oResponse->getStatus() === 'OK') {
-                $sOrderId = $oResponse->getTransID();
+                $sOrderTransId = $oResponse->getTransID();
                 $oOrder = oxNew(Order::class);
-                if ($oOrder->load($sOrderId)) {
+                if ($oOrder->loadByTransId($sOrderTransId)) {
                     if (!$this->updateUserAndOrderInfo($oResponse, $oOrder)) {
                         //TODO: handle in case it's required
                     }
@@ -194,7 +196,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                     //redirect to the order page
                     Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=order');
                 } else {
-                    $aLog['request_details'] = 'NOT ABL TO LOAD ASSOCIATED ORDER ' . $sOrderId;
+                    $aLog['request_details'] = 'NOT ABL TO LOAD ASSOCIATED ORDER ' . $sOrderTransId;
                     Registry::getLogger()->error('paypal_express_success_hook: not able to load associated order, log dump: ' . print_r($aLog, true));
                 }
             } else {
@@ -335,6 +337,16 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $oUser->delete();
                 $oUser->load($sResponseEmailId);
             } else {
+                $notApplicableFields = [
+                    'oxuser__oxustid'  => '',
+                    'oxuser__oxcompany' => '',
+                    'oxuser__oxaddinfo' => '',
+                    'oxuser__oxstateid' => '',
+                    'oxuser__oxaddinfo' => '',
+                    'oxuser__oxfon' => '',
+                    'oxuser__oxfax' => '',
+                    'oxuser__oxsal' => ''
+                ];
                 $billAddress = [
                     'oxuser__oxusername' => $oResponse->getEMail(),
                     'oxuser__oxfname' => $oResponse->getFirstName(),
@@ -345,7 +357,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                     'oxuser__oxcountryid' => $sCountryId,
                     'oxuser__oxzip' => $oResponse->getAddrZIP(),
                 ];
-                $oUser->assign($billAddress);
+                $oUser->assign(array_merge($notApplicableFields,$billAddress));
             }
         }
         $delAdressPayPal = [
@@ -492,10 +504,12 @@ class FatchipComputopPayPalExpress extends FrontendController
     {
         /** @var PaypalExpress $oPaypalExpressPaypment */
         $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
+        $sTransId = $oPaypalExpressPaypment::generateTransID(12);
         $oApiLog = oxNew(ApiLog::class);
         $aLog = [
             'payment_name' => $oPaypalExpressPaypment::paymentClass,
-            'creation_date' => date('Y-m-d H:i:s', time())
+            'creation_date' => date('Y-m-d H:i:s', time()),
+            'trans_id' => $sTransId
         ];
         $oOrder = oxNew(Order::class);
         $oUser = oxNew(User::class);
@@ -550,8 +564,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $oCTOrder = new CTOrder();
                 $oCTOrder->setAmount($oBasket->getPrice()->getBruttoPrice());
                 $oCTOrder->setCurrency($oBasket->getBasketCurrency()->name);
-                $oCTOrder->setTransID($oOrder->getId());
-                $aLog['trans_id'] = $oCTOrder->getTransID();
+                $oCTOrder->setTransID($sTransId);
                 //$oCTOrder->setPayId($oOrder->oxorder__oxpaymentid->value);
                 //$aLog['pay_id'] = $oCTOrder->getPayId();
 

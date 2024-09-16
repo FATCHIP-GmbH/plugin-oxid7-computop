@@ -334,6 +334,26 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     }
                 }
             }
+        }else{
+            if($paymentId === 'fatchip_computop_paypal_express'){
+                $ret = parent::execute();
+                // if order is validated and finalized complete Order on thankyou
+                if ($ret === 'thankyou' || $ret === 'thankyou?mailerror=1') {
+                    /** @var CTResponse $oResponse */
+                    $oResponse = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+                    if ($oResponse) {
+                        $oOrder = oxNew(Order::class);
+                        if($oOrder->loadByTransID($oResponse->getTransID())){
+                            $oOrder->customizeOrdernumber($oResponse);
+                            $oOrder->updateOrderAttributes($oResponse);
+                            $oOrder->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+                            $this->updateRefNrWithComputop($oOrder);
+                            $oOrder->autocapture($oOrder->getUser(), false);
+                        }
+                    }
+                }
+            }
+
         }
 
         // in all other cases return parent
@@ -1093,7 +1113,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $paymentClass = $this->fatchipComputopPaymentClass;
         }
         $ctOrder = $this->createCTOrder();
-        if ($paymentClass !== 'PaypalExpress'
+        if ($paymentClass !== 'PayPalExpress'
             && $paymentClass !== 'AmazonPay'
         ) {
             $payment = $this->fatchipComputopPaymentService->getIframePaymentClass($paymentClass, $this->fatchipComputopConfig, $ctOrder);

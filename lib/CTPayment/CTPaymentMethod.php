@@ -399,4 +399,25 @@ abstract class CTPaymentMethod extends Encryption
     {
         return number_format($amount * 100, 0, '.', '');
     }
+
+    /**
+     * Generate random transaction id
+     */
+    public static function generateTransID($digitCount = 12)
+    {
+        mt_srand((double)microtime() * 1000000);
+
+        $transID = (string)mt_rand();
+        // y: 2 digits for year
+        // m: 2 digits for month
+        // d: 2 digits for day of month
+        // H: 2 digits for hour
+        // i: 2 digits for minute
+        // s: 2 digits for second
+        $transID .= date('ymdHis');
+        // $transID = md5($transID);
+        $transID = substr($transID, 0, $digitCount);
+
+        return $transID;
+    }
 }
