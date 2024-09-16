@@ -402,9 +402,10 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oOrder->oxorder__oxdelsal = new Field('');
         $oOrder->oxorder__oxdelstateid = new Field('');
         $paymentType = $oOrder->getPaymentType();
+
         $basket = Registry::getSession()->getBasket();
         $basket->setUser($oUser);
-        $basket->setPayment($paymentType->getId());
+        $basket->setPayment($paymentType->getFieldData("oxuserpayments__oxpaymentsid"));
         Registry::getSession()->setUser($oUser);
         $oUser->login($oResponse->getEMail(),'',true);
 
