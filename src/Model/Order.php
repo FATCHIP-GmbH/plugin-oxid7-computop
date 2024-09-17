@@ -239,7 +239,7 @@ class Order extends Order_parent
         $capturedAmount = $this->getFieldData('fatchip_computop_amount_captured');
 
         if ($capturedAmount > 0.0) {
-            return oxNew(Price::class, $capturedAmount / 100)->getPrice();
+            return number_format($capturedAmount / 100, 2, '.', '');
         }
 
         $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));

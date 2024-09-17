@@ -12,7 +12,6 @@
     {{ parent() }}
     {% block checkout_order_computop_fatchip_additional_information %}
         {% set payment = oView.getPayment() %}
-        {{ payment.oxpayments__oxid.value }}
         {% if payment.oxpayments__oxid.value == 'fatchip_computop_easycredit'  %}
             {% include "@fatchip_computop_payments/fatchip_computop/checkout_order_easycredit"%}
         {% endif %}
