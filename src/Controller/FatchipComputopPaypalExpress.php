@@ -348,8 +348,8 @@ class FatchipComputopPayPalExpress extends FrontendController
                 ];
                 $billAddress = [
                     'oxuser__oxusername' => $oResponse->getEMail(),
-                    'oxuser__oxfname' => $oResponse->getFirstName(),
-                    'oxuser__oxlname' => $oResponse->getLastName(),
+                    'oxuser__oxfname' => $this->getFirstName($oResponse),
+                    'oxuser__oxlname' => $this->getLastName($oResponse),
                     'oxuser__oxstreet' => $oResponse->getAddrStreet(),
                     'oxuser__oxstreetnr' => $oResponse->getAddrStreetNr(),
                     'oxuser__oxcity' => $oResponse->getAddrCity(),
@@ -362,8 +362,8 @@ class FatchipComputopPayPalExpress extends FrontendController
         $delAdressPayPal = [
             'oxaddress__oxaddressuserid' => $oUser->getId(),
             'oxaddress__oxcompany' => '',
-            'oxaddress__oxfname' => $oResponse->getFirstName(),
-            'oxaddress__oxlname' => $oResponse->getLastName(),
+            'oxaddress__oxfname' => $this->getFirstName($oResponse),
+            'oxaddress__oxlname' => $this->getLastName($oResponse),
             'oxaddress__oxstreet' => $oResponse->getAddrStreet(),
             'oxaddress__oxstreetnr' =>  $oResponse->getAddrStreetNr(),
             'oxaddress__oxcity' => $oResponse->getAddrCity(),
@@ -383,8 +383,8 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         // update order's bill info
         $oOrder->oxorder__oxbillemail = new Field($oResponse->getEMail());
-        $oOrder->oxorder__oxbillfname = new Field($oResponse->getFirstName());
-        $oOrder->oxorder__oxbilllname = new Field($oResponse->getLastName());
+        $oOrder->oxorder__oxbillfname = new Field($this->getFirstName($oResponse));
+        $oOrder->oxorder__oxbilllname = new Field($this->getLastName($oResponse));
         $oOrder->oxorder__oxbillstreet = new Field($oResponse->getAddrStreet());
         $oOrder->oxorder__oxbillstreetnr = new Field($oResponse->getAddrStreetNr());
         $oOrder->oxorder__oxbillcity = new Field($oResponse->getAddrCity());
@@ -399,8 +399,8 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oOrder->oxorder__oxbillstateid = new Field('');
         // update order's delivery info
         $oOrder->oxorder__oxdelemail = new Field($oResponse->getEMail());
-        $oOrder->oxorder__oxdelfname = new Field($oResponse->getFirstName());
-        $oOrder->oxorder__oxdellname = new Field($oResponse->getLastName());
+        $oOrder->oxorder__oxdelfname = new Field($this->getFirstName($oResponse));
+        $oOrder->oxorder__oxdellname = new Field($this->getLastName($oResponse));
         $oOrder->oxorder__oxdelstreet = new Field($oResponse->getAddrStreet());
         $oOrder->oxorder__oxdelstreetnr = new Field($oResponse->getAddrStreetNr());
         $oOrder->oxorder__oxdelcity = new Field($oResponse->getAddrCity());
@@ -424,12 +424,29 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         return $bUserSaveState && $bOrderSaveState;
     }
-    protected function extractStreetNr($address) {
-            // Regex für eine Hausnummer (Zahlen + optionaler Buchstabe oder Zeichen)
-            preg_match('/(\d+[\s]*[a-zA-Z]?)$/', $address, $matches);
+
+    protected function getFirstName(CTResponse $oResponse): string
+    {
+        if (!empty($oResponse->getName)) {
+            return implode(' ', array_slice(explode(' ', (string)$oResponse->getName()), 0, -1));
+        } else return '';
+    }
+
+    protected function getLastName(CTResponse $oResponse): string
+    {
+        if (!empty($oResponse->getName)) {
+            return array_slice(explode(' ', (string)$oResponse->getName()), -1)[0];
+        } else return '';
+    }
+
+    protected function extractStreetNr($address)
+    {
+        // Regex für eine Hausnummer (Zahlen + optionaler Buchstabe oder Zeichen)
+        preg_match('/(\d+[\s]*[a-zA-Z]?)$/', $address, $matches);
         return $matches[1] ?? null;
 
     }
+
     protected function stringStartWith($haystack, $needle): bool
     {
         return strncmp($haystack, $needle, strlen($needle)) === 0;
