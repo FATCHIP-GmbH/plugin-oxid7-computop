@@ -383,8 +383,8 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         // update order's bill info
         $oOrder->oxorder__oxbillemail = new Field($oResponse->getEMail());
-        $oOrder->oxorder__oxbillfname = new Field($this->getFirstName($oResponse));
-        $oOrder->oxorder__oxbilllname = new Field($this->getLastName($oResponse));
+        $oOrder->oxorder__oxbillfname = new Field($oResponse->getFirstName());
+        $oOrder->oxorder__oxbilllname = new Field($oResponse->getLastName());
         $oOrder->oxorder__oxbillstreet = new Field($oResponse->getAddrStreet());
         $oOrder->oxorder__oxbillstreetnr = new Field($oResponse->getAddrStreetNr());
         $oOrder->oxorder__oxbillcity = new Field($oResponse->getAddrCity());
