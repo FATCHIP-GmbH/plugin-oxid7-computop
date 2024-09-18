@@ -326,8 +326,14 @@ class FatchipComputopPayPalExpress extends FrontendController
         if (empty($oResponse->getAddrStreetNr())) {
             $address =  $oResponse->getAddrStreet();
             $streetNr = $this->extractStreetNr($address);
+                // Entfernt alle Zahlen und eventuelle Leerzeichen am Ende des Strings
+            $street =  preg_replace('/\s*\d+.*$/', '', $address);
+            $oResponse->setAddrStreet($street);
             $oResponse->setAddrStreetNr($streetNr);
-
+        }
+        if ($oResponse->getAddrStreetNr()) {
+            $street =  preg_replace('/\s*\d+.*$/', '', $address);
+            $oResponse->setAddrStreet($street);
         }
         //this condition if true indicate the user has been tmp created during the PaypalExpress createOrder action
         if ($this->stringStartWith($oUser->oxuser__oxusername->value, 'PAYPAL_TMP_USER')) {
