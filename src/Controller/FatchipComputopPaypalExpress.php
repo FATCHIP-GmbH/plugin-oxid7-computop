@@ -335,11 +335,9 @@ class FatchipComputopPayPalExpress extends FrontendController
         //this condition if true indicate the user has been tmp created during the PaypalExpress createOrder action
         if ($this->stringStartWith($oUser->oxuser__oxusername->value, 'PAYPAL_TMP_USER')) {
             $sResponseEmailId = $oUser->getIdByUserName($oResponse->getEMail());
-            if (!empty($sResponseEmailId)) {
                 $oOrder->oxorder__oxuserid = new Field($sResponseEmailId);
                 $oUser->delete();
                 $oUser->load($sResponseEmailId);
-            } else {
                 $notApplicableFields = [
                     'oxuser__oxustid'  => '',
                     'oxuser__oxcompany' => '',
@@ -361,7 +359,6 @@ class FatchipComputopPayPalExpress extends FrontendController
                     'oxuser__oxzip' => $oResponse->getAddrZIP(),
                 ];
                 $oUser->assign(array_merge($notApplicableFields,$billAddress));
-            }
         }
         $delAdressPayPal = [
             'oxaddress__oxaddressuserid' => $oUser->getId(),
