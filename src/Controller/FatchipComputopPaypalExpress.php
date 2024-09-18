@@ -348,8 +348,8 @@ class FatchipComputopPayPalExpress extends FrontendController
                 ];
                 $billAddress = [
                     'oxuser__oxusername' => $oResponse->getEMail(),
-                    'oxuser__oxfname' => $this->getFirstName($oResponse),
-                    'oxuser__oxlname' => $this->getLastName($oResponse),
+                    'oxuser__oxfname' => $oResponse->getFirstName(),
+                    'oxuser__oxlname' => $oResponse->getLastName(),
                     'oxuser__oxstreet' => $oResponse->getAddrStreet(),
                     'oxuser__oxstreetnr' => $oResponse->getAddrStreetNr(),
                     'oxuser__oxcity' => $oResponse->getAddrCity(),
@@ -427,14 +427,14 @@ class FatchipComputopPayPalExpress extends FrontendController
 
     protected function getFirstName(CTResponse $oResponse): string
     {
-        if (!empty($oResponse->getName)) {
+        if (!empty($oResponse->getName())) {
             return implode(' ', array_slice(explode(' ', (string)$oResponse->getName()), 0, -1));
         } else return '';
     }
 
     protected function getLastName(CTResponse $oResponse): string
     {
-        if (!empty($oResponse->getName)) {
+        if (!empty($oResponse->getName())) {
             return array_slice(explode(' ', (string)$oResponse->getName()), -1)[0];
         } else return '';
     }
