@@ -334,6 +334,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             $sResponseEmailId = $oUser->getIdByUserName($oResponse->getEMail());
             if (!empty($sResponseEmailId)) {
                 $oOrder->oxorder__oxuserid = new Field($sResponseEmailId);
+                $oUser->delete();
                 $oUser->load($sResponseEmailId);
             } else {
                 $notApplicableFields = [
@@ -541,7 +542,6 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
         $isLoaded = $oUser->loadActiveUser();
         //load user in case one is logged in
-        $test = Registry::getSession()->getUser();
         if (!$isLoaded) {
             //create a temp user [paypal_guest]
             $oUser->oxuser__oxusername = new Field('PAYPAL_TMP_USER_' . $oSession->getId());
