@@ -324,7 +324,6 @@ class FatchipComputopPayPalExpress extends FrontendController
         $address =  $oResponse->getAddrStreet();
         if (empty($oResponse->getAddrStreetNr())) {
             $streetNr = $this->extractStreetNr($address);
-                // Entfernt alle Zahlen und eventuelle Leerzeichen am Ende des Strings
             $street =  preg_replace('/\s*\d+.*$/', '', $address);
             $oResponse->setAddrStreet($street);
             $oResponse->setAddrStreetNr($streetNr);
