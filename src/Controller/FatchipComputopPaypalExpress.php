@@ -319,12 +319,10 @@ class FatchipComputopPayPalExpress extends FrontendController
         if (!$oUser->load($oOrder->oxorder__oxuserid->value)) {
             $blOrderUserFound = false;
         }
-        $orderUser = $oOrder->getUser();
         $oCountry = oxNew(Country::class);
-        $code = $oResponse->getAddrCountryCode();
         $sCountryId = $oCountry->getIdByCode($oResponse->getAddrCountryCode());
+        $address =  $oResponse->getAddrStreet();
         if (empty($oResponse->getAddrStreetNr())) {
-            $address =  $oResponse->getAddrStreet();
             $streetNr = $this->extractStreetNr($address);
                 // Entfernt alle Zahlen und eventuelle Leerzeichen am Ende des Strings
             $street =  preg_replace('/\s*\d+.*$/', '', $address);
