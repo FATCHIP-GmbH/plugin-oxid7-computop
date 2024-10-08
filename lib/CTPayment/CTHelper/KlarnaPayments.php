@@ -37,6 +37,9 @@ use Shopware\Plugins\FatchipCTPayment\Util;
  */
 trait KlarnaPayments
 {
+
+    protected $billToCustomer;
+
     public function needNewKlarnaSession()
     {
         /** @var CTOrder $ctOrder */
@@ -251,5 +254,19 @@ trait KlarnaPayments
         $articleList = base64_encode(json_encode($articleList));
 
         return $articleList;
+    }
+
+    public function getBillToCustomer()
+    {
+        return $this->billToCustomer;
+    }
+
+    public function setBillToCustomer($ctOrder)
+    {
+        #$customer['consumer']['salutation'] = $ctOrder->getBillingAddress()->getSalutation();
+        $customer['consumer']['firstName'] = $ctOrder->getBillingAddress()->getFirstName();
+        $customer['consumer']['lastName'] = $ctOrder->getBillingAddress()->getLastName();
+        $customer['email'] = $ctOrder->getEmail();
+        $this->billToCustomer = base64_encode(json_encode($customer));
     }
 }
