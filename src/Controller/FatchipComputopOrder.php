@@ -50,6 +50,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     protected $fatchipComputopPaymentId;
     protected $fatchipComputopPaymentClass;
     protected $fatchipComputopShopUtils;
+    /** @var Logger */
     protected $fatchipComputopLogger;
     public $fatchipComputopSilentParams;
     /** @var CTPaymentService fatchipComputopPaymentService */
@@ -308,15 +309,25 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         if (empty($basket->getPaymentId())) {
         }
         $paymentId = $basket->getPaymentId();
-
         $ret = null;
+        $lastschrift = false;
         if (Constants::isFatchipComputopRedirectPayment($paymentId)) {
+            if($paymentId === 'fatchip_computop_lastschrift'){
+                $lastschrift = true;
+                $response =      $this->lastschriftAction();
+            }
             $ret = parent::execute();
             // if order is validated and finalized complete Order on thankyou
             if ($ret === 'thankyou' || $ret === 'thankyou?mailerror=1') {
+                if($lastschrift === false){
                 $response = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+                }
                 if ($response) {
-                    $orderOxId = $response->getSessionId();
+                    if($lastschrift){
+                        $orderOxId = Registry::getSession()->getVariable('sess_challenge');
+                    } else {
+                        $orderOxId = $response->getSessionId();
+                    }
                     $order = oxNew(Order::class);
                     $oUser = $this->getUser();
                     if ($order->load($orderOxId)) {
@@ -377,7 +388,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $payment->setAccOwner($dynValue['fatchip_computop_lastschrift_bank_account_holder']);
         $payment->setIBAN($dynValue['fatchip_computop_lastschrift_iban']);
         $params = $payment->getRedirectUrlParams();
-
+        $customParam = $this->getCustomParam($payment->getTransID());
+        $params['custom'] = $customParam['custom'];
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $sessionID = $this->fatchipComputopSession->getId();
             $customerId = $oUser->getId();
@@ -388,7 +400,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 [
                     'payment' => $paymentName,
                     'UserID' => $customerId,
-                    'basket' => $basketExport,
+                    'basket' => '',
                     'SessionID' => $sessionID,
                     'params' => $params
                 ]
@@ -396,6 +408,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest', $params);
         $response = $payment->callComputop($params, $payment->getCTPaymentURL());
+
+        $this->fatchipComputopLogger->logRequestResponse($params,$paymentName,'AUTH',$response);
         return $response;
     }
 

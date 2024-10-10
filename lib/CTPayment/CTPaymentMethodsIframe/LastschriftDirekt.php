@@ -35,13 +35,17 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
  */
 class LastschriftDirekt extends Lastschrift
 {
+    protected $Custom;
+
     const paymentClass = 'LastschriftDirekt';
     /**
      * 2. Zeile der Warenbeschreibung, die auf dem Kontoauszug erscheint (27 Zei-chen).
      *
      * @var string
      */
-    protected $orderDesc2;
+    protected      $orderDesc2;
+
+    private string $billToCustomer;
 
 
     /**
@@ -68,10 +72,21 @@ class LastschriftDirekt extends Lastschrift
         $capture,
         $orderDesc2
     ) {
+        $this->setCustom();
         parent::__construct($config, $order, $urlSuccess, $urlFailure, $urlNotify, $orderDesc, $userData, $capture);
         $this->setOrderDesc2($orderDesc2);
     }
-
+    public function setCustom()
+    {
+        /* $module = Shopware()->Container()->get('front')->Request()->getModuleName();
+        if ($module !== 'backend') {
+            $this->Custom = 'session=' . Shopware()->Session()->get('sessionId');
+        } else {
+            $this->Custom = '';
+        }
+        */
+        $this->Custom = '';
+    }
     /**
      * @ignore <description>
      * @param string $orderDesc2
@@ -88,5 +103,18 @@ class LastschriftDirekt extends Lastschrift
     public function getOrderDesc2()
     {
         return $this->orderDesc2;
+    }
+    public function setBillToCustomer($ctOrder)
+    {
+        #$customer['consumer']['salutation'] = $ctOrder->getBillingAddress()->getSalutation();
+        $customer['consumer']['firstName'] = $ctOrder->getBillingAddress()->getFirstName();
+        $customer['consumer']['lastName'] = $ctOrder->getBillingAddress()->getLastName();
+        $customer['email'] = $ctOrder->getEmail();
+        $this->billToCustomer = base64_encode(json_encode($customer));
+    }
+
+    public function getBillToCustomer(): string
+    {
+        return $this->billToCustomer;
     }
 }

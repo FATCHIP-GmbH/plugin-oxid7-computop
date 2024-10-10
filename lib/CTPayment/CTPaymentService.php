@@ -207,7 +207,11 @@ class CTPaymentService extends Encryption
     public function handleDirectPaymentResponse($response)
     {
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
+
         $directRequest = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+        if ($response->getStatus() === null) {
+            return CTEnumStatus::OK;
+        }
         $this->fatchipComputopLogger->logRequestResponse(
             $directRequest,
             $this->fatchipComputopPaymentClass,
