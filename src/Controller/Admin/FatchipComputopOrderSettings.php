@@ -676,11 +676,15 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         $this->getOrder()->fatchipComputopPaymentId = $this->getOrder()->getFieldData('oxpaymenttype');
 
         if  ($this->getOrder()->isAutoCaptureEnabled()) {
-            $this->setErrorMessage('Capture Status: Autocapture Disabled');
-            return false;
+        //    $this->setErrorMessage('Capture Status: Autocapture Disabled');
+  //          return false;
         }
         $result =   $this->getOrder()->autoCapture($oUser, true);
-        return $result;
+        if ($result->getStatus() === 'FAILED') {
+            $status = $result->getStatus();
+            $description = $result->getDescription();
+            $this->setErrorMessage('Capture Status: '.$status.' Description: '.$description);
+        }
     }
     /**
      * Return Compuop api order

@@ -278,7 +278,7 @@ class Order extends Order_parent
         }
     }
 
-    public function autoCapture($oUser = false, $force = false): void
+    public function autoCapture($oUser = false, $force = false)
     {
         $captureAmount = $this->getFieldData('fatchip_computop_amount_captured');
         $requestCapture = Registry::getRequest()->getRequestParameter('captureAmount');
@@ -304,6 +304,9 @@ class Order extends Order_parent
             $captureResponse = $this->captureOrder($requestCapture);
 
             $this->handleCaptureResponse($captureResponse, $oUser);
+            if ($captureResponse->getStatus() === 'FAILED') {
+                return $captureResponse;
+            }
         } else {
             $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
         }
