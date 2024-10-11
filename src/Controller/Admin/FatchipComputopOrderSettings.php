@@ -268,7 +268,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
                 );
             }
 
-            
+
             $response = $this->callComputopRefundService($oOrder, $params, $payment);
             $this->handleRefundResponse($oOrder,$response, $amount);
         } catch (Exception $e) {
@@ -673,6 +673,12 @@ class FatchipComputopOrderSettings extends AdminDetailsController
 
     public function captureManual() {
         $oUser = $this->getOrder()->getUser();
+        $this->getOrder()->fatchipComputopPaymentId = $this->getOrder()->getFieldData('oxpaymenttype');
+
+        if  ($this->getOrder()->isAutoCaptureEnabled()) {
+            $this->setErrorMessage('Capture Status: Autocapture Disabled');
+            return false;
+        }
         $result =   $this->getOrder()->autoCapture($oUser, true);
         return $result;
     }

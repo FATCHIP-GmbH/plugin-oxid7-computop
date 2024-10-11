@@ -325,8 +325,11 @@ class Order extends Order_parent
                 $autoCaptureConfigKey = 'creditCardCaption';
                 break;
             case 'fatchip_computop_paypal_express':
-                    $autoCaptureConfigKey = 'paypalExpressCaption';
-                    break;
+                $autoCaptureConfigKey = 'paypalExpressCaption';
+                break;
+            case 'fatchip_computop_lastschrift':
+                $autoCaptureConfigKey = 'lastschriftCaption';
+                break;
             default:
                 break;
         }

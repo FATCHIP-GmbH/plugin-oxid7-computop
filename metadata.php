@@ -123,7 +123,6 @@ $aModule = [
         ['name' => 'lastschriftDienst', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'lastschriftCaption', 'type' => 'str', 'value' => '', 'group' => null],
 
-        ['name' => 'lastschriftAnon', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'paypalCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressClientID', 'type' => 'str', 'value' => '', 'group' => null],

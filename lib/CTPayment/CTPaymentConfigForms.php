@@ -302,7 +302,7 @@ class CTPaymentConfigForms
                         ['DIREKT', [
                             'de_DE' => 'Direktanbindung',
                             'en_GB' => 'direct',
-                        ]],
+                        ]]/*,
                         ['EVO', [
                             'de_DE' => 'EVO Payments',
                             'en_GB' => 'EVO Payments',
@@ -310,7 +310,7 @@ class CTPaymentConfigForms
                         ['INTERCARD', [
                             'de_DE' => 'Intercard',
                             'en_GB' => 'Intercard',
-                        ]],
+                        ]],*/
                     ],
                 'description' => 'Lastschrift Zahlungen können direkt, über EVO oder über INTERCARD abgewickelt werden.',
             ],
@@ -333,27 +333,7 @@ class CTPaymentConfigForms
                         ]],
                     ],
                 'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
-            ],
-            'lastschriftAnon' => [
-                'name' => 'lastschriftAnon',
-                'type' => 'select',
-                'value' => 'Aus',
-                'label' => 'Iban anonymisieren',
-                'required' => false,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['Aus', [
-                            'de_DE' => 'Aus',
-                            'en_GB' => 'off',
-                        ]],
-                        ['An', [
-                            'de_DE' => 'An',
-                            'en_GB' => 'on',
-                        ]],
-                    ],
-                'description' => 'Stellt im Checkout und im Mein Konto Bereich die Iban anonymisiert dar',
-            ],
+            ]
         ];
 
     const formLastschriftNumberElements =
