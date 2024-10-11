@@ -72,8 +72,6 @@ class Config
 
     protected $lastschriftCaption = null;
 
-    protected $lastschriftAnon = null;
-
     protected $paypalCaption = null;
 
     protected $paypalExpressCaption = null;
@@ -419,18 +417,6 @@ class Config
         $moduleSettingBridge->save('lastschriftCaption', $lastschriftCaption, FatchipComputopModule::MODULE_ID);
     }
 
-    /**
-     * @return null
-     */
-    public function getLastschriftAnon()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('lastschriftAnon', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
 
 
     /**

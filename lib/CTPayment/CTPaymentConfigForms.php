@@ -582,10 +582,7 @@ class CTPaymentConfigForms
                     'label' => 'Lastschrift - Capture Modus',
                     'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
                 ],
-                'lastschriftAnon' => [
-                    'label' => 'Iban anonymisieren',
-                    'description' => 'Stellt im Checkout und im Mein Konto Bereich die Iban anonymisiert dar',
-                ],
+
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
                     'description' => '<p>Bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br><b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b></p>',
@@ -700,10 +697,7 @@ class CTPaymentConfigForms
                     'label' => 'Direct debit - Capture Mode',
                     'description' => '<p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR><b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
                 ],
-                'lastschriftAnon' => [
-                    'label' => 'Anonymize IBAN',
-                    'description' => 'The customers IBAN will be displayed anonymized in checkout and on the my accoutn page',
-                ],
+
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
                     'description' => '<p>Determines whether the requested amount is collected immediately or at a later date. <br><b>Important:<br>Please contact Computop Support for Manual to clarify the different application options.</b></p>',
