@@ -719,14 +719,13 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 [
                     'payment' => $paymentName,
                     'UserID' => $customerId,
-                    'basket' => $basket,
                     'SessionID' => $sessionID,
                     'parmas' => $params
                 ]
             );
         }
         $requestParams = $payment->getRedirectUrlParams();
-        $response = $payment->prepareComputopRequest($requestParams, $payment->getCTPaymentURL(), $addTemplate);
+        $response = $payment->prepareComputopRequest($requestParams, $payment->getCTPaymentURL());
         Registry::getUtils()->redirect($response, false, 302);
     }
 
@@ -788,7 +787,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 [
                     'payment' => $paymentName,
                     'UserID' => $customerId,
-                    'basket' => $basket,
                     'SessionID' => $sessionID,
                     'parmas' => $params
                 ]
@@ -861,7 +859,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 [
                     'payment' => $paymentName,
                     'UserID' => $customerId,
-                    'basket' => $basket,
                     'SessionID' => $sessionID,
                     'params' => $params
                 ]
