@@ -914,7 +914,7 @@ class Order extends Order_parent
 
             case "fatchip_computop_ideal":
                 if ($this->fatchipComputopConfig['idealDirektOderUeberSofort'] === 'PPRO') {
-                    return [];
+                    return ['issuerID' => ''];
                 } else {
                     return [
                         'issuerID' => $dynValue['fatchip_computop_ideal_bankname'],

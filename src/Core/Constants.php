@@ -38,7 +38,8 @@ class Constants
     const APILOG_TABLE = self::GENERAL_PREFIX . 'api_log';
 
     const directPayments = [
-        'fatchip_computop_lastschrift'
+        'fatchip_computop_lastschrift',
+
     ];
 
     const redirectPayments = [
@@ -49,6 +50,7 @@ class Constants
         'fatchip_computop_creditcard',
         'fatchip_computop_twint',
         'fatchip_computop_ideal'
+
     ];
 
     const amazonpayPaymentId = 'fatchip_computop_amazonpay';

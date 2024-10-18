@@ -701,38 +701,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     }
 
     public
-    function iDealAction()
-    {
-        $payment = $this->getPaymentClassForGatewayAction();
-        $params = $payment->getRedirectUrlParams();
-        $oUser = $this->getUser();
-        $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
-
-        $payment->setIssuerID($dynValue['fatchip_computop_ideal_bankname']);
-
-        if ($this->config['debuglog'] === 'extended') {
-            $sessionID = $this->fatchipComputopSession->getId();
-            $customerId = $oUser->getId();
-            $paymentName = $this->fatchipComputopPaymentClass;
-            $basketExport = var_export($this->fatchipComputopBasket, true);
-            $this->fatchipComputopLogger->log(
-                'DEBUG',
-                'Redirecting to ' . $payment->getHTTPGetURL($params),
-                [
-                    'payment' => $paymentName,
-                    'UserID' => $customerId,
-                    'basket' => $basket,
-                    'SessionID' => $sessionID,
-                    'parmas' => $params
-                ]
-            );
-        }
-        $requestParams = $payment->getRedirectUrlParams();
-        $response = $payment->prepareComputopRequest($requestParams, $payment->getCTPaymentURL(), $addTemplate);
-        Registry::getUtils()->redirect($response, false, 302);
-    }
-
-    public
     function twintAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
@@ -830,6 +798,41 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $this->fatchipComputopSession->setVariable('FatchipComputopResponse', $response);
     }
 
+    /**
+     *  use this, if it is not generic (prepared)
+     *
+     * @return void
+     * @throws DatabaseConnectionException
+     * @throws DatabaseErrorException
+     */
+    public function executeIdealPayment()
+    {
+        $payment = $this->getPaymentClassForGatewayAction();
+        $params = $payment->getRedirectUrlParams();
+        $oUser = $this->getUser();
+        $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
+
+        $payment->setIssuerID($dynValue['fatchip_computop_ideal_bankname']);
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->fatchipComputopSession->getId();
+            $customerId = $oUser->getId();
+            $paymentName = $this->fatchipComputopPaymentClass;
+            $this->fatchipComputopLogger->log(
+                'DEBUG',
+                'Redirecting to ' . $payment->getHTTPGetURL($params),
+                [
+                    'payment' => $paymentName,
+                    'UserID' => $customerId,
+                    'SessionID' => $sessionID,
+                    'parmas' => $params
+                ]
+            );
+        }
+        $requestParams = $payment->getRedirectUrlParams();
+        $response = $payment->prepareComputopRequest($requestParams, $payment->getCTPaymentURL());
+        Registry::getUtils()->redirect($response, false, 302);
+    }
     public
     function klarnaAction()
     {
