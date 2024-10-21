@@ -86,7 +86,6 @@ class Ideal extends CTPaymentMethodIframe
     }
     public function setBillToCustomer($ctOrder)
     {
-        #$customer['consumer']['salutation'] = $ctOrder->getBillingAddress()->getSalutation();
         $customer['consumer']['firstName'] = $ctOrder->getBillingAddress()->getFirstName();
         $customer['consumer']['lastName'] = $ctOrder->getBillingAddress()->getLastName();
         $customer['email'] = $ctOrder->getEmail();
