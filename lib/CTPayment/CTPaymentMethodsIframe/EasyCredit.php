@@ -30,6 +30,7 @@ namespace Fatchip\CTPayment\CTPaymentMethodsIframe;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
 use Fatchip\CTPayment\CTAddress\CTAddress;
+use OxidEsales\Eshop\Core\Registry;
 
 /**
  * Class EasyCredit
@@ -45,6 +46,8 @@ class EasyCredit extends CTPaymentMethodIframe
      * @var
      */
     protected $eventToken;
+
+    protected $billToCustomer;
 
     /**
      * Anrede HERR oder FRAU
@@ -679,6 +682,22 @@ class EasyCredit extends CTPaymentMethodIframe
         $this->setVersion('v3');
     }
 
+    public function setBillToCustomer($ctOrder)
+    {
+        #$customer['consumer']['salutation'] = $ctOrder->getBillingAddress()->getSalutation();
+        $customer['consumer']['firstName'] = $ctOrder->getBillingAddress()->getFirstName();
+        $customer['consumer']['lastName'] = $ctOrder->getBillingAddress()->getLastName();
+        $customer['email'] = $ctOrder->getEmail();
+        $this->billToCustomer = base64_encode(json_encode($customer));
+    }
+
+    /**
+     * @return string
+     */
+    public function getBillToCustomer()
+    {
+        return $this->billToCustomer;
+    }
 
     /**
      * Sets all address fields for shipping address
@@ -754,8 +773,8 @@ class EasyCredit extends CTPaymentMethodIframe
             'transID' => $transID,
             'Amount' => $amount,
             'currency' => $currency,
-            'EventToken' => 'GET',
-            'version' => 'v3',
+            'RefNr' => Registry::getSession()->getId(),
+            'EventToken' => 'GET'
         ];
         return $params;
     }

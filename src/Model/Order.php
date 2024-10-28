@@ -249,11 +249,11 @@ class Order extends Order_parent
                 $this->fatchipComputopPaymentClass
             );
         }else{
-        $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
-            $this->fatchipComputopPaymentClass,
-            $this->fatchipComputopConfig,
-            $ctOrder
-        );
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
+                $this->fatchipComputopPaymentClass,
+                $this->fatchipComputopConfig,
+                $ctOrder
+            );
         }
         $payId = $this->getFieldData('fatchip_computop_payid');
         $param = $payment->getInquireParams($payId);
@@ -700,7 +700,7 @@ class Order extends Order_parent
         $redirectParams = $payment->getRedirectUrlParams();
         $payment->setBillToCustomer($ctOrder);
         if ($payment instanceof PaypalStandard) {
-         //   $payment->setPayPalMethod('shortcut');
+            //   $payment->setPayPalMethod('shortcut');
         }
         $paymentParams = $this->getPaymentParams($oUser, $dynValue);
         $paymentParams['billToCustomer'] = $payment->getBillToCustomer();
@@ -751,7 +751,7 @@ class Order extends Order_parent
             }
         }
         $response = $payment->getHTTPGetURL($params);
-       // $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-STANDARD', $payment);
+        // $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-STANDARD', $payment);
 
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
         Registry::getUtils()->redirect($response, false);
@@ -759,7 +759,7 @@ class Order extends Order_parent
         // return true;
     }
 
-    protected
+    public
     function createCTOrder()
     {
         $ctOrder = new CTOrder();
@@ -816,12 +816,18 @@ class Order extends Order_parent
     public
     function getUrlParams($redirect = false)
     {
+        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+
         $paymentClass = $this->fatchipComputopPaymentId;
         if ($redirect === true) {
             $paymentClass = Constants::GENERAL_PREFIX.'redirect';
         }
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_easycredit') {
+            $URLSuccess = $sShopUrl . 'index.php?cl=order&sid='.Registry::getSession()->getId().'&action=success';
+        } else {
+            $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
+
+        }
         $URLFailure = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
         $URLCancel = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
@@ -914,7 +920,7 @@ class Order extends Order_parent
 
             case "fatchip_computop_ideal":
                 if ($this->fatchipComputopConfig['idealDirektOderUeberSofort'] === 'PPRO') {
-                    return [];
+                    return ['issuerID' => ''];
                 } else {
                     return [
                         'issuerID' => $dynValue['fatchip_computop_ideal_bankname'],
@@ -924,7 +930,7 @@ class Order extends Order_parent
                 return [
                     'RefNr' => Registry::getSession()->getSessionChallengeToken(),
                     'UserData' => Registry::getSession()->getId()
-                    ];
+                ];
 
             case "fatchip_computop_paypal_express":
                 return [

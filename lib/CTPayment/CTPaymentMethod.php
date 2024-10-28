@@ -119,7 +119,7 @@ abstract class CTPaymentMethod extends Encryption
     protected function ctHMAC($params)
     {
         $data = $params['payID'] . '*' . $params['transID'] . '*' . $this->merchantID . '*' . $params['amount'] . '*' . $params['currency'];
-        return hash_hmac("sha256", $data, $this->mac);
+        return strtoupper(hash_hmac("sha256", $data, $this->mac));
     }
 
     /**
@@ -155,16 +155,16 @@ abstract class CTPaymentMethod extends Encryption
         $len = mb_strlen($request);  // Length of the plain text string
         $data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
 
-            $url .=
-                '?MerchantID=' . $this->merchantID .
-                '&Len=' . $len .
-                '&Data=' . $data;
+        $url .=
+            '?MerchantID=' . $this->merchantID .
+            '&Len=' . $len .
+            '&Data=' . $data;
 
-            if ($addTemplate) {
-                $url .= '&template=' . $addTemplate;
-            }
+        if ($addTemplate) {
+            $url .= '&template=' . $addTemplate;
+        }
 
-            return $url;
+        return $url;
     }
 
     /**
@@ -206,7 +206,7 @@ abstract class CTPaymentMethod extends Encryption
 
         curl_setopt_array($curl,
             [CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_URL => $this->prepareComputopRequest($ctRequest, $url)
+             CURLOPT_URL => $this->prepareComputopRequest($ctRequest, $url)
             ]);
         try {
             $resp = curl_exec($curl);
