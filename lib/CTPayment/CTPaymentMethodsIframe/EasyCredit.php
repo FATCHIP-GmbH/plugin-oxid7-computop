@@ -46,7 +46,12 @@ class EasyCredit extends CTPaymentMethodIframe
      * @var
      */
     protected $eventToken;
-
+    /**
+     * Vorname
+     *
+     * @var string
+     */
+    protected $xid;
     protected $billToCustomer;
 
     /**
@@ -207,6 +212,7 @@ class EasyCredit extends CTPaymentMethodIframe
     protected $MobileNr;
 
     protected $version;
+    protected   $status;
 
     /**
      * @ignore <description>
@@ -773,7 +779,6 @@ class EasyCredit extends CTPaymentMethodIframe
             'transID' => $transID,
             'Amount' => $amount,
             'currency' => $currency,
-            'RefNr' => Registry::getSession()->getId(),
             'EventToken' => 'GET'
         ];
         return $params;
@@ -808,5 +813,12 @@ class EasyCredit extends CTPaymentMethodIframe
     public function confirm($ctRequest)
     {
         return  $this->prepareComputopRequest($ctRequest, $this->getCTCreditCheckURL());
+    }
+
+    public function getXID() {
+        return $this->xid;
+    }
+    public function getStatus() {
+        return $this->status;
     }
 }

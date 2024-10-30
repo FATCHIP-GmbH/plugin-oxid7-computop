@@ -169,7 +169,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             // page 11
             $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $amount, $this->fatchipComputopBasket->getBasketCurrency()->name);
             $mac = $response->getMAC();
-            $decisionParams['mac'] = $this->fatchipComputopConfig['mac'];
+         //   $decisionParams['mac'] = $this->fatchipComputopConfig['mac'];
             $responseObject = $this->callComputopService($decisionParams, $payment, 'GET', $payment->getCTCreditCheckURL());
             $decision = json_decode($responseObject->getFinancing(), true);
 
