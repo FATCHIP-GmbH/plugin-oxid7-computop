@@ -128,8 +128,8 @@ class FatchipComputopNotify extends FrontendController
                     $orderNumber = $order->getFieldData('oxordernr');
                 }
                 $order->updateOrderAttributes($response);
-                $order->customizeOrdernumber($response);
-                $responseRefNr =  $this->updateRefNrWithComputop($order);
+              //  $order->customizeOrdernumber($response);
+               // $responseRefNr =  $this->updateRefNrWithComputop($order);
               //  $order->autoCapture();
 
 

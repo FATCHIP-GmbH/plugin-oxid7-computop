@@ -288,8 +288,9 @@ class Order extends Order_parent
         }
 
         // Skip Auto Capture if its iDEAL
-        if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal') {
-            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentId, $oUser);
+        if ($this->fatchipComputopPaymentClass === 'Ideal') {
+            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass, [$oUser]);
+            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
             return;
         }
 
