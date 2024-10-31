@@ -98,7 +98,7 @@ class FatchipComputopLastschrift extends FatchipComputopPayments
                         $orderNumber = $order->getFieldData('oxordernr');
                     }
                     $order->updateOrderAttributes($response);
-                    $order->customizeOrdernumber($response);
+                   // $order->customizeOrdernumber($response);
                     $responseRefNr =  $this->updateRefNrWithComputop($order);
                     //  $order->autoCapture();
 

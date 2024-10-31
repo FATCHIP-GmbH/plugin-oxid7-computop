@@ -41,10 +41,6 @@ class Config
 
     protected $blowfishPassword = null;
 
-    protected $prefixOrdernumber = null;
-
-    protected $suffixOrdernumber = null;
-
     protected $debuglog = null;
 
     protected $encryption = null;
@@ -740,54 +736,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('blowfishPassword', $blowfishPassword, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getPrefixOrdernumber()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('prefixOrdernumber', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $prefixOrdernumber
-     */
-    public function setPrefixOrdernumber($prefixOrdernumber): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('prefixOrdernumber', $prefixOrdernumber, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getSuffixOrdernumber()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('suffixOrdernumber', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $suffixOrdernumber
-     */
-    public function setSuffixOrdernumber($suffixOrdernumber): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('suffixOrdernumber', $suffixOrdernumber, FatchipComputopModule::MODULE_ID);
     }
 
     public function getMerchantID(): string

@@ -155,7 +155,7 @@ class Order extends Order_parent
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
             $this->fatchipComputopLogger->logRequestResponse([], $this->fatchipComputopPaymentClass, 'REDIRECT-BACK', $response);
 
-            $this->customizeOrdernumber($response);
+           // $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
             $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
             $this->autocapture($oUser, false);
