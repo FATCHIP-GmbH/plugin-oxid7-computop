@@ -177,7 +177,11 @@ class Order extends Order_parent
                 }
                 $this->save();
                 break;
-
+            case "FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED":
+                $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
+                $this->setFieldData('oxtransstatus', 'OK');
+                $this->save();
+                break;
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED":
                 $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
                 $this->setFieldData('oxtransstatus', 'NOT_FINISHED');
@@ -297,6 +301,9 @@ class Order extends Order_parent
 
         // Check if auto-capture is enabled for the payment method
         if (!$force && !$this->isAutoCaptureEnabled()) {
+            if ($this->fatchipComputopPaymentId === 'fatchip_computop_lastschrift') {
+                $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED');
+            }
             $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass,[], $oUser);
             return;
         }
@@ -308,6 +315,7 @@ class Order extends Order_parent
 
         } else {
             $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
+
         }
 
     }
