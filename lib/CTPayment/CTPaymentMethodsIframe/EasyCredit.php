@@ -777,7 +777,7 @@ class EasyCredit extends CTPaymentMethodIframe
             'payID' => $payID,
             'merchantID' => $this->merchantID,
             'transID' => $transID,
-            'Amount' => $amount,
+            'amount' => $amount,
             'currency' => $currency,
             'EventToken' => 'GET'
         ];
