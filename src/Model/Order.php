@@ -304,9 +304,8 @@ class Order extends Order_parent
             $captureResponse = $this->captureOrder($requestCapture);
 
             $this->handleCaptureResponse($captureResponse, $oUser);
-            if ($captureResponse->getStatus() === 'FAILED') {
-                return $captureResponse;
-            }
+            return $captureResponse;
+
         } else {
             $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
         }
@@ -346,11 +345,15 @@ class Order extends Order_parent
     private function handleCaptureResponse($captureResponse, $oUser)
     {
         $status = $captureResponse->getStatus();
-
+        if ($captureResponse->getAmountCap() == "0") {
+            $amount = $captureResponse->getAmountAuth();
+        } else {
+            $amount = $captureResponse->getAmountCap();
+        }
         if ($status === 'OK') {
             $this->updateComputopFatchipOrderStatus(
                 Constants::PAYMENTSTATUSPAID,
-                ['captureAmount' => $captureResponse->getAmountCap()]
+                ['captureAmount' => $amount]
             );
         } elseif ($status === 'FAILED') {
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSREVIEWNECESSARY,
@@ -483,12 +486,12 @@ class Order extends Order_parent
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($this->fatchipComputopPaymentClass);
         }
         if ($amount === null) {
-            $totalOrderSum =  ((double)$this->oxorder__oxtotalordersum->value);
+            $totalOrderSum =  $this->oxorder__oxtotalordersum->value;
 
         } else {
             $totalOrderSum =  ((double)$amount);
         }
-        $orderSum = $totalOrderSum * 100;
+        $orderSum = intval(round($totalOrderSum * 100));
         $payId = $this->getFieldData('fatchip_computop_payid');
         $transId = $this->getFieldData('fatchip_computop_transid');
         $xid = $this->getFieldData('fatchip_computop_xid');
@@ -496,7 +499,7 @@ class Order extends Order_parent
 
         $requestParams = $payment->getCaptureParams(
             $payId,
-            round($orderSum, 2),
+            $orderSum,
             $this->getFieldData('oxorder__oxcurrency'),
             $transId,
             $xid,

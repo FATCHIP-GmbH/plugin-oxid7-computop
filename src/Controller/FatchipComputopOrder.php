@@ -43,6 +43,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 {
 
     protected $fatchipComputopConfig;
+    /** @var Basket */
     protected $fatchipComputopBasket;
     protected $fatchipComputopSession;
     /** @var \OxidEsales\Eshop\Core\Config */
@@ -533,7 +534,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $ctOrder = new CTOrder();
         $oUser = $this->getUser();
         $config = oxNew(Config::class);
-        $ctOrder->setAmount((int)($this->fatchipComputopBasket->getBruttoSum() * 100));
+        $ctOrder->setAmount((int)($this->fatchipComputopBasket->getPrice()->getBruttoPrice() * 100));
         $ctOrder->setCurrency($this->fatchipComputopBasket->getBasketCurrency()->name);
         // try catch in case Address Splitter retrun exceptions
         try {
