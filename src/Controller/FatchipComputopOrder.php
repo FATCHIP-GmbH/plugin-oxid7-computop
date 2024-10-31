@@ -338,7 +338,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                         } else {
                             $orderNumber = $order->getFieldData('oxordernr');
                         }
-                        $order->customizeOrdernumber($response);
+                   //     $order->customizeOrdernumber($response);
                         $order->updateOrderAttributes($response);
                         $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
                         $this->updateRefNrWithComputop($order);
@@ -356,7 +356,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     if ($oResponse) {
                         $oOrder = oxNew(Order::class);
                         if($oOrder->loadByTransID($oResponse->getTransID())){
-                            $oOrder->customizeOrdernumber($oResponse);
+                        //    $oOrder->customizeOrdernumber($oResponse);
                             $oOrder->updateOrderAttributes($oResponse);
                             $oOrder->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
                             $this->updateRefNrWithComputop($oOrder);
