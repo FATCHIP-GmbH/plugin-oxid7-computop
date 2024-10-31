@@ -751,10 +751,23 @@ class Order extends Order_parent
             }
         }
         $response = $payment->getHTTPGetURL($params);
-        $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT', $payment);
+        $parts = parse_url($response);
+        parse_str($parts['query'], $query);
+
+// Die Len und Data Werte ausgeben
+        $len = $query['Len'];
+        $data = $query['Data'];
+        $PostRequestParams = [
+            'Len'    => $len,
+            'Data'   => $data,
+        ];
+        $responseDec = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
+
+        $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT', $responseDec);
         // $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-STANDARD', $payment);
 
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
+        $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse', $responseDec);
         Registry::getUtils()->redirect($response, false);
 
         // return true;

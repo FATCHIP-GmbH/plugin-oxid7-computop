@@ -203,10 +203,10 @@ abstract class CTPaymentMethod extends Encryption
     public function callComputop($ctRequest, $url)
     {
         $curl = curl_init();
-
+        $curlUrl = $this->prepareComputopRequest($ctRequest, $url);
         curl_setopt_array($curl,
             [CURLOPT_RETURNTRANSFER => 1,
-             CURLOPT_URL => $this->prepareComputopRequest($ctRequest, $url)
+             CURLOPT_URL => $curlUrl
             ]);
         try {
             $resp = curl_exec($curl);

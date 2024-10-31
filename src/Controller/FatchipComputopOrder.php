@@ -167,9 +167,10 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             // Only save Information to Session if $decision['entscheidung']['entscheidungsergebnis'] is "GRUEN"
             // see https://www.computop.com/fileadmin/user_upload/Downloads_Content/deutsch/Handbuch/Manual_Computop_Paygate_easyCredit.pdf
             // page 11
+            $redirectResponse = Registry::getSession()->getVariable('FatchipComputopRedirectResponse');
             $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $amount, $this->fatchipComputopBasket->getBasketCurrency()->name);
-            $mac = $response->getMAC();
-         //   $decisionParams['mac'] = $this->fatchipComputopConfig['mac'];
+            $mac = $redirectResponse->getMAC();
+            $decisionParams['mac'] = $this->fatchipComputopConfig['mac'];
             $responseObject = $this->callComputopService($decisionParams, $payment, 'GET', $payment->getCTCreditCheckURL());
             $decision = json_decode($responseObject->getFinancing(), true);
 
