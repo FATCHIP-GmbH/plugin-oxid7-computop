@@ -288,7 +288,7 @@ class Order extends Order_parent
         }
 
         // Skip Auto Capture if its iDEAL
-        if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal') {
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal' || $this->fatchipComputopPaymentId === 'fatchip_computop_easycredit') {
             $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentId, $oUser);
             return;
         }
@@ -668,7 +668,12 @@ class Order extends Order_parent
             );
         }
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest', $params);
-        $response = $payment->callComputop($params, $payment->getCTPaymentURL());
+        if ($paymentClass === 'EasyCredit') {
+            $response = $payment->callComputop($params, $payment->getCTCreditCheckURL());
+        } else {
+            $response = $payment->callComputop($params, $payment->getCTPaymentURL());
+
+        }
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
 
         return $this->handleAuthorizationResponse($response);
@@ -921,10 +926,21 @@ class Order extends Order_parent
                 ];
 
             case "fatchip_computop_easycredit":
-                return [
-                    'DateOfBirth' => $dynValue['fatchip_computop_easycredit_birthdate_year'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_month'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_day'],
-                    'EventToken' => CTEnumEasyCredit::EVENTTOKEN_INIT,
-                ];
+                $oSession = Registry::getSession();
+                if ($oSession->getVariable('fatchip_computop_TransId')) {
+                   $sessionDecisionPayId = Registry::getSession()->getVariable('fatchipComputopEasyCreditPayId');
+                   $payId =  $sessionDecisionPayId->getPayID();
+                    return [
+                        'payID' => $payId,
+                        'EventToken' => CTEnumEasyCredit::EVENTTOKEN_CON,
+                    ];
+                } else {
+                    return [
+                        'DateOfBirth' => $dynValue['fatchip_computop_easycredit_birthdate_year'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_month'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_day'],
+                        'EventToken' => CTEnumEasyCredit::EVENTTOKEN_INIT,
+                    ];
+                }
+
 
             case "fatchip_computop_paypal_standard":
                 return [

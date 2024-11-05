@@ -80,37 +80,11 @@ class FatchipComputopEasycredit extends FrontendController
      */
     public function render()
     {
-        $test = Registry::getRequest()->getRequestParameter('cl');
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-        }
-        $action = Registry::getRequest()->getRequestParameter('action');
-        $orderOxId = $response->getSessionId();
-        $config = new Config();
-        $aConfig = $config->toArray();
-        /** @var Order $order */
-        $order = oxNew(Order::class);
-        $session = Registry::getSession()->getVariable('sess_challenge');
-        $order->load($session);
-        $ctOrder = $order->createCTOrder();
+        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $returnUrl = $sShopUrl . 'index.php?cl=order';
+        Registry::getUtils()->redirect($returnUrl, false);
 
-        $params = $this->getDecisionParams($response->getPayID(),$response->getTransID(),$ctOrder->getAmount(),'EUR');
-        $params['MAC'] = $aConfig['mac'];
-        /** @var EasyCredit $payment */
-        $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
-            'EasyCredit',
-            $this->fatchipComputopConfig,
-            $ctOrder);
-        $test = $payment->getDecision($params);
-        $order->callComputopService($params,$payment,'GetFinance',$payment->getCTCreditCheckURL());
-        if ($order->load($orderOxId)) {}
-        return parent::render();
+
     }
 
     /**
