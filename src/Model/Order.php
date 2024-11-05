@@ -288,7 +288,7 @@ class Order extends Order_parent
         }
 
         // Skip Auto Capture if its iDEAL
-        if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal' || $this->fatchipComputopPaymentId === 'fatchip_computop_easycredit') {
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal') {
             $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentId, $oUser);
             return;
         }
@@ -308,7 +308,7 @@ class Order extends Order_parent
                 return $captureResponse;
             }
         } else {
-            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSPAID);
         }
 
     }
@@ -346,11 +346,18 @@ class Order extends Order_parent
     private function handleCaptureResponse($captureResponse, $oUser)
     {
         $status = $captureResponse->getStatus();
-
+        $test2 =$captureResponse->getAmountAuth();
+        $test1 = $captureResponse->getAmountCap();
         if ($status === 'OK') {
+            if ($captureResponse->getAmountCap() === "0") {
+                $captureAmount = $captureResponse->getAmountAuth();
+            } else {
+                $captureAmount =  $captureResponse->getAmountCap();
+
+            }
             $this->updateComputopFatchipOrderStatus(
                 Constants::PAYMENTSTATUSPAID,
-                ['captureAmount' => $captureResponse->getAmountCap()]
+                ['captureAmount' => $captureAmount]
             );
         } elseif ($status === 'FAILED') {
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSREVIEWNECESSARY,
@@ -513,10 +520,15 @@ class Order extends Order_parent
             } catch (StandardException $e) {
                 return 0.0;
             }
-
-            $capturedAmount = (double) $response->getAmountCap();
-            $this->assign(['fatchip_computop_amount_captured' => $capturedAmount]);
-            $this->save();
+            if ($response->getStatus() === "OK") {
+                if ($response->getAmountCap() === 0.0) {
+                    $capturedAmount = $response->getAmountAuth();
+                } else {
+                    $capturedAmount = (double) $response->getAmountCap();
+                }
+                $this->assign(['fatchip_computop_amount_captured' => $capturedAmount]);
+                $this->save();
+            }
         }
         return $response;
     }
