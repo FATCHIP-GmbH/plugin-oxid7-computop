@@ -401,7 +401,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                         }
                         $order->customizeOrdernumber($response);
                         $order->updateOrderAttributes($response);
-                        $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+                        $order->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
                         $this->updateRefNrWithComputop($order);
                         $order->autocapture($oUser, false);
                     }
@@ -419,7 +419,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                         if($oOrder->loadByTransID($oResponse->getTransID())){
                             $oOrder->customizeOrdernumber($oResponse);
                             $oOrder->updateOrderAttributes($oResponse);
-                            $oOrder->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+                            $oOrder->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
                             $this->updateRefNrWithComputop($oOrder);
                             $oOrder->autocapture($oOrder->getUser(), false);
                         }
@@ -441,7 +441,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                         if($oOrder->load($orderOxId)){
                           //  $oOrder->customizeOrdernumber($oResponse);
                             $oOrder->updateOrderAttributes($oResponse);
-                            $oOrder->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
+                            $oOrder->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
                             $this->updateRefNrWithComputop($oOrder);
                             $oOrder->autocapture($oOrder->getUser(), false);
                         }

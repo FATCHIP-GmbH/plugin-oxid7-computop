@@ -157,7 +157,7 @@ class Order extends Order_parent
 
             $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
-            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
             $this->autocapture($oUser, false);
         }
 
@@ -180,7 +180,7 @@ class Order extends Order_parent
 
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED":
                 $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
-                $this->setFieldData('oxtransstatus', 'NOT_FINISHED');
+                $this->setFieldData('oxtransstatus', 'OK');
                 if (!empty($data)) {
                     $this->setFieldData('fatchip_computop_remark', 'Auth OK  Capture pending');
                 }
