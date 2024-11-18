@@ -50,6 +50,7 @@ class ViewConfig extends ViewConfig_parent
      */
     public function getFatchipComputopConfig(): array
     {
+        $whoami = $this->fatchipComputopConfig;
         return $this->fatchipComputopConfig;
     }
 
@@ -118,10 +119,21 @@ class ViewConfig extends ViewConfig_parent
      */
     public function getPayload(): string
     {
-        $test = $this->fatchipComputopSession->getVariable('FatchipComputopResponse');
-        return $test;
+        // Sicherstellen, dass wir eine gültige Antwort bekommen
+        $payload = $this->fatchipComputopSession->getVariable('FatchipComputopResponse');
+        $signature = $payload->getButtonsignature();
+        $payloadButton = $payload->getButtonpayload();
+        $this->signature = $payload->getButtonsignature();
+
+
+        return $payload->getButtonpayload();
     }
 
+    public function getButtonPubKey() {
+        $payload = $this->fatchipComputopSession->getVariable('FatchipComputopResponse');
+        $buttonPublicKey = $payload->getButtonpublickeyid();
+        return $buttonPublicKey;
+    }
     public function getConfig()
     {
         return $this->fatchipComputopShopConfig;
@@ -136,7 +148,8 @@ class ViewConfig extends ViewConfig_parent
      */
     public function getSignature(string $payload): string
     {
-        return $this->signature;
+        $test = $this->signature;
+        return $test;
     }
 
     /**

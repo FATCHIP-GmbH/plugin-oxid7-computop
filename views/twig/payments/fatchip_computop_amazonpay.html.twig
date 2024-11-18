@@ -1,0 +1,87 @@
+<div class="payment-option">
+    {% set dynvalue = oView.getDynValue() %}
+    <div class="payment-option-form">
+        <input class="form-check-input" id="payment_{{ sPaymentID }}" type="radio" name="paymentid"
+               value="{{ sPaymentID }}"{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} checked{% endif %}>
+        <label for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
+        <div class="payment-option-info{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} activePayment{% endif %}">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" size="20" maxlength="15"
+                       id="telephone_number" name="dynvalue[telephone_number]"
+                       placeholder="{{ translate({ ident: "PHONE" }) }}"
+                       value="{{ dynvalue.telephone_number }}">
+                <label>{{ translate({ ident: "PHONE" }) }}</label>
+                <span id="telephoneError" class="error-message" style="display: none; color: red; font-size: 0.9em;">
+        Bitte geben Sie Ihre Telefonnummer ein.
+                 </span>
+            </div>
+        </div>
+    </div>
+    {% if paymentmethod.getPrice() %}
+        <div class="payment-option-price">
+            {% set oPaymentPrice = paymentmethod.getPrice() %}
+            {% if oViewConf.isFunctionalityEnabled('blShowVATForPayCharge') %}
+                {{ format_price(oPaymentPrice.getNettoPrice(), { currency: currency }) }}
+                {% if oPaymentPrice.getVatValue() > 0 %}
+                    {{ translate({ ident: "PLUS_VAT" }) }} {{ format_price(oPaymentPrice.getVatValue(), { currency: currency }) }}
+                {% endif %}
+            {% else %}
+                {{ format_price(oPaymentPrice.getBruttoPrice(), { currency: currency }) }}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const paymentOptionAmazonPay = document.getElementById('payment_fatchip_computop_amazonpay');
+        const telephoneNumberField = document.getElementById('telephone_number');
+        const telephoneError = document.getElementById('telephoneError');
+        const form = document.getElementById('payment');
+        const weiterButton = document.querySelector('.btn.btn-highlight');
+
+        function isFormValid() {
+            if (paymentOptionAmazonPay && paymentOptionAmazonPay.checked && telephoneNumberField.value.trim() === '') {
+                return false;
+            }
+            return true;
+        }
+
+        weiterButton.addEventListener('click', function(event) {
+            if (!isFormValid()) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                showTelephoneError();
+            } else {
+                hideTelephoneError();
+                form.submit();
+            }
+        }, true);
+
+        document.querySelectorAll('input[name="paymentid"]').forEach(function(paymentOption) {
+            paymentOption.addEventListener('change', function() {
+                if (paymentOptionAmazonPay && paymentOptionAmazonPay.checked) {
+                    telephoneNumberField.required = true;
+                } else {
+                    telephoneNumberField.required = false;
+                    hideTelephoneError();
+                }
+            });
+        });
+
+        if (paymentOptionAmazonPay && paymentOptionAmazonPay.checked) {
+            telephoneNumberField.required = true;
+        }
+
+        function showTelephoneError() {
+            telephoneError.style.display = 'block';
+            telephoneNumberField.classList.add('input-error');
+        }
+
+        // Hide error message
+        function hideTelephoneError() {
+            telephoneError.style.display = 'none'; // Hide the error message
+            telephoneNumberField.classList.remove('input-error'); // Remove error class from input field
+        }
+    });
+</script>

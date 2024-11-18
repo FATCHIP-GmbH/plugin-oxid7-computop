@@ -37,6 +37,12 @@ class AmazonPay extends CTPaymentMethod
 {
     const paymentClass = 'AmazonPay';
 
+
+    public function __construct()
+    {
+        $test = 'test';
+    }
+
     /**
      * returns PaymentURL
      * @return string
@@ -60,7 +66,7 @@ class AmazonPay extends CTPaymentMethod
      * @return array
      */
     public function getAmazonInitParams($merchantId, $transID, $countryCode, $amount, $currency, $urlSuccess, $URLFailure, $URLNotify,
-                                        $URLCancel, $shopUrl, $txType = 'Authorize', $localCurrency = 'EUR', $scope = '' )
+                                        $URLCancel, $shopUrl, $txType = 'AuthorizeWithCapture', $localCurrency = 'EUR', $scope = '' )
     {
         $params = [
             'transID' => $transID,

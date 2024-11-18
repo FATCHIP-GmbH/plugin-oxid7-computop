@@ -7,6 +7,7 @@ use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopConfig;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiTest;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLog;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopOrderSettings;
+use Fatchip\ComputopPayments\Controller\FatchipComputopAmazonpay;
 use Fatchip\ComputopPayments\Controller\FatchipComputopEasycredit;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopUpdateIdealIssuers;
 use Fatchip\ComputopPayments\Controller\FatchipComputopIdeal;
@@ -30,6 +31,7 @@ use OxidEsales\Eshop\Application\Model\Order as CoreOrderModel;
 use Fatchip\ComputopPayments\Model\Order as ModuleOrder;
 use OxidEsales\Eshop\Application\Model\PaymentGateway as CorePaymentGateway;
 use Fatchip\ComputopPayments\Model\PaymentGateway as ModulePaymentGateway;
+use OxidEsales\Eshop\Core\Session;
 use OxidEsales\Eshop\Core\ViewConfig as CoreViewConfig;
 
 
@@ -68,7 +70,7 @@ $aModule = [
         CorePaymentController::class => FatchipComputopPayment::class,
         CoreOrderModel::class => ModuleOrder::class,
         CoreViewConfig::class => ModuleViewConfig::class,
-        \OxidEsales\Eshop\Core\Session::class => FatchipComputopSession::class,
+        Session::class => FatchipComputopSession::class,
 
 
         // Models
@@ -93,6 +95,7 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'paypal_express' => FatchipComputopPaypalExpress::class,
         Constants::GENERAL_PREFIX . 'klarna' => FatchipComputopKlarna::class,
         Constants::GENERAL_PREFIX . 'easycredit' => FatchipComputopEasycredit::class,
+        Constants::GENERAL_PREFIX . 'amazonpay' => FatchipComputopAmazonpay::class,
         Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
         Constants::GENERAL_PREFIX . 'ideal' => FatchipComputopIdeal::class,
         Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,

@@ -148,7 +148,7 @@ class Order extends Order_parent
         }
 
         if ($ret === 3 || $response !== null) {
-            // check Status and set Order appropiatelay
+            $blRecalculatingOrder = true;
             $ret = $this->finalizeRedirectOrder($oBasket, $oUser, $blRecalculatingOrder);
         }
         if ($returning) {
@@ -472,7 +472,6 @@ class Order extends Order_parent
     {
         $ctOrder = $this->createCTOrder();
         if ($this->fatchipComputopPaymentClass !== 'PayPalExpress'
-            && $this->fatchipComputopPaymentClass !== 'AmazonPay'
         ) {
             $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
                 $this->fatchipComputopPaymentClass,

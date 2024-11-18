@@ -27,8 +27,40 @@
 
 namespace Fatchip\ComputopPayments\Controller;
 
+use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
+use OxidEsales\Eshop\Core\Registry;
 
-class FatchipComputopAmazonpay extends FrontendController
+class FatchipComputopAmazonpay extends FatchipComputopPayments
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        $config = new Config();
+        $this->fatchipComputopConfig = $config->toArray();
+        $this->fatchipComputopSession = Registry::getSession();
+        $this->fatchipComputopShopConfig = Registry::getConfig();
+        $this->fatchipComputopShopUtils = Registry::getUtils();
+        $this->fatchipComputopLogger = new Logger();
+        $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
+    }
+
+    public function render() {
+        $this->return();
+    }
+
+    public function return() {
+        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $len = Registry::getRequest()->getRequestParameter('Len');
+        $data = Registry::getRequest()->getRequestParameter('Data');
+        $custom = Registry::getRequest()->getRequestParameter('Custom');
+        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&Len=' . $len . '&Data=' . $data;
+
+        Registry::getUtils()->redirect($returnUrl, false, 301);
+
+        die;
+    }
 }

@@ -76,7 +76,9 @@ class FatchipComputopRedirect extends FatchipComputopPayments
                 $delAdress = $custom->getDelAdress();
             }
         }
-
+        if (empty($stoken)) {
+            $stoken = Registry::getSession()->getVariable('sess_stoken');
+        }
         $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
             . '&stoken=' . $stoken.'&sid='.$sid.'&sDeliveryAddressMD5='.$delAdress;
 

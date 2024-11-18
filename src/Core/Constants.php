@@ -48,7 +48,8 @@ class Constants
         'fatchip_computop_easycredit',
         'fatchip_computop_creditcard',
         'fatchip_computop_twint',
-        'fatchip_computop_ideal'
+        'fatchip_computop_ideal',
+        'fatchip_computop_amazonpay'
     ];
 
     const amazonpayPaymentId = 'fatchip_computop_amazonpay';
@@ -89,7 +90,7 @@ class Constants
                 return 'PaypalStandard';
 
             case "fatchip_computop_amazonpay":
-                return 'Amazonpay';
+                return 'AmazonPay';
 
             case "fatchip_computop_creditcard":
                 return 'CreditCard';

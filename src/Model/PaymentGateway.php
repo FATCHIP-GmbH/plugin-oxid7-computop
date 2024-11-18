@@ -65,6 +65,9 @@ class PaymentGateway extends PaymentGateway_parent
         if($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_lastschrift'){
             return true;
         }
+        if($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_amazonpay'){
+            return true;
+        }
         $config = new Config();
         $configArray =  $config->toArray();
         $this->_iLastErrorNo = null;
