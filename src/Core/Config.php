@@ -84,8 +84,6 @@ class Config
 
     protected $amazonpayMerchantId = null;
 
-    protected $amazonpayStoreId = null;
-
     protected $amazonLiveMode = null;
 
     protected $amazonCaptureType = null;
@@ -739,24 +737,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('amazonpayPubKeyId', $value, FatchipComputopModule::MODULE_ID);
-    }
-
-    public function getAmazonpayStoreId(): string
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonpayStoreId', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    public function setAmazonpayStoreId($value): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonpayStoreId', $value, FatchipComputopModule::MODULE_ID);
     }
 
     public function toArray($mergable = false)

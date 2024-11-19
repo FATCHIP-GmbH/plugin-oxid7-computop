@@ -133,7 +133,6 @@ $aModule = [
 
         ['name' => 'amazonpayMerchantId', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'amazonpayPubKeyId', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'amazonpayStoreId', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonLiveMode', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonCaptureType', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonButtonColor', 'type' => 'string', 'value' => false, 'group' => null],

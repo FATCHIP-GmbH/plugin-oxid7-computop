@@ -367,15 +367,6 @@ class CTPaymentConfigForms
                 'required' => false,
                 'description' => 'Ihre Amazonpay Public Key Id',
             ],
-            'amazonpayStoreId' => [
-                'name' => 'amazonpayStoreId',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'AmazonPay - Store Id',
-                'required' => false,
-                'description' => 'Ihre Amazonpay Store Id',
-            ],
-
         ];
 
     const formAmazonSelectElements =
