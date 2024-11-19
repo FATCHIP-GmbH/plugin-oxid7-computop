@@ -80,8 +80,6 @@ class Config
 
     protected $paypalExpressTestMode = null;
 
-    protected $amazonpayPrivKey = null;
-
     protected $amazonpayPubKeyId = null;
 
     protected $amazonpayMerchantId = null;
@@ -92,11 +90,8 @@ class Config
 
     protected $amazonCaptureType = null;
 
-    protected $amazonButtonType = null;
-
     protected $amazonButtonColor = null;
 
-    protected $amazonButtonSize = null;
 
     protected $klarnaaccount = null;
 
@@ -599,30 +594,6 @@ class Config
     /**
      * @return null
      */
-    public function getAmazonButtonType()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonButtonType', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $amazonButtonType
-     */
-    public function setAmazonButtonType($amazonButtonType): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonButtonType', $amazonButtonType, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
     public function getAmazonButtonColor()
     {
         $moduleSettingBridge
@@ -642,30 +613,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('amazonButtonColor', $amazonButtonColor, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getAmazonButtonSize()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonButtonSize', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $amazonButtonSize
-     */
-    public function setAmazonButtonSize($amazonButtonSize): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonButtonSize', $amazonButtonSize, FatchipComputopModule::MODULE_ID);
     }
 
     /**
@@ -774,23 +721,7 @@ class Config
         $moduleSettingBridge->save('amazonpayMerchantId', $value, FatchipComputopModule::MODULE_ID);
     }
 
-    public function getAmazonpayPrivKey(): string
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonpayPrivKey', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
 
-    public function setAmazonpayPrivKey($value): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonpayPrivKey', $value, FatchipComputopModule::MODULE_ID);
-    }
 
     public function getAmazonpayPubKeyId(): string
     {

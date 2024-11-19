@@ -132,15 +132,11 @@ $aModule = [
         ['name' => 'paypalExpressTestMode', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'amazonpayMerchantId', 'type' => 'string', 'value' => false, 'group' => null],
-        ['name' => 'amazonpayPrivKey', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonpayPubKeyId', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonpayStoreId', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonLiveMode', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonCaptureType', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'amazonButtonType', 'type' => 'str', 'value' => '', 'group' => null],
-
         ['name' => 'amazonButtonColor', 'type' => 'string', 'value' => false, 'group' => null],
-        ['name' => 'amazonButtonSize', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'klarnaaccount', 'type' => 'str', 'value' => '', 'group' => null],
 
