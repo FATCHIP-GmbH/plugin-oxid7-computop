@@ -450,7 +450,6 @@ class CTPaymentConfigForms
                     [
                         ['Gold', 'Gold'],
                         ['LightGray', 'LightGray'],
-                        ['DarkGray', 'DarkGray'],
                     ],
                 'description' => '<p>Farbe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Farbe"</p>',
             ],

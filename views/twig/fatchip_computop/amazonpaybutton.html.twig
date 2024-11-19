@@ -26,6 +26,7 @@
             checkoutLanguage: '{{ oViewConf.getCheckoutLanguage() }}',
             productType: 'PayAndShip',
             placement: 'Checkout',
+            buttonColor: '{{ fatchipComputopConfig.amazonButtonColor }}',
             payloadJSON: '{{ aPayload|raw }}',
             estimatedOrderAmount: { "amount": "{{ oxcmp_basket.getPrice().getBruttoPrice() }}", "currencyCode": "EUR"},
 
