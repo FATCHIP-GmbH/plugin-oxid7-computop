@@ -57,22 +57,7 @@ class CTPaymentConfigForms
                 'required' => true,
                 'description' => 'Ihr Verschlüsselungs-Passwort',
             ],
-            'prefixOrdernumber' => [
-                'name' => 'prefixOrdernumber',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Bestellnummer Präfix',
-                'required' => false,
-                'description' => 'Präfix für Bestellnummern.',
-            ],
-            'suffixOrdernumber' => [
-                'name' => 'suffixOrdernumber',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Bestellnummer Suffix',
-                'required' => false,
-                'description' => 'Suffix für Bestellnummern.',
-            ],
+
         ];
 
     const formGeneralSelectElements =
@@ -521,14 +506,6 @@ class CTPaymentConfigForms
                 'fatchip_computop_ideal_button' => [
                     'label' => '<strong>iDeal Banken aktualisieren <strong>',
                 ],
-                'prefixOrdernumber' => [
-                    'label' => 'Bestellnummer Präfix',
-                    'description' => 'Präfix für Bestellnummern.',
-                ],
-                'suffixOrdernumber' => [
-                    'label' => 'Bestellnummer Suffix',
-                    'description' => 'Suffix für Bestellnummern.',
-                ],
                 'debuglog' => [
                     'label' => 'Debug Protokoll',
                     'description' => 'Erzeugt eine Log Datei <FatchipCTPayment_.log> mit Debug Ausgaben im Shopware Protokollverzeichnis',
@@ -636,14 +613,6 @@ class CTPaymentConfigForms
                 ],
                 'fatchip_computop_ideal_button' => [
                     'label' => '<strong>update iDeal banks<strong>',
-                ],
-                'prefixOrdernumber' => [
-                    'label' => 'Ordernumber prefix',
-                    'description' => 'Prefix for ordernumbers.',
-                ],
-                'suffixOrdernumber' => [
-                    'label' => 'Ordernumber suffix',
-                    'description' => 'Suffix for ordernumbers.',
                 ],
                 'debuglog' => [
                     'label' => 'Debug protocol',

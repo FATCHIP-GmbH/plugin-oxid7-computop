@@ -107,8 +107,6 @@ $aModule = [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'mac', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'blowfishPassword', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'prefixOrdernumber', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'suffixOrdernumber', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'debuglog', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'encryption', 'type' => 'str', 'value' => '', 'group' => null],

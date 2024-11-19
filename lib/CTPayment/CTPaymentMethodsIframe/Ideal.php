@@ -77,7 +77,20 @@ class Ideal extends CTPaymentMethodIframe
         $this->setUrlNotify($urlNotify);
         $this->setCustom();
     }
-
+    /**
+     * @return string
+     */
+    public function getBillToCustomer()
+    {
+        return $this->billToCustomer;
+    }
+    public function setBillToCustomer($ctOrder)
+    {
+        $customer['consumer']['firstName'] = $ctOrder->getBillingAddress()->getFirstName();
+        $customer['consumer']['lastName'] = $ctOrder->getBillingAddress()->getLastName();
+        $customer['email'] = $ctOrder->getEmail();
+        $this->billToCustomer = base64_encode(json_encode($customer));
+    }
     /**
      * @ignore <description>
      * @param boolean $idealDirekt

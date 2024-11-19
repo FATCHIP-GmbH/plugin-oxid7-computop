@@ -155,7 +155,7 @@ class Order extends Order_parent
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
             $this->fatchipComputopLogger->logRequestResponse([], $this->fatchipComputopPaymentClass, 'REDIRECT-BACK', $response);
 
-            $this->customizeOrdernumber($response);
+           // $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
             $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
             $this->autocapture($oUser, false);
@@ -177,7 +177,11 @@ class Order extends Order_parent
                 }
                 $this->save();
                 break;
-
+            case "FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED":
+                $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
+                $this->setFieldData('oxtransstatus', 'OK');
+                $this->save();
+                break;
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED":
                 $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
                 $this->setFieldData('oxtransstatus', 'NOT_FINISHED');
@@ -288,8 +292,9 @@ class Order extends Order_parent
         }
 
         // Skip Auto Capture if its iDEAL
-        if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal') {
-            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentId, $oUser);
+        if ($this->fatchipComputopPaymentClass === 'Ideal') {
+            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass, [$oUser]);
+            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
             return;
         }
 
@@ -297,6 +302,9 @@ class Order extends Order_parent
 
         // Check if auto-capture is enabled for the payment method
         if (!$force && !$this->isAutoCaptureEnabled()) {
+            if ($this->fatchipComputopPaymentId === 'fatchip_computop_lastschrift') {
+                $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED');
+            }
             $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass,[], $oUser);
             return;
         }
@@ -304,11 +312,11 @@ class Order extends Order_parent
             $captureResponse = $this->captureOrder($requestCapture);
 
             $this->handleCaptureResponse($captureResponse, $oUser);
-            if ($captureResponse->getStatus() === 'FAILED') {
-                return $captureResponse;
-            }
+            return $captureResponse;
+
         } else {
             $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
+
         }
 
     }
@@ -346,11 +354,15 @@ class Order extends Order_parent
     private function handleCaptureResponse($captureResponse, $oUser)
     {
         $status = $captureResponse->getStatus();
-
+        if ($captureResponse->getAmountCap() == "0") {
+            $amount = $captureResponse->getAmountAuth();
+        } else {
+            $amount = $captureResponse->getAmountCap();
+        }
         if ($status === 'OK') {
             $this->updateComputopFatchipOrderStatus(
                 Constants::PAYMENTSTATUSPAID,
-                ['captureAmount' => $captureResponse->getAmountCap()]
+                ['captureAmount' => $amount]
             );
         } elseif ($status === 'FAILED') {
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSREVIEWNECESSARY,
@@ -482,12 +494,12 @@ class Order extends Order_parent
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($this->fatchipComputopPaymentClass);
         }
         if ($amount === null) {
-            $totalOrderSum =  ((double)$this->oxorder__oxtotalordersum->value);
+            $totalOrderSum =  $this->oxorder__oxtotalordersum->value;
 
         } else {
             $totalOrderSum =  ((double)$amount);
         }
-        $orderSum = $totalOrderSum * 100;
+        $orderSum = intval(round($totalOrderSum * 100));
         $payId = $this->getFieldData('fatchip_computop_payid');
         $transId = $this->getFieldData('fatchip_computop_transid');
         $xid = $this->getFieldData('fatchip_computop_xid');
@@ -495,7 +507,7 @@ class Order extends Order_parent
 
         $requestParams = $payment->getCaptureParams(
             $payId,
-            round($orderSum, 2),
+            $orderSum,
             $this->getFieldData('oxorder__oxcurrency'),
             $transId,
             $xid,
@@ -913,7 +925,7 @@ class Order extends Order_parent
 
             case "fatchip_computop_ideal":
                 if ($this->fatchipComputopConfig['idealDirektOderUeberSofort'] === 'PPRO') {
-                    return [];
+                    return ['issuerID' => ''];
                 } else {
                     return [
                         'issuerID' => $dynValue['fatchip_computop_ideal_bankname'],
