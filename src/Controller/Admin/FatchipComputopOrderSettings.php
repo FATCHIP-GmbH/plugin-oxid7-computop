@@ -40,6 +40,13 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     protected $_sErrorMessage = false;
 
     /**
+     * notice message property
+     *
+     * @var string|bool
+     */
+    protected $_sNoticeMessage = false;
+
+    /**
      * Compuop ApiOrder
      *
      */
@@ -128,6 +135,16 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         }
 
         return $this->_sTemplate;
+    }
+
+    public function getSNoticeMessage(): bool|string
+    {
+        return $this->_sNoticeMessage;
+    }
+
+    public function setSNoticeMessage(bool|string $sNoticeMessage): void
+    {
+        $this->_sNoticeMessage = $sNoticeMessage;
     }
 
     /**
@@ -284,8 +301,10 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             $oOrder->assign(['fatchip_computop_amount_refunded' => $this->getAmountForComputop($amount)]);
             $oOrder->save();
             $this->_blSuccessfulRefund = true;
-        } else {
+        } elseif ($response->getStatus() === 'FAILED') {
             $this->setErrorMessage('Refund Status:'. $response->getStatus());
+        } else {
+            $this->setSNoticeMessage('Refund Status:'. $response->getStatus());
         }
     }
     protected function createCTOrder($oOrder) {

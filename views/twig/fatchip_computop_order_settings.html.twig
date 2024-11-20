@@ -200,6 +200,12 @@
             {{ oView.getErrorMessage() }}
         </fieldset>
     {% endif %}
+    {% if oView.getSNoticeMessage() is not same as(false) %}
+        <fieldset class="refundNotice message">
+            <strong>Notice</strong>
+            {{ oView.getSNoticeMessage() }}
+        </fieldset>
+    {% endif %}
     {% if oView.wasRefundSuccessful() is same as(true) %}
         <fieldset class="refundSuccess message">
             {{ translate({ ident: "COMPUTOP_REFUND_SUCCESS" }) }}
