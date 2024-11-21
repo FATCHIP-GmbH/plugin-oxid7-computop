@@ -105,23 +105,10 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 }
             }
         }
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-            $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
-            if ($this->fatchipComputopPaymentId ==='fatchip_computop_easycredit') {
-                $this->easyCreditHandling($response,$dynValue);
-            }
-
-        } else {
-            if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {
-                $this->fatchipComputopPaymentClass = 'AmazonPay';
-                /** @todo button "click" should generate a unfinished order **/
-                $this->amazonPayButtonAction();
-            }
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_amazonpay') {
+            $this->fatchipComputopPaymentClass = 'AmazonPay';
+            /** @todo button "click" should generate a unfinished order **/
+            $this->amazonPayButtonAction();
         }
 
         return parent::render();
