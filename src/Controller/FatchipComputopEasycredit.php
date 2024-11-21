@@ -28,6 +28,9 @@ namespace Fatchip\ComputopPayments\Controller;
 
 use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Model\Order;
+use Fatchip\ComputopPayments\Model\PaymentGateway;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Core\Registry;
@@ -77,27 +80,11 @@ class FatchipComputopEasycredit extends FrontendController
      */
     public function render()
     {
-        $test = Registry::getRequest()->getRequestParameter('cl');
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-            }
-        $action = Registry::getRequest()->getRequestParameter('action');
-        if (empty($action)) {
-            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
-            } else {
-                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_silent';
-            }
-        } else {
-            $this->$action();
-        }
-        return parent::render();
+        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $returnUrl = $sShopUrl . 'index.php?cl=order';
+        Registry::getUtils()->redirect($returnUrl, false);
+
+
     }
 
     /**
@@ -114,15 +101,27 @@ class FatchipComputopEasycredit extends FrontendController
             return $redirectUrl;
         }
     }
-
+    public function getDecisionParams($payID, $transID, $amount, $currency)
+    {
+        $params = [
+            'payID' => $payID,
+            'merchantID' => $this->merchantID,
+            'transID' => $transID,
+            'Amount' => $amount,
+            'currency' => $currency,
+            'EventToken' => 'GET',
+            'version' => 'v3',
+        ];
+        return $params;
+    }
     public function success() {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
         if (!empty($len) && !empty($data)) {
-        $PostRequestParams = [
-            'Len' => $len,
-            'Data' => $data,
-        ];
+            $PostRequestParams = [
+                'Len' => $len,
+                'Data' => $data,
+            ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
         if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {

@@ -68,6 +68,10 @@ class PaymentGateway extends PaymentGateway_parent
         if($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_amazonpay'){
             return true;
         }
+        if ($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_easycredit') {
+            return $oOrder->handleAuthorization($dAmount, $this);
+
+        }
         $config = new Config();
         $configArray =  $config->toArray();
         $this->_iLastErrorNo = null;
