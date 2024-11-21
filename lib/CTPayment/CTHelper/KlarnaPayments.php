@@ -1,17 +1,17 @@
 <?php
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The Computop Oxid Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The Computop Oxid Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with Computop Oxid Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0 , 7.1
  *
@@ -28,7 +28,7 @@ namespace Fatchip\CTPayment\CTHelper;
 
 use Exception;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use OxidEsales\Eshop\Core\Registry;
 
 
 /**
@@ -42,7 +42,7 @@ trait KlarnaPayments
         /** @var CTOrder $ctOrder */
         $ctOrder = $this->utils->createCTOrder();
         /** @var \Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments $payment */
-        $session = Shopware()->Session();
+        $session = Registry::getSession();
 
         $sessionAmount = $session->get('FatchipCTKlarnaPaymentAmount', '');
         $currentAmount = $ctOrder->getAmount();

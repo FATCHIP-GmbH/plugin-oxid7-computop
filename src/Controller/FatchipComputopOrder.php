@@ -570,7 +570,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     }
 
     /**
-     * creates a CTAddress object from a Shopware address array
+     * creates a CTAddress object from a Oxid address array
      * @param $user
      * @return CTAddress
      * @throws \Exception
@@ -1079,7 +1079,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
      * Because the ordernumber is only known after successful payments
      * and successful saveOrder() call update the RefNr AFTER order creation
      *
-     * @param Order $order shopware order
+     * @param Order $order Oxid order
      * @param string $paymentClass name of the payment class
      *
      * @return CTResponse
