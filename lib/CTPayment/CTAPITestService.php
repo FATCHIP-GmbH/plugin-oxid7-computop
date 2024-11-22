@@ -280,9 +280,11 @@ class CTAPITestService extends Encryption
             ;';
 
             // replace netherland with NL
-            DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
+         $success =   DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
         }
-
+        if ($success !== 1) {
+            return false;
+        }
 
         if (strpos($resp, 'Unexpected exception') !== false) {
             throw new Exception('Wrong Credentials');
