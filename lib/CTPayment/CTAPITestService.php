@@ -253,6 +253,9 @@ class CTAPITestService extends Encryption
         $issuerList = explode('|', $stringissuerList);
         $issuers = [];
         $i = 1;
+        if (!is_array($issuerList)) {
+            return false;
+        }
         foreach ($issuerList AS $issuer) {
             $data = explode(',', $issuer);
                 if (!empty($data[0])) {
