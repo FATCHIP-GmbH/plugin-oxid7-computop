@@ -888,6 +888,7 @@ class Order extends Order_parent
                 $oxisoalpha2 = $oCountry->getFieldData('oxisoalpha2');
 
                 return [
+                    'order' => 'AUTO',
                     'TaxAmount' => $taxAmount,
                     'ArticleList' => $aOrderlines,
                     'Account' => $this->fatchipComputopConfig['klarnaaccount'],

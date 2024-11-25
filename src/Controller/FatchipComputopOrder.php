@@ -1121,6 +1121,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $payment = $this->fatchipComputopPaymentService->getPaymentClass($paymentClass);
         }
         $payID = $order->getFieldData('fatchip_computop_payid');
+        if ($paymentClass === 'KlarnaPayments') {
+            $payment->setTransID($order->getFieldData('fatchip_computop_transid'));
+        }
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
         $RefNrChangeParams['EtiId'] = $this->getUserDataParam();
 
