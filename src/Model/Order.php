@@ -327,6 +327,9 @@ class Order extends Order_parent
             case 'fatchip_computop_paypal_express':
                     $autoCaptureConfigKey = 'paypalExpressCaption';
                     break;
+            case 'fatchip_computop_klarna':
+                $autoCaptureConfigKey = 'klarnaCaption';
+                break;
             default:
                 break;
         }

@@ -521,6 +521,26 @@ class CTPaymentConfigForms
                 'required' => false,
                 'description' => '<p>Das zu benutzende Klarna Konto.</p>',
             ],
+            'klarnaCaption' => [
+                'name' => 'klarnaCaption',
+                'type' => 'select',
+                'value' => 'AUTO',
+                'label' => 'Klarna - Capture Modus',
+                'required' => false,
+                'editable' => true,
+                'store' =>
+                    [
+                        ['AUTO', [
+                            'de_DE' => 'Automatisch',
+                            'en_GB' => 'automatic',
+                        ]],
+                        ['MANUAL', [
+                            'de_DE' => 'Manuell',
+                            'en_GB' => 'manual',
+                        ]],
+                    ],
+                'description' => '<p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
+            ]
         ];
 
     const formTranslations =
