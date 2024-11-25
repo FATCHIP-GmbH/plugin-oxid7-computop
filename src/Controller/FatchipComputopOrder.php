@@ -387,7 +387,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     $this->fatchipComputopSession->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectResponse');
                 }
                 if ($response) {
-                    if($lastschrift){
+                    if($lastschrift || $paymentId === 'fatchip_computop_paypal_express'){
                         $orderOxId = Registry::getSession()->getVariable('sess_challenge');
                     } else {
                         $orderOxId = $response->getSessionId();
