@@ -249,15 +249,6 @@ class FatchipComputopConfig extends AdminController
         $service = new CTAPITestService($config);
         try {
             $success = $service->getIdealIssuers();
-            if ($success === false) {
-                $e = oxNew(\Exception::class);
-                Registry::getUtilsView()->addErrorToDisplay(
-                    $e,
-                    true,
-                    true,
-                    'fatchip_computop_error'
-                );
-            }
             $this->setIdealUpdateSuccess($success);
         }
         catch (Exception $e) {
