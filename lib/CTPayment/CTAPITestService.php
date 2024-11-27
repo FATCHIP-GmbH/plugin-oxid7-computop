@@ -253,6 +253,9 @@ class CTAPITestService extends Encryption
         $issuerList = explode('|', $stringissuerList);
         $issuers = [];
         $i = 1;
+        if (!is_array($issuerList)) {
+            return false;
+        }
         foreach ($issuerList AS $issuer) {
             $data = explode(',', $issuer);
                 if (!empty($data[0])) {
@@ -277,9 +280,11 @@ class CTAPITestService extends Encryption
             ;';
 
             // replace netherland with NL
-            DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
+         $success =   DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
         }
-
+        if ($success !== 1) {
+            return false;
+        }
 
         if (strpos($resp, 'Unexpected exception') !== false) {
             throw new Exception('Wrong Credentials');

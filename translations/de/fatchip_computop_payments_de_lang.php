@@ -20,5 +20,6 @@ $aLang = [
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR_ADDRESS' => 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten',
     'FATCHIP_COMPUTOP_EASYCREDIT_INFORMATION' => 'Easycredit Konditionen',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR' => 'Hoppla, da ist etwas schiefgelaufen.',
-    'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR' => 'Hoppla, da ist etwas schiefgelaufen.'
+    'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR' => 'Hoppla, da ist etwas schiefgelaufen.',
+    'FATCHIP_COMPUTOP_BIRTHDAY_PLEASE_ENTER' => 'Bitte Geburtstag angeben'
 ];

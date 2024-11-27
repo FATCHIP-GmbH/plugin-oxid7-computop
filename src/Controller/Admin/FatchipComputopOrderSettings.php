@@ -699,11 +699,14 @@ class FatchipComputopOrderSettings extends AdminDetailsController
   //          return false;
         }
         $result =   $this->getOrder()->autoCapture($oUser, true);
-        if ($result->getStatus() === 'FAILED') {
-            $status = $result->getStatus();
-            $description = $result->getDescription();
-            $this->setErrorMessage('Capture Status: '.$status.' Description: '.$description);
+        if ($result) {
+            if ($result->getStatus() === 'FAILED') {
+                $status = $result->getStatus();
+                $description = $result->getDescription();
+                $this->setErrorMessage('Capture Status: '.$status.' Description: '.$description);
+            }
         }
+
     }
     /**
      * Return Compuop api order

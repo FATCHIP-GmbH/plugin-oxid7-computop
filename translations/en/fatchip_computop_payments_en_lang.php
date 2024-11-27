@@ -14,5 +14,6 @@ $aLang = [
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_NOT_COMPUTOP' => 'The chosen payment method in not a computop payment',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR_ADDRESS' => 'An error occured setting your address',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR' => 'Oops, something went wrong.',
-    'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR' => 'Oops, something went wrong.'
+    'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR' => 'Oops, something went wrong.',
+    'FATCHIP_COMPUTOP_BIRTHDAY_PLEASE_ENTER' => 'Please enter birthday'
 ];

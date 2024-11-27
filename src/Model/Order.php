@@ -148,7 +148,7 @@ class Order extends Order_parent
         }
 
         if ($ret === 3 || $response !== null) {
-            $blRecalculatingOrder = true;
+            // check Status and set Order appropiatelay
             $ret = $this->finalizeRedirectOrder($oBasket, $oUser, $blRecalculatingOrder);
         }
         if ($returning) {
@@ -157,7 +157,7 @@ class Order extends Order_parent
 
            // $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
-            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
             $this->autocapture($oUser, false);
         }
 
@@ -253,11 +253,11 @@ class Order extends Order_parent
                 $this->fatchipComputopPaymentClass
             );
         }else{
-        $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
-            $this->fatchipComputopPaymentClass,
-            $this->fatchipComputopConfig,
-            $ctOrder
-        );
+            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
+                $this->fatchipComputopPaymentClass,
+                $this->fatchipComputopConfig,
+                $ctOrder
+            );
         }
         $payId = $this->getFieldData('fatchip_computop_payid');
         $param = $payment->getInquireParams($payId);
@@ -292,9 +292,8 @@ class Order extends Order_parent
         }
 
         // Skip Auto Capture if its iDEAL
-        if ($this->fatchipComputopPaymentClass === 'Ideal') {
-            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentClass, [$oUser]);
-            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_ideal') {
+            $this->logDebug('autoCapture: skipping for ' . $this->fatchipComputopPaymentId, $oUser);
             return;
         }
 
@@ -315,8 +314,7 @@ class Order extends Order_parent
             return $captureResponse;
 
         } else {
-            $this->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID');
-
+            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSPAID);
         }
 
     }
@@ -679,7 +677,12 @@ class Order extends Order_parent
             );
         }
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest', $params);
-        $response = $payment->callComputop($params, $payment->getCTPaymentURL());
+        if ($paymentClass === 'EasyCredit') {
+            $response = $payment->callComputop($params, $payment->getCTCreditCheckURL());
+        } else {
+            $response = $payment->callComputop($params, $payment->getCTPaymentURL());
+
+        }
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
 
         return $this->handleAuthorizationResponse($response);
@@ -711,7 +714,7 @@ class Order extends Order_parent
         $redirectParams = $payment->getRedirectUrlParams();
         $payment->setBillToCustomer($ctOrder);
         if ($payment instanceof PaypalStandard) {
-         //   $payment->setPayPalMethod('shortcut');
+            //   $payment->setPayPalMethod('shortcut');
         }
         $paymentParams = $this->getPaymentParams($oUser, $dynValue);
         $paymentParams['billToCustomer'] = $payment->getBillToCustomer();
@@ -762,15 +765,29 @@ class Order extends Order_parent
             }
         }
         $response = $payment->getHTTPGetURL($params);
-       // $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-STANDARD', $payment);
+        $parts = parse_url($response);
+        parse_str($parts['query'], $query);
+
+// Die Len und Data Werte ausgeben
+        $len = $query['Len'];
+        $data = $query['Data'];
+        $PostRequestParams = [
+            'Len'    => $len,
+            'Data'   => $data,
+        ];
+        $responseDec = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
+
+        $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT', $responseDec);
+        // $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-STANDARD', $payment);
 
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
+        $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse', $responseDec);
         Registry::getUtils()->redirect($response, false);
 
         // return true;
     }
 
-    protected
+    public
     function createCTOrder()
     {
         $ctOrder = new CTOrder();
@@ -827,12 +844,18 @@ class Order extends Order_parent
     public
     function getUrlParams($redirect = false)
     {
+        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+
         $paymentClass = $this->fatchipComputopPaymentId;
         if ($redirect === true) {
             $paymentClass = Constants::GENERAL_PREFIX.'redirect';
         }
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
+        if ($this->fatchipComputopPaymentId === 'fatchip_computop_easycredit') {
+            $URLSuccess = $sShopUrl . 'index.php?cl=order&sid='.Registry::getSession()->getId().'&action=success';
+        } else {
+            $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass.'&sid='.Registry::getSession()->getId().'&action=success';
+
+        }
         $URLFailure = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
         $URLCancel = $sShopUrl . 'index.php?cl=' . 'payment'.'&sid='.Registry::getSession()->getId();
         $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify'.'&sid='.Registry::getSession()->getId();
@@ -912,10 +935,21 @@ class Order extends Order_parent
                 ];
 
             case "fatchip_computop_easycredit":
-                return [
-                    'DateOfBirth' => $dynValue['fatchip_computop_easycredit_birthdate_year'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_month'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_day'],
-                    'EventToken' => CTEnumEasyCredit::EVENTTOKEN_INIT,
-                ];
+                $oSession = Registry::getSession();
+                if ($oSession->getVariable('fatchip_computop_TransId')) {
+                   $sessionDecisionPayId = Registry::getSession()->getVariable('fatchipComputopEasyCreditPayId');
+                   $payId =  $sessionDecisionPayId->getPayID();
+                    return [
+                        'payID' => $payId,
+                        'EventToken' => CTEnumEasyCredit::EVENTTOKEN_CON,
+                    ];
+                } else {
+                    return [
+                        'DateOfBirth' => $dynValue['fatchip_computop_easycredit_birthdate_year'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_month'] . '-' . $dynValue['fatchip_computop_easycredit_birthdate_day'],
+                        'EventToken' => CTEnumEasyCredit::EVENTTOKEN_INIT,
+                    ];
+                }
+
 
             case "fatchip_computop_paypal_standard":
                 return [
@@ -935,7 +969,7 @@ class Order extends Order_parent
                 return [
                     'RefNr' => Registry::getSession()->getSessionChallengeToken(),
                     'UserData' => Registry::getSession()->getId()
-                    ];
+                ];
 
             case "fatchip_computop_paypal_express":
                 return [

@@ -17,7 +17,7 @@
             <td width="40%"><b>{{ FatchipComputopEasyCreditInformation.gesamtsumme|number_format(2, ',','') }}</b></td>
         </tr>
         <tr>
-            <td width="40%">Ihre monatliche Rate{/s}:</td>
+            <td width="40%">Ihre monatliche Rate:</td>
             <td width="40%">{{ FatchipComputopEasyCreditInformation.betragRate|number_format(2, ',','') }}</td>
         </tr>
         <tr>
@@ -33,15 +33,43 @@
             <td width="40%">{{ FatchipComputopEasyCreditInformation.effektivzins|number_format(2, ',','') }}%</td>
         </tr>
         <tr>
-            <td width="40%" colspan="2">{{ FatchipComputopEasyCreditInformation.tilgungsplanText }}</td>
+            <td width="40%" colspan="2" style="padding-top: 15px;">
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9;">
+                    <div id="tilgungsplanContainer">
+                        <p id="tilgungsplanText" style="display: none;">{{ FatchipComputopEasyCreditInformation.tilgungsplanText }}</p>
+                    </div>
+                </div>
+            </td>
         </tr>
         <tr>
-            <td width="40%"><a href="{{ FatchipComputopEasyCreditInformation.urlVorvertraglicheInformationen }}">
+            <td width="40%">
+                <a href="{{ FatchipComputopEasyCreditInformation.urlVorvertraglicheInformationen }}"
+                   onclick="openPopup('{{ FatchipComputopEasyCreditInformation.urlVorvertraglicheInformationen }}'); return false;"
+                   style="white-space: nowrap;">
                     Vorvertragliche Informationen
                 </a>
             </td>
         </tr>
     </table>
-
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var tilgungsplanText = document.getElementById("tilgungsplanText").innerText;
+        var paragraphs = tilgungsplanText.split(/(?:\r\n|\r|\n|\.|\.\s)/);
+        var container = document.getElementById("tilgungsplanContainer");
+        paragraphs.forEach(function(paragraph) {
+            paragraph = paragraph.trim();
+            if (paragraph.length > 0) {
+                var p = document.createElement("p");
+                p.style.marginBottom = "10px";
+                p.textContent = paragraph;
+                container.appendChild(p);
+            }
+        });
+    });
+
+    function openPopup(url) {
+        window.open(url, 'popupWindow', 'width=600,height=600,scrollbars=yes,resizable=yes');
+    }
+</script>

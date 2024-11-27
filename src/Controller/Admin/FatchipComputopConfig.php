@@ -250,7 +250,6 @@ class FatchipComputopConfig extends AdminController
         try {
             $success = $service->getIdealIssuers();
             $this->setIdealUpdateSuccess($success);
-
         }
         catch (Exception $e) {
             Registry::getUtilsView()->addErrorToDisplay(
