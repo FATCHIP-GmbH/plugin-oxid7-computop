@@ -404,8 +404,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                         //     $order->customizeOrdernumber($response);
                         $order->updateOrderAttributes($response);
                         $order->updateComputopFatchipOrderStatus('FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED');
-                        $this->updateRefNrWithComputop($order);
                         $order->autocapture($oUser, false);
+                        $this->updateRefNrWithComputop($order);
                     }
                 }
             }
