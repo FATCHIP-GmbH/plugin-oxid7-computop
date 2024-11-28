@@ -57,22 +57,7 @@ class CTPaymentConfigForms
                 'required' => true,
                 'description' => 'Ihr Verschlüsselungs-Passwort',
             ],
-            'prefixOrdernumber' => [
-                'name' => 'prefixOrdernumber',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Bestellnummer Präfix',
-                'required' => false,
-                'description' => 'Präfix für Bestellnummern.',
-            ],
-            'suffixOrdernumber' => [
-                'name' => 'suffixOrdernumber',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Bestellnummer Suffix',
-                'required' => false,
-                'description' => 'Suffix für Bestellnummern.',
-            ],
+
         ];
 
     const formGeneralSelectElements =
@@ -302,7 +287,7 @@ class CTPaymentConfigForms
                         ['DIREKT', [
                             'de_DE' => 'Direktanbindung',
                             'en_GB' => 'direct',
-                        ]],
+                        ]]/*,
                         ['EVO', [
                             'de_DE' => 'EVO Payments',
                             'en_GB' => 'EVO Payments',
@@ -310,7 +295,7 @@ class CTPaymentConfigForms
                         ['INTERCARD', [
                             'de_DE' => 'Intercard',
                             'en_GB' => 'Intercard',
-                        ]],
+                        ]],*/
                     ],
                 'description' => 'Lastschrift Zahlungen können direkt, über EVO oder über INTERCARD abgewickelt werden.',
             ],
@@ -333,27 +318,7 @@ class CTPaymentConfigForms
                         ]],
                     ],
                 'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
-            ],
-            'lastschriftAnon' => [
-                'name' => 'lastschriftAnon',
-                'type' => 'select',
-                'value' => 'Aus',
-                'label' => 'Iban anonymisieren',
-                'required' => false,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['Aus', [
-                            'de_DE' => 'Aus',
-                            'en_GB' => 'off',
-                        ]],
-                        ['An', [
-                            'de_DE' => 'An',
-                            'en_GB' => 'on',
-                        ]],
-                    ],
-                'description' => 'Stellt im Checkout und im Mein Konto Bereich die Iban anonymisiert dar',
-            ],
+            ]
         ];
 
     const formLastschriftNumberElements =
@@ -394,14 +359,6 @@ class CTPaymentConfigForms
                 'required' => false,
                 'description' => 'Ihre Amazonpay MerchantId',
             ],
-            'amazonpayPrivKey' => [
-                'name' => 'amazonpayPrivKey',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'AmazonPay - Private Kay',
-                'required' => false,
-                'description' => 'Ihr Amazonpay Private Key',
-            ],
             'amazonpayPubKeyId' => [
                 'name' => 'amazonpayPubKeyId',
                 'type' => 'text',
@@ -410,15 +367,6 @@ class CTPaymentConfigForms
                 'required' => false,
                 'description' => 'Ihre Amazonpay Public Key Id',
             ],
-            'amazonpayStoreId' => [
-                'name' => 'amazonpayStoreId',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'AmazonPay - Store Id',
-                'required' => false,
-                'description' => 'Ihre Amazonpay Store Id',
-            ],
-
         ];
 
     const formAmazonSelectElements =
@@ -457,23 +405,6 @@ class CTPaymentConfigForms
                     ],
                 'description' => '<p><b>Automatisch</b>: Reservierte Beträge werden automatisch eingezogen.<BR><b>Manuell</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
             ],
-            'amazonButtonType' => [
-                'name' => 'amazonButtonType',
-                'type' => 'select',
-                'value' => 'PwA',
-                'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_TYPE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Typ</a>',
-                'required' => false,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['PwA', 'Amazon Pay (Default)'],
-                        ['Pay', 'Pay'],
-                        ['A', 'A'],
-                        ['LwA', 'LwA'],
-                        ['Login', 'Login'],
-                    ],
-                'description' => '<p>Typ des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Typ"</p>',
-            ],
             'amazonButtonColor' => [
                 'name' => 'amazonButtonColor',
                 'type' => 'select',
@@ -485,29 +416,8 @@ class CTPaymentConfigForms
                     [
                         ['Gold', 'Gold'],
                         ['LightGray', 'LightGray'],
-                        ['DarkGray', 'DarkGray'],
                     ],
                 'description' => '<p>Farbe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Farbe"</p>',
-            ],
-            'amazonButtonSize' => [
-                'name' => 'amazonButtonSize',
-                'type' => 'select',
-                'value' => 'medium',
-                'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Größe</a>',
-                'required' => 'true',
-                'editable' => false,
-                'store' =>
-                    [
-                        ['small', [
-                            'de_DE' => 'klein',
-                            'en_GB' => 'small',
-                        ]],
-                        ['medium', [
-                            'de_DE' => 'mittel',
-                            'en_GB' => 'medium',
-                        ]],
-                    ],
-                'description' => '<p>Größe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Größe"</p>',
             ],
         ];
 
@@ -560,14 +470,6 @@ class CTPaymentConfigForms
                 ],
                 'fatchip_computop_ideal_button' => [
                     'label' => '<strong>iDeal Banken aktualisieren <strong>',
-                ],
-                'prefixOrdernumber' => [
-                    'label' => 'Bestellnummer Präfix',
-                    'description' => 'Präfix für Bestellnummern.',
-                ],
-                'suffixOrdernumber' => [
-                    'label' => 'Bestellnummer Suffix',
-                    'description' => 'Suffix für Bestellnummern.',
                 ],
                 'debuglog' => [
                     'label' => 'Debug Protokoll',
@@ -622,10 +524,7 @@ class CTPaymentConfigForms
                     'label' => 'Lastschrift - Capture Modus',
                     'description' => '<p></p><b>AUTO</b>: Reservierte Beträge werden sofort automatisch eingezogen.<BR><b>MANUAL</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
                 ],
-                'lastschriftAnon' => [
-                    'label' => 'Iban anonymisieren',
-                    'description' => 'Stellt im Checkout und im Mein Konto Bereich die Iban anonymisiert dar',
-                ],
+
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
                     'description' => '<p>Bestimmt, ob der angefragte Betrag sofort oder erst später eingezogen wird. <br><b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b></p>',
@@ -646,19 +545,10 @@ class CTPaymentConfigForms
                     'label' => 'Amazon Capture Modus',
                     'description' => '<p><b>Automatisch</b>: Reservierte Beträge werden automatisch eingezogen.<BR><b>Manuell</b>: Geldeinzüge werden von Ihnen manuell im Shopbackend durchgeführt.</p>',
                 ],
-                'amazonButtonType' => [
-                    'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_TYPE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Typ</a>',
-                    'description' => '<p>Typ des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Typ"</p>',
-                ],
                 'amazonButtonColor' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_COLOR_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Farbe</a>',
                     'description' => '<p>Farbe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Farbe"</p>',
                 ],
-                'amazonButtonSize' => [
-                    'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener" >AmazonPay - Button Größe</a>',
-                    'description' => '<p>Größe des Amazon Buttons<BR>Das Aussehen der verschiedenen Buttons.<BR>Klicken Sie links auf den Link "AmazonPay - Button Größe"</p>',
-                ],
-
                 'klarnaaccount' => [
                     'label' => 'Klarna Konto',
                     'description' => '<p>Das zu benutzende Klarna Konto.</p>',
@@ -679,14 +569,6 @@ class CTPaymentConfigForms
                 ],
                 'fatchip_computop_ideal_button' => [
                     'label' => '<strong>update iDeal banks<strong>',
-                ],
-                'prefixOrdernumber' => [
-                    'label' => 'Ordernumber prefix',
-                    'description' => 'Prefix for ordernumbers.',
-                ],
-                'suffixOrdernumber' => [
-                    'label' => 'Ordernumber suffix',
-                    'description' => 'Suffix for ordernumbers.',
                 ],
                 'debuglog' => [
                     'label' => 'Debug protocol',
@@ -740,10 +622,7 @@ class CTPaymentConfigForms
                     'label' => 'Direct debit - Capture Mode',
                     'description' => '<p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR><b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
                 ],
-                'lastschriftAnon' => [
-                    'label' => 'Anonymize IBAN',
-                    'description' => 'The customers IBAN will be displayed anonymized in checkout and on the my accoutn page',
-                ],
+
                 'paypalCaption' => [
                     'label' => 'Paypal - Capture Modus',
                     'description' => '<p>Determines whether the requested amount is collected immediately or at a later date. <br><b>Important:<br>Please contact Computop Support for Manual to clarify the different application options.</b></p>',
@@ -764,19 +643,10 @@ class CTPaymentConfigForms
                     'label' => 'Amazon Capture Mode',
                     'description' => '<p><b>AUTO</b>: Reserved amounts will be captured automatically.<BR><b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
                 ],
-                'amazonButtonType' => [
-                    'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_TYPE_PARAMETER" target="_blank" rel="noopener">AmazonPay - Button Type</a>',
-                    'description' => '<p>Type of the Amazon button<BR>The look of the different buttons.<BR>Please click on the left link "AmazonPay - Button Type"</p>',
-                ],
                 'amazonButtonColor' => [
                     'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_COLOR_PARAMETER" target="_blank" rel="noopener">AmazonPay - Button Color</a>',
                     'description' => '<p>Color of the Amazon button<BR>The look of the different button.<BR>Please click on the left link "AmazonPay - Button Color"</p>',
                 ],
-                'amazonButtonSize' => [
-                    'label' => '<a href="https://pay.amazon.com/de/developer/documentation/lpwa/201952050#ENTER_SIZE_PARAMETER" target="_blank" rel="noopener">AmazonPay - Button Size</a>',
-                    'description' => '<p>Size of the amazon button<BR>The look of the different button.<BR>Please click on the left link "AmazonPay - Button Size"</p>',
-                ],
-
                 'klarnaaccount' => [
                     'label' => 'Klarna Account',
                     'description' => '<p>Your Klarna account.</p>',

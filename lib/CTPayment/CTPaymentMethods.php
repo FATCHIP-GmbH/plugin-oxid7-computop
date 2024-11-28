@@ -50,6 +50,7 @@ class CTPaymentMethods
                 'className' => 'Twint',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],*/
+            /*
             [
                 'name' => 'fatchip_computop_klarna',
                 'shortname' => 'Klarna',
@@ -59,7 +60,7 @@ class CTPaymentMethods
                 'additionalDescription' => '',
                 'className' => 'KlarnaPayments',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
-            ],
+            ], */
             [
                 'name' => 'fatchip_computop_lastschrift',
                 'shortname' => 'Lastschrift',
@@ -90,7 +91,7 @@ class CTPaymentMethods
                 'className' => 'PaypalExpress',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
             ],
-            /*
+
             [
                 'name' => 'fatchip_computop_amazonpay',
                 'shortname' => 'AmazonPay',
@@ -100,6 +101,6 @@ class CTPaymentMethods
                 'additionalDescription' => '',
                 'className' => 'AmazonPay',
                 //'countries' => ['DE', 'NL', 'DK', 'FI', 'SE', 'NO'],
-            ], */
+            ],
         ];
 }

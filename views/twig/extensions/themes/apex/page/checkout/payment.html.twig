@@ -24,6 +24,8 @@
         {% include "@fatchip_computop_payments/payments/fatchip_computop_easycredit" %}
     {% elseif sPaymentID == 'fatchip_computop_creditcard' %}
         {% include "@fatchip_computop_payments/payments/fatchip_computop_creditcard_iframe" %}
+    {% elseif sPaymentID == 'fatchip_computop_amazonpay' %}
+        {% include "@fatchip_computop_payments/payments/fatchip_computop_amazonpay" %}
     {% else %}
         {{ parent() }}
     {% endif %}

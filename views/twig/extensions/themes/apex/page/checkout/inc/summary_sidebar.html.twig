@@ -3,8 +3,7 @@
 {% block checkout_basketcontents_summary %}
     {{ parent() }}
     {% if oViewConf.isPaypalActive() %}
-        {% set payment = oView.getPayment() %}
-        {% if payment.oxpayments__oxid.value != 'fatchip_computop_paypal_express'  %}
+        {% if oViewConf.getActiveClassName() == 'basket' %}
             <div class="w-100 mb-2">
                 {% include "@fatchip_computop_payments/fatchip_computop/fatchip_computop_paypalbutton" with {buttonId: "paypal_button_container", buttonclass: "large", placement: "Cart"} %}
             </div>

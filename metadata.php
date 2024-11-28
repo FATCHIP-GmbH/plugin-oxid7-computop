@@ -7,6 +7,7 @@ use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopConfig;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiTest;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopApiLog;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopOrderSettings;
+use Fatchip\ComputopPayments\Controller\FatchipComputopAmazonpay;
 use Fatchip\ComputopPayments\Controller\FatchipComputopEasycredit;
 use Fatchip\ComputopPayments\Controller\Admin\FatchipComputopUpdateIdealIssuers;
 use Fatchip\ComputopPayments\Controller\FatchipComputopIdeal;
@@ -30,6 +31,7 @@ use OxidEsales\Eshop\Application\Model\Order as CoreOrderModel;
 use Fatchip\ComputopPayments\Model\Order as ModuleOrder;
 use OxidEsales\Eshop\Application\Model\PaymentGateway as CorePaymentGateway;
 use Fatchip\ComputopPayments\Model\PaymentGateway as ModulePaymentGateway;
+use OxidEsales\Eshop\Core\Session;
 use OxidEsales\Eshop\Core\ViewConfig as CoreViewConfig;
 
 
@@ -68,7 +70,7 @@ $aModule = [
         CorePaymentController::class => FatchipComputopPayment::class,
         CoreOrderModel::class => ModuleOrder::class,
         CoreViewConfig::class => ModuleViewConfig::class,
-        \OxidEsales\Eshop\Core\Session::class => FatchipComputopSession::class,
+        Session::class => FatchipComputopSession::class,
 
 
         // Models
@@ -93,6 +95,7 @@ $aModule = [
         Constants::GENERAL_PREFIX . 'paypal_express' => FatchipComputopPaypalExpress::class,
         Constants::GENERAL_PREFIX . 'klarna' => FatchipComputopKlarna::class,
         Constants::GENERAL_PREFIX . 'easycredit' => FatchipComputopEasycredit::class,
+        Constants::GENERAL_PREFIX . 'amazonpay' => FatchipComputopAmazonpay::class,
         Constants::GENERAL_PREFIX . 'notify' => FatchipComputopNotify::class,
         Constants::GENERAL_PREFIX . 'ideal' => FatchipComputopIdeal::class,
         Constants::GENERAL_PREFIX . 'twint' => FatchipComputopTwint::class,
@@ -104,8 +107,6 @@ $aModule = [
         ['name' => 'merchantID', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'mac', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'blowfishPassword', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'prefixOrdernumber', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'suffixOrdernumber', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'debuglog', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'encryption', 'type' => 'str', 'value' => '', 'group' => null],
@@ -123,7 +124,6 @@ $aModule = [
         ['name' => 'lastschriftDienst', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'lastschriftCaption', 'type' => 'str', 'value' => '', 'group' => null],
 
-        ['name' => 'lastschriftAnon', 'type' => 'string', 'value' => false, 'group' => null],
         ['name' => 'paypalCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressCaption', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'paypalExpressClientID', 'type' => 'str', 'value' => '', 'group' => null],
@@ -132,15 +132,10 @@ $aModule = [
         ['name' => 'paypalExpressTestMode', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'amazonpayMerchantId', 'type' => 'string', 'value' => false, 'group' => null],
-        ['name' => 'amazonpayPrivKey', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonpayPubKeyId', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'amazonpayStoreId', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonLiveMode', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'amazonCaptureType', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'amazonButtonType', 'type' => 'str', 'value' => '', 'group' => null],
-
         ['name' => 'amazonButtonColor', 'type' => 'string', 'value' => false, 'group' => null],
-        ['name' => 'amazonButtonSize', 'type' => 'str', 'value' => '', 'group' => null],
 
         ['name' => 'klarnaaccount', 'type' => 'str', 'value' => '', 'group' => null],
         ['name' => 'klarnaCaption', 'type' => 'str', 'value' => '', 'group' => null],

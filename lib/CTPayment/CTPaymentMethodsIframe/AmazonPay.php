@@ -1,47 +1,45 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The Computop Oxid Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The Computop Oxid Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with Computop Oxid Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 8.0
  *
  * @category   Payment
  * @package    FatchipCTPayment
  * @subpackage CTPaymentMethods
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2024 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
-namespace Fatchip\CTPayment\CTPaymentMethods;
+namespace Fatchip\CTPayment\CTPaymentMethodsIframe;
 
+use Fatchip\CTPayment\CTAddress\CTAddress;
+use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethod;
+
+use Fatchip\CTPayment\CTPaymentMethodIframe;
+
+use function Fatchip\CTPayment\CTPaymentMethods\Shopware;
 
 /**
  * Class AmazonPay
  * @package Fatchip\CTPayment\CTPaymentMethods
  */
-class AmazonPay extends CTPaymentMethod
+class AmazonPay extends CTPaymentMethodIframe
 {
     const paymentClass = 'AmazonPay';
-
-
-    public function __construct()
-    {
-        $test = 'test';
-    }
 
     /**
      * returns PaymentURL
@@ -51,7 +49,69 @@ class AmazonPay extends CTPaymentMethod
     {
         return 'https://www.computop-paygate.com/AmazonAPA.aspx';
     }
+    public function getAuthorizeParams($payID, $transID, $amount, $currency, $capture)
+    {
+        $params = [
+            'merchantID' => $this->merchantID,
+            'amount' => $amount,
+            'currency' => $currency,
+            'Capture' => $capture,
+        ];
 
+        return $params;
+    }
+    public function __construct(
+        $config,
+        $order,
+        $urlSuccess,
+        $urlFailure,
+        $urlNotify,
+        $orderDesc,
+        $userData,
+        $eventToken = null,
+        $isFirm = null,
+        $klarnainvoice = null,
+        $urlBack
+    )
+    {
+        parent::__construct($config, $order, $orderDesc, $userData);
+
+        $this->setUrlSuccess($urlSuccess);
+        $this->setUrlFailure($urlFailure);
+        $this->setUrlNotify($urlNotify);
+        $this->setUrlBack($urlBack);
+
+        $this->setMsgVer('2.0');
+        $this->setUserData(base64_encode($userData));
+
+        if($config['creditCardTestMode']) {
+            $this->setOrderDesc('Test:0000');
+        }
+        else {
+            $this->setOrderDesc($orderDesc);
+        }
+
+
+        $this->setBillingAddress($order->getBillingAddress());
+        $this->setShippingAddress($order->getShippingAddress());
+        $this->setCapture('MANUAL');
+
+        $this->setCustom();
+
+    }
+    public function setCapture($capture)
+    {
+        $this->capture = $capture;
+    }
+
+    /**
+     * @ignore <description>
+     * @param string $msgVer
+     */
+    public function setMsgVer($msgVer)
+    {
+        $this->msgVer = $msgVer;
+    }
     /**
      * sets and returns request parameters for amazon
      * "LOGON" api call
@@ -66,7 +126,7 @@ class AmazonPay extends CTPaymentMethod
      * @return array
      */
     public function getAmazonInitParams($merchantId, $transID, $countryCode, $amount, $currency, $urlSuccess, $URLFailure, $URLNotify,
-                                        $URLCancel, $shopUrl, $txType = 'AuthorizeWithCapture', $localCurrency = 'EUR', $scope = '' )
+                                        $URLCancel, $shopUrl, $txType = 'Authorize', $localCurrency = 'EUR', $scope = '' )
     {
         $params = [
             'transID' => $transID,
@@ -229,5 +289,114 @@ class AmazonPay extends CTPaymentMethod
         ];
 
         return $params;
+    }
+    /**
+     * @ignore <description>
+     * @return string
+     */
+    public function getBillingAddress()
+    {
+        return $this->billingAddress;
+    }
+
+    /**
+     * @ignore <description>
+     * @param CTAddress $CTAddress
+     */
+    public function setBillingAddress($CTAddress)
+    {
+        $this->billingAddress = base64_encode(json_encode($this->declareAddress($CTAddress)));
+    }
+
+    /**
+     * @ignore <description>
+     * @return string
+     */
+    public function getShippingAddress()
+    {
+        return $this->shippingAddress;
+    }
+
+    /**
+     * @ignore <description>
+     * @param CTAddress $CTAddress
+     */
+    public function setShippingAddress($CTAddress)
+    {
+        $this->shippingAddress = base64_encode(json_encode($this->declareAddress($CTAddress)));
+    }
+
+    /**
+     * @param CTAddress $CTAddress
+     * @return array
+     */
+    protected function declareAddress($CTAddress)
+    {
+        $address['city'] = $CTAddress->getCity();
+        $address['country']['countryA3'] = $CTAddress->getCountryCodeIso3();
+        $address['addressLine1']['street'] = $CTAddress->getStreet();
+        $address['addressLine1']['streetNumber'] = $CTAddress->getStreetNr();
+        $address['postalCode'] = $CTAddress->getZip();
+        return $address;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBillToCustomer()
+    {
+        return $this->billToCustomer;
+    }
+
+    /**
+     * @param CTOrder $ctOrder
+     */
+    public function setBillToCustomer($ctOrder)
+    {
+        #$customer['consumer']['salutation'] = $ctOrder->getBillingAddress()->getSalutation();
+        $customer['consumer']['firstName'] = $ctOrder->getBillingAddress()->getFirstName();
+        $customer['consumer']['lastName'] = $ctOrder->getBillingAddress()->getLastName();
+        $customer['email'] = $ctOrder->getEmail();
+        $this->billToCustomer = base64_encode(json_encode($customer));
+    }
+
+    /**
+     * @return string
+     */
+    public function getShipToCustomer()
+    {
+        return $this->shipToCustomer;
+    }
+
+    /**
+     * @param CTOrder $ctOrder
+     */
+    public function setShipToCustomer($ctOrder)
+    {
+        #$customer['consumer']['salutation'] = $ctOrder->getShippingAddress()->getSalutation();
+        $customer['consumer']['firstName'] = $ctOrder->getShippingAddress()->getFirstName();
+        $customer['consumer']['lastName'] = $ctOrder->getShippingAddress()->getLastName();
+        $customer['email'] = $ctOrder->getEmail();
+        $customer['customerNumber'] = $ctOrder->getCustomerID();
+        $this->shipToCustomer = base64_encode(json_encode($customer));
+    }
+    public function getCredentialsOnFile()
+    {
+      //  return $this->credentialOnFile;
+    }
+
+    /**
+     * return string
+     */
+    public function setCredentialsOnFile($unscheduled = 'CIT', $initalPayment = true)
+    {
+        $credentialsOnFile['type']['unscheduled'] = $unscheduled;
+        $credentialsOnFile['initialPayment'] = $initalPayment;
+      //  $this->credentialOnFile = base64_encode(json_encode($credentialsOnFile));
+    }
+
+    public function setCustom()
+    {
+        $this->Custom = '';
     }
 }

@@ -41,10 +41,6 @@ class Config
 
     protected $blowfishPassword = null;
 
-    protected $prefixOrdernumber = null;
-
-    protected $suffixOrdernumber = null;
-
     protected $debuglog = null;
 
     protected $encryption = null;
@@ -72,8 +68,6 @@ class Config
 
     protected $lastschriftCaption = null;
 
-    protected $lastschriftAnon = null;
-
     protected $paypalCaption = null;
 
     protected $paypalExpressCaption = null;
@@ -86,23 +80,16 @@ class Config
 
     protected $paypalExpressTestMode = null;
 
-    protected $amazonpayPrivKey = null;
-
     protected $amazonpayPubKeyId = null;
 
     protected $amazonpayMerchantId = null;
-
-    protected $amazonpayStoreId = null;
 
     protected $amazonLiveMode = null;
 
     protected $amazonCaptureType = null;
 
-    protected $amazonButtonType = null;
-
     protected $amazonButtonColor = null;
 
-    protected $amazonButtonSize = null;
 
     protected $klarnaaccount = null;
 
@@ -421,18 +408,6 @@ class Config
         $moduleSettingBridge->save('lastschriftCaption', $lastschriftCaption, FatchipComputopModule::MODULE_ID);
     }
 
-    /**
-     * @return null
-     */
-    public function getLastschriftAnon()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('lastschriftAnon', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
 
 
     /**
@@ -619,30 +594,6 @@ class Config
     /**
      * @return null
      */
-    public function getAmazonButtonType()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonButtonType', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $amazonButtonType
-     */
-    public function setAmazonButtonType($amazonButtonType): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonButtonType', $amazonButtonType, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
     public function getAmazonButtonColor()
     {
         $moduleSettingBridge
@@ -662,30 +613,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('amazonButtonColor', $amazonButtonColor, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getAmazonButtonSize()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonButtonSize', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $amazonButtonSize
-     */
-    public function setAmazonButtonSize($amazonButtonSize): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonButtonSize', $amazonButtonSize, FatchipComputopModule::MODULE_ID);
     }
 
     /**
@@ -776,54 +703,6 @@ class Config
         $moduleSettingBridge->save('blowfishPassword', $blowfishPassword, FatchipComputopModule::MODULE_ID);
     }
 
-    /**
-     * @return null
-     */
-    public function getPrefixOrdernumber()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('prefixOrdernumber', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $prefixOrdernumber
-     */
-    public function setPrefixOrdernumber($prefixOrdernumber): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('prefixOrdernumber', $prefixOrdernumber, FatchipComputopModule::MODULE_ID);
-    }
-
-    /**
-     * @return null
-     */
-    public function getSuffixOrdernumber()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('suffixOrdernumber', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    /**
-     * @param null $suffixOrdernumber
-     */
-    public function setSuffixOrdernumber($suffixOrdernumber): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('suffixOrdernumber', $suffixOrdernumber, FatchipComputopModule::MODULE_ID);
-    }
-
     public function getMerchantID(): string
     {
         $moduleSettingBridge
@@ -860,23 +739,7 @@ class Config
         $moduleSettingBridge->save('amazonpayMerchantId', $value, FatchipComputopModule::MODULE_ID);
     }
 
-    public function getAmazonpayPrivKey(): string
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonpayPrivKey', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
 
-    public function setAmazonpayPrivKey($value): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonpayPrivKey', $value, FatchipComputopModule::MODULE_ID);
-    }
 
     public function getAmazonpayPubKeyId(): string
     {
@@ -894,24 +757,6 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('amazonpayPubKeyId', $value, FatchipComputopModule::MODULE_ID);
-    }
-
-    public function getAmazonpayStoreId(): string
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('amazonpayStoreId', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    public function setAmazonpayStoreId($value): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('amazonpayStoreId', $value, FatchipComputopModule::MODULE_ID);
     }
 
     public function toArray($mergable = false)

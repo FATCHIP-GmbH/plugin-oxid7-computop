@@ -29,10 +29,12 @@
 namespace Fatchip\CTPayment\CTPaymentMethods;
 
 use Fatchip\ComputopPayments\Core\Blowfish;
+use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\CTPayment\CTPaymentMethod;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Model\Payment;
 use OxidEsales\Eshop\Core\Registry;
 
@@ -240,12 +242,14 @@ class PayPalExpress extends CTPaymentMethod
         $dataQuery = urldecode(http_build_query($params));
         $length = mb_strlen($dataQuery);
 
-        $oBlowfish = new Blowfish();
-
+        $config = new Config();
+        $this->fatchipComputopConfig = $config->toArray();
+        $paymentService = new CTPaymentService($this->fatchipComputopConfig);
+         $data =  $paymentService->ctEncrypt($dataQuery, $length,$paymentService->blowfishPassword,$paymentService->encryption);
         $payload = [
             'MerchantID' => $this->getComputopMerchantId(),
             'Len' => $length,
-            'Data' => $oBlowfish->ctEncrypt($dataQuery, $length, 'x!3JH9n*mD_6[2Wb'),
+            'Data' => $data,
             'raw' => $dataQuery
         ];
 

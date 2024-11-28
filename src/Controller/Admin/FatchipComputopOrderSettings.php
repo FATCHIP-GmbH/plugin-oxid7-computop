@@ -40,6 +40,13 @@ class FatchipComputopOrderSettings extends AdminDetailsController
     protected $_sErrorMessage = false;
 
     /**
+     * notice message property
+     *
+     * @var string|bool
+     */
+    protected $_sNoticeMessage = false;
+
+    /**
      * Compuop ApiOrder
      *
      */
@@ -128,6 +135,16 @@ class FatchipComputopOrderSettings extends AdminDetailsController
         }
 
         return $this->_sTemplate;
+    }
+
+    public function getSNoticeMessage(): bool|string
+    {
+        return $this->_sNoticeMessage;
+    }
+
+    public function setSNoticeMessage(bool|string $sNoticeMessage): void
+    {
+        $this->_sNoticeMessage = $sNoticeMessage;
     }
 
     /**
@@ -268,7 +285,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
                 );
             }
 
-            
+
             $response = $this->callComputopRefundService($oOrder, $params, $payment);
             $this->handleRefundResponse($oOrder,$response, $amount);
         } catch (Exception $e) {
@@ -284,8 +301,10 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             $oOrder->assign(['fatchip_computop_amount_refunded' => $this->getAmountForComputop($amount)]);
             $oOrder->save();
             $this->_blSuccessfulRefund = true;
-        } else {
+        } elseif ($response->getStatus() === 'FAILED') {
             $this->setErrorMessage('Refund Status:'. $response->getStatus());
+        } else {
+            $this->setSNoticeMessage('Refund Status:'. $response->getStatus());
         }
     }
     protected function createCTOrder($oOrder) {
@@ -673,8 +692,21 @@ class FatchipComputopOrderSettings extends AdminDetailsController
 
     public function captureManual() {
         $oUser = $this->getOrder()->getUser();
+        $this->getOrder()->fatchipComputopPaymentId = $this->getOrder()->getFieldData('oxpaymenttype');
+
+        if  ($this->getOrder()->isAutoCaptureEnabled()) {
+        //    $this->setErrorMessage('Capture Status: Autocapture Disabled');
+  //          return false;
+        }
         $result =   $this->getOrder()->autoCapture($oUser, true);
-        return $result;
+        if ($result) {
+            if ($result->getStatus() === 'FAILED') {
+                $status = $result->getStatus();
+                $description = $result->getDescription();
+                $this->setErrorMessage('Capture Status: '.$status.' Description: '.$description);
+            }
+        }
+
     }
     /**
      * Return Compuop api order

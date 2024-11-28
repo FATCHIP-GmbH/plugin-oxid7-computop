@@ -38,16 +38,19 @@ class Constants
     const APILOG_TABLE = self::GENERAL_PREFIX . 'api_log';
 
     const directPayments = [
-        'fatchip_computop_lastschrift'
+        'fatchip_computop_lastschrift',
+
     ];
 
     const redirectPayments = [
         'fatchip_computop_klarna',
         'fatchip_computop_paypal_standard',
-        'fatchip_computop_easycredit',
+        'fatchip_computop_lastschrift',
         'fatchip_computop_creditcard',
         'fatchip_computop_twint',
-        'fatchip_computop_ideal'
+        'fatchip_computop_ideal',
+        'fatchip_computop_amazonpay'
+
     ];
 
     const amazonpayPaymentId = 'fatchip_computop_amazonpay';
@@ -79,7 +82,7 @@ class Constants
     {
         switch ($paymentId) {
             case "fatchip_computop_lastschrift":
-                return 'Lastschrift';
+                return 'LastschriftDirekt';
 
             case "fatchip_computop_paypal":
                 return 'Paypal';
@@ -88,7 +91,7 @@ class Constants
                 return 'PaypalStandard';
 
             case "fatchip_computop_amazonpay":
-                return 'Amazonpay';
+                return 'AmazonPay';
 
             case "fatchip_computop_creditcard":
                 return 'CreditCard';

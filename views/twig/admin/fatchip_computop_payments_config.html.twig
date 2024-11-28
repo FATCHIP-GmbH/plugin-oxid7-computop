@@ -89,22 +89,22 @@
         } %}
 
         {# Amazon Settings #}
-        {#% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
             'headingId': 'headingAmazon',
             'collapseId': 'collapseAmazon',
             'title': translate({ ident: "FATCHIP_COMPUTOP_AMAZON_SETTINGS" }),
             'formFields': amazonFormFields,
             'currentBlock': 'amazon'
-        } %#}
+        } %}
 
         {# Klarna Settings #}
-        {% include sModuleId ~ "/admin/accordion_section.html.twig" with {
+        {# % include sModuleId ~ "/admin/accordion_section.html.twig" with {
             'headingId': 'headingKlarna',
             'collapseId': 'collapseKlarna',
             'title': translate({ ident: "FATCHIP_COMPUTOP_KLARNA_SETTINGS" }),
             'formFields': klarnaFormFields,
             'currentBlock': 'klarna'
-        } %}
+        } % #}
         <br />
         <div class="form-group row mt-3">
             <div class="col-md-12 text-center">

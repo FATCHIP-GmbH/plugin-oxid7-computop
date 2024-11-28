@@ -119,7 +119,7 @@ abstract class CTPaymentMethod extends Encryption
     protected function ctHMAC($params)
     {
         $data = $params['payID'] . '*' . $params['transID'] . '*' . $this->merchantID . '*' . $params['amount'] . '*' . $params['currency'];
-        return hash_hmac("sha256", $data, $this->mac);
+        return strtoupper(hash_hmac("sha256", $data, $this->mac));
     }
 
     /**
@@ -155,16 +155,16 @@ abstract class CTPaymentMethod extends Encryption
         $len = mb_strlen($request);  // Length of the plain text string
         $data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
 
-            $url .=
-                '?MerchantID=' . $this->merchantID .
-                '&Len=' . $len .
-                '&Data=' . $data;
+        $url .=
+            '?MerchantID=' . $this->merchantID .
+            '&Len=' . $len .
+            '&Data=' . $data;
 
-            if ($addTemplate) {
-                $url .= '&template=' . $addTemplate;
-            }
+        if ($addTemplate) {
+            $url .= '&template=' . $addTemplate;
+        }
 
-            return $url;
+        return $url;
     }
 
     /**
@@ -203,10 +203,10 @@ abstract class CTPaymentMethod extends Encryption
     public function callComputop($ctRequest, $url)
     {
         $curl = curl_init();
-
+        $curlUrl = $this->prepareComputopRequest($ctRequest, $url);
         curl_setopt_array($curl,
             [CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_URL => $this->prepareComputopRequest($ctRequest, $url)
+             CURLOPT_URL => $curlUrl
             ]);
         try {
             $resp = curl_exec($curl);
@@ -215,12 +215,12 @@ abstract class CTPaymentMethod extends Encryption
                 throw new Exception(curl_error($curl), curl_errno($curl));
             }
             $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
         } catch (Exception $e) {
             trigger_error(sprintf(
                 'Curl failed with error #%d: %s',
-                $e->getCode(), $e->getMessage()),
-                E_USER_ERROR);
+                $e->getCode(),
+                $e->getMessage()
+            ), E_USER_ERROR);
         }
 
         if ($httpcode === 302) {
@@ -230,9 +230,35 @@ abstract class CTPaymentMethod extends Encryption
         // Paypal Special:
         $resp = strstr($resp, 'Len=');
         $resp = str_replace('amp;', '', $resp);
+
         parse_str($resp, $arr);
         $plaintext = $this->ctDecrypt($arr['Data'], $arr['Len'], $this->blowfishPassword);
-        $response = new CTResponse($this->ctSplit(explode('&', $plaintext), '='));
+
+        $matches = [];
+        preg_match('/buttonpayload=({.*})/', $plaintext, $matches);
+
+        if (isset($matches[1])) {
+            $buttonPayloadJson = $matches[1];
+        } else {
+            $buttonPayloadJson = null;
+        }
+
+        $plaintextWithoutButtonPayload = preg_replace('/buttonpayload=({.*})/', '', $plaintext);
+        $keyValuePairs = explode('&', $plaintextWithoutButtonPayload);
+        $responseArray = [];
+        foreach ($keyValuePairs as $pair) {
+            $parts = explode('=', $pair, 2);
+            if (count($parts) === 2) {
+                $responseArray[$parts[0]] = $parts[1];
+            }
+        }
+
+        if ($buttonPayloadJson) {
+            $responseArray['buttonpayload'] = $buttonPayloadJson;
+        }
+
+        // Erzeuge die Antwort
+        $response = new CTResponse($responseArray);
         return $response;
     }
 

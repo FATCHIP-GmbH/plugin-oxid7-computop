@@ -31,6 +31,7 @@ use Exception;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonoLogLogger;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
@@ -71,7 +72,7 @@ class Logger extends AbstractLogger
             $logMessage->setTransId($response->getTransID());
             $logMessage->setPayId($response->getPayID());
 
-            if ($response instanceof CreditCard) {
+            if ($response instanceof CreditCard || $response instanceof EasyCredit) {
                 $logMessage->setPayId($response->getPayID());
             } else {
                 $logMessage->setPayId($response->getPayID());

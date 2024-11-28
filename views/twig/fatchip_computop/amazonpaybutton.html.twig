@@ -4,25 +4,34 @@
 <div class="amazonpay-button {{ buttonclass }} nonexpress" id="{{ buttonId }}"></div>
 <script src="https://static-eu.payments-amazon.com/checkout.js"></script>
 {% capture assign = "fatchip_computop_amazonpay_script_amazonbutton" %}
+    {% if false %}<script>{% endif %}
     console.log('Button Captured');
     console.log('ButtonID:' + {{ buttonId }});
     console.log('vars:');
     console.log('merchantId:' + '{{ fatchipComputopConfig.merchantID }}');
+/*
+    console.log('merchantId:' + '{{ fatchipComputopConfig.amazonpayMerchantId }}');
+*/
+
     console.log('publicKeyId:' + '{{ fatchipComputopConfig.amazonpayPubKeyId }}');
     console.log('ledgerCurrency:' + 'EUR');
     console.log('checkoutLanguage:' + 'DE_de');
+    console.log('buttonsignature:','{{ oViewConf.getSignature(aPayload)|raw }}');
 
     if (typeof {{ buttonId }}_is_rendered === "undefined" || {{ buttonId }}_is_rendered !== true) {
         var fatchipComputopAmazonPayButton = amazon.Pay.renderButton('#{{ buttonId }}', {
-            merchantId: '{{ fatchipComputopConfig.merchantID }}',
+            merchantId: '{{ fatchipComputopConfig.amazonpayMerchantId }}',
             publicKeyId : '{{ fatchipComputopConfig.amazonpayPubKeyId }}',
             ledgerCurrency: '{{ oViewConf.getLedgerCurrency() }}',
             checkoutLanguage: '{{ oViewConf.getCheckoutLanguage() }}',
             productType: 'PayAndShip',
-            placement: 'Checkout'
-        });
-        FatchipComputopAmazonPayButtonComponent.init(fatchipComputopAmazonPayButton, '{{ aPayload|raw }}', '{{ oViewConf.signature|raw }}');
-        // FatchipComputopAmazonPayCheckoutAGBComponent.init();
+            placement: 'Checkout',
+            buttonColor: '{{ fatchipComputopConfig.amazonButtonColor }}',
+            payloadJSON: '{{ aPayload|raw }}',
+            estimatedOrderAmount: { "amount": "{{ oxcmp_basket.getPrice().getBruttoPrice() }}", "currencyCode": "EUR"},
+
+    });
+    FatchipComputopAmazonPayButtonComponent.init(fatchipComputopAmazonPayButton, {{ aPayload|raw }}, '{{ oViewConf.getSignature(aPayload)|raw }}','{{ oViewConf.getButtonPubKey()|raw }}');
     {{ buttonId }}_is_rendered = true;
     }
 {% endcapture %}
