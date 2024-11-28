@@ -1,26 +1,25 @@
 <?php
-/** @noinspection PhpUnused */
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The Computop Oxid Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The Computop Oxid Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with Computop Oxid Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 8.0
  *
  * @category   Payment
  * @package    FatchipCTPayment
  * @subpackage CTPaymentMethodsIframe
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2024 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
@@ -469,51 +468,6 @@ class Afterpay extends CTPaymentMethodIframe
         $this->setAddrZip($billingAddress->getZip());
         $this->setAddrCity($billingAddress->getCity());
         $this->setAddrCountryCode($billingAddress->getCountryCode());
-    }
-
-    /**
-     * sets mandatory JSON orderinfo
-     *
-     * @param $basket
-     */
-    public function setOrder($basket)
-    {
-        $order = [];
-        $orderItem = [];
-        $orderVariables = Shopware()->Session()->offsetGet('sOrderVariables')->getArrayCopy();
-
-        $order['totalGrossAmount'] = (string) $orderVariables['sAmount'];
-        $order['totalNetAmount'] = (string) $orderVariables['sAmountNet'];
-        $order['currency'] = "EUR";
-
-        $i = 0;
-        foreach ($basket['content'] as $article) {
-            $orderItem[$i]['productId'] = $article['ordernumber'];
-            $orderItem[$i]['description'] = $article['articlename'];
-            $orderItem[$i]['grossUnitPrice'] = str_replace(',', '.',$article['price']);
-            $orderItem[$i]['netUnitPrice'] = round($article['netprice'], 2);
-            $orderItem[$i]['vatAmount'] = $orderItem[$i]['grossUnitPrice'] - $orderItem[$i]['netUnitPrice'] ;
-            $orderItem[$i]['vatPercent'] = $article['tax_rate'];
-            $orderItem[$i]['quantity'] = $article['quantity'];
-            $i++;
-        }
-
-        // handle shipping costs
-        $shipping = $orderVariables['sDispatch'];
-        if (is_array($shipping)) {
-            $taxFactor = (float)('1.' . $shipping['max_tax']);
-
-            $orderItem[$i]['productId'] = (string)$shipping['id'];
-            $orderItem[$i]['description'] = $shipping['name'];
-            $orderItem[$i]['grossUnitPrice'] = (string)$orderVariables['sShippingcosts'];
-            $orderItem[$i]['netUnitPrice'] = round($orderVariables['sShippingcosts'] / $taxFactor, 2);
-            $orderItem[$i]['vatAmount'] = (float)($orderVariables['sShippingcosts'] - $orderItem[$i]['netUnitPrice']);
-            $orderItem[$i]['vatPercent'] = (string)$shipping['max_tax'];
-            $orderItem[$i]['quantity'] = (string)1;
-        }
-        $order['items'] = $orderItem;
-        $jsonTmp = json_encode($order);
-        $this->Order = base64_encode($jsonTmp);
     }
 
     /**

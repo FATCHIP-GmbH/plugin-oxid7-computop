@@ -12,7 +12,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with Computop Oxid Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 8.1, 8.2
  *

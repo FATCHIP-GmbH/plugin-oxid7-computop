@@ -1,18 +1,18 @@
 <?php
 
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The Computop Oxid Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The Computop Oxid Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with Computop Oxid Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0 , 7.1
  *
@@ -84,7 +84,7 @@ class CTPaymentConfigForms
                             'en_GB' => 'enable extra logging',
                         ]],
                     ],
-                'description' => 'Erzeugt eine Log Datei <FatchipCTPayment_.log> mit Debug Ausgaben im Shopware Protokollverzeichnis.<BR>',
+                'description' => 'Erzeugt eine Log Datei <FatchipCTPayment_.log> mit Debug Ausgaben im Oxid Protokollverzeichnis.<BR>',
             ],
             'encryption' => [
                 'name' => 'encryption',
@@ -453,7 +453,7 @@ class CTPaymentConfigForms
                 ],
                 'debuglog' => [
                     'label' => 'Debug Protokoll',
-                    'description' => 'Erzeugt eine Log Datei <FatchipCTPayment_.log> mit Debug Ausgaben im Shopware Protokollverzeichnis',
+                    'description' => 'Erzeugt eine Log Datei <FatchipCTPayment_.log> mit Debug Ausgaben im Oxid Protokollverzeichnis',
                 ],
                 'encryption' => [
                     'label' => 'Verschlüsselung',
@@ -552,7 +552,7 @@ class CTPaymentConfigForms
                 ],
                 'debuglog' => [
                     'label' => 'Debug protocol',
-                    'description' => 'Creates a log file <FatchipCTPayment_.log> with debugging output on the shopware log folder',
+                    'description' => 'Creates a log file <FatchipCTPayment_.log> with debugging output on the Oxid log folder',
                 ],
                 'encryption' => [
                     'label' => 'Encyption',
