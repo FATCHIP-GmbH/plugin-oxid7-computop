@@ -68,88 +68,6 @@ trait KlarnaPayments
     }
 
     /**
-     * @return \Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments
-     */
-    public function createCTKlarnaPayment()
-    {
-        $userData = Shopware()->Modules()->Admin()->sGetUserData();
-        $paymentName = $userData['additional']['payment']['name'];
-
-        $payTypes = [
-            'pay_now' => 'pay_now',
-            'pay_later' => 'pay_later',
-            'slice_it' => 'pay_over_time',
-            'direct_bank_transfer' => 'direct_bank_transfer',
-            'direct_debit' => 'direct_debit',
-        ];
-
-        // set payType to correct value
-        foreach ($payTypes as $key => $value) {
-            $length = strlen($key);
-            if (substr($paymentName, -$length) === $key) {
-                $payType = $value;
-                break;
-            }
-        }
-
-        if (!isset($payType)) {
-            return null;
-        }
-
-        $articleList = $this->createArticleListBase64();
-        $taxAmount = $this->calculateTaxAmount($articleList);
-
-        $URLConfirm = Shopware()->Front()->Router()->assemble([
-            'controller' => 'checkout',
-            'action' => 'finish',
-            'forceSecure' => true,
-        ]);
-
-        $ctOrder = $this->utils->createCTOrder();
-
-        if (!$ctOrder instanceof CTOrder) {
-            return null;
-        }
-
-        $klarnaAccount = $this->config['klarnaaccount'];
-
-        $params = $this->getKlarnaSessionRequestParams(
-            $taxAmount,
-            $articleList,
-            $URLConfirm,
-            $payType,
-            $klarnaAccount,
-            $userData['additional']['country']['countryiso'],
-            $ctOrder->getAmount(),
-            $ctOrder->getCurrency(),
-            \Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments::generateTransID(),
-            Util::getRemoteAddress());
-
-        return $params;
-    }
-
-    public function cleanSessionVars()
-    {
-        $session = Shopware()->Session();
-        $sessionVars = [
-            'FatchipCTKlarnaPaymentSessionResponsePayID',
-            'FatchipCTKlarnaPaymentSessionResponseTransID',
-            'FatchipCTKlarnaPaymentTokenExt',
-            'FatchipCTKlarnaPaymentArticleListBase64',
-            'FatchipCTKlarnaPaymentAmount',
-            'FatchipCTKlarnaPaymentAddressHash',
-            'FatchipCTKlarnaPaymentHash',
-            'FatchipCTKlarnaAccessToken',
-            'FatchipCTKlarnaPaymentDispatchID',
-            'CTError',
-        ];
-
-        foreach ($sessionVars as $sessionVar) {
-            $session->offsetUnset($sessionVar);
-        }
-    }
-
-    /**
      * Calculates the Klarna tax amount by adding the tax amounts of each position in the article list.
      *
      * @param $articleList
@@ -168,20 +86,7 @@ trait KlarnaPayments
         return $taxAmount;
     }
 
-    /**
-     * Creates an md5 hash from current billing and shipping addresses.
-     *
-     * @return string
-     */
-    public static function createAddressHash()
-    {
-        $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
-        /** @var string $address */
-        $address = md5(serialize($userData['billingaddress']) . serialize($userData['shippingaddress']));
-
-        return $address;
-    }
 
     /**
      * @param int $digitCount Optional parameter for the length of resulting
@@ -207,49 +112,5 @@ trait KlarnaPayments
         return $transID;
     }
 
-    /**
-     * Creates the Klarna article list. The list is json and then base64 encoded.
-     *
-     * @return string
-     */
-    public function createArticleListBase64()
-    {
-        $articleList = [];
 
-        try {
-            foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
-                $quantity = (int)$item['quantity'];
-                $itemTaxAmount = round(str_replace(',', '.', $item['tax']) * 100);
-                $totalAmount = round(str_replace(',', '.', $item['price']) * 100) * $quantity;
-                $articleList['order_lines'][] = [
-                    'name' => $item['articlename'],
-                    'quantity' => $quantity,
-                    'unit_price' => round($item['priceNumeric'] * 100),
-                    'total_amount' => $totalAmount,
-                    'tax_rate' => $item['tax_rate'] * 100,
-                    'total_tax_amount' => $itemTaxAmount,
-                ];
-            }
-        } catch (Exception $e) {
-            return '';
-        }
-
-        $shippingCosts = $this->utils->calculateShippingCosts();
-
-        if ($shippingCosts) {
-            $articleList['order_lines'][] = [
-                'name' => 'shippingcosts',
-                'quantity' => 1,
-                'unit_price' => $shippingCosts * 100,
-                'total_amount' => $shippingCosts * 100,
-                'tax_rate' => 0,
-                'total_tax_amount' => 0,
-            ];
-        }
-
-        /** @var string $articleList */
-        $articleList = base64_encode(json_encode($articleList));
-
-        return $articleList;
-    }
 }

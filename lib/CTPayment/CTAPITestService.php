@@ -68,7 +68,6 @@ class CTAPITestService extends Encryption
      */
     public function getURL()
     {
-        // $router = Shopware()->Front()->Router();
         mt_srand((double)microtime() * 1000000);
         $reqId = (string)mt_rand();
         $reqId .= date('yzGis');
@@ -124,9 +123,7 @@ class CTAPITestService extends Encryption
         $request = join('&', $requestParams);
         $len = mb_strlen($request);  // Length of the plain text string
 
-        // Test if encryption is supported
-        // $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        // $plugin->checkOpenSSLSupport();
+
 
         $this->checkOpenSSLSupport();
 
@@ -307,7 +304,6 @@ class CTAPITestService extends Encryption
      */
     public function getIssuerListURL()
     {
-        // $router = Shopware()->Front()->Router();
         mt_srand((double)microtime() * 1000000);
         $reqId = (string)mt_rand();
         $reqId .= date('yzGis');

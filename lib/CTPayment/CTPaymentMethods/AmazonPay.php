@@ -168,42 +168,6 @@ class AmazonPay extends CTPaymentMethod
 
     /**
      * sets and returns request parameters for amazon
-     * "Set Order Details and Confirm Order" api call
-     *
-     * @param $payID
-     * @param $transID
-     * @param $amount
-     * @param $currency
-     * @param $orderDesc
-     * @param $referenceID
-     * @return array
-     */
-    public function getAmazonSCOParams($payID, $transID, $amount, $currency, $orderDesc, $referenceID)
-    {
-        $router = Shopware()->Front()->Router();
-        $successurl = $router->assemble(array('controller' => 'FatchipCTAmazon', 'action' => 'gateway',
-            'forceSecure' => true, 'appendSession' => false));
-        $errorurl = $router->assemble(array('controller' => 'checkout', 'action' => 'cart',
-            'amznLogout' => true, 'forceSecure' => true, 'appendSession' => false, 'amznError' => 'SCO'));
-
-        $params = [
-            'payID' => $payID,
-            'merchantID' => $this->merchantID,
-            'transID' => $transID,
-            'amount' => $amount,
-            'currency' => $currency,
-            'OrderDesc' => $orderDesc,
-            'OrderReferenceID' => $referenceID,
-            'URLSuccess' => $successurl,
-            'URLFailure' => $errorurl,
-            'EventToken' => 'SCO',
-        ];
-
-        return $params;
-    }
-
-    /**
-     * sets and returns request parameters for amazon
      * "ATH" api call
      *
      * @param $payID

@@ -636,9 +636,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             }
         } catch (Exception $e) {
             $ctError = [];
-            /*$ctError['CTErrorMessage'] = Shopware()->Snippets()
-                ->getNamespace('frontend/FatchipCTPayment/translations')
-                ->get('errorAddress');*/
             $ctError['CTErrorCode'] = $e->getMessage();
             return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
         }

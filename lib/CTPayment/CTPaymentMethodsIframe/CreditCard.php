@@ -211,13 +211,7 @@ class CreditCard extends CTPaymentMethodIframe
      */
     public function setCustom()
     {
-        /* $module = Shopware()->Container()->get('front')->Request()->getModuleName();
-        if ($module !== 'backend') {
-            $this->Custom = 'session=' . Shopware()->Session()->get('sessionId');
-        } else {
-            $this->Custom = '';
-        }
-        */
+
         $this->Custom = '';
     }
 
