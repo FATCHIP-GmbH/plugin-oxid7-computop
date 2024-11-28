@@ -93,7 +93,6 @@ class Config
 
     protected $klarnaaccount = null;
 
-    protected $klarnaCaption = null;
 
     /**
      * @return null
@@ -635,25 +634,6 @@ class Config
             ->get(ModuleSettingBridgeInterface::class);
         $moduleSettingBridge->save('klarnaaccount', $klarnaaccount, FatchipComputopModule::MODULE_ID);
     }
-
-    public function getKlarnaCaption()
-    {
-        $moduleSettingBridge
-            = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $value = $moduleSettingBridge->get('klarnaCaption', FatchipComputopModule::MODULE_ID);
-        return $value;
-    }
-
-    public function setKlarnaCaption($klarnaCaption): void
-    {
-        $moduleSettingBridge = ContainerFactory::getInstance()
-            ->getContainer()
-            ->get(ModuleSettingBridgeInterface::class);
-        $moduleSettingBridge->save('klarnaCaption', $klarnaCaption, FatchipComputopModule::MODULE_ID);
-    }
-
 
     /**
      * @return null

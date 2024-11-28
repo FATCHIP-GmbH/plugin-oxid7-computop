@@ -339,9 +339,6 @@ class Order extends Order_parent
             case 'fatchip_computop_lastschrift':
                 $autoCaptureConfigKey = 'lastschriftCaption';
                 break;
-            case 'fatchip_computop_klarna':
-                $autoCaptureConfigKey = 'klarnaCaption';
-                break;
             default:
                 break;
         }

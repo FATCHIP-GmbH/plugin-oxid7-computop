@@ -138,7 +138,6 @@ $aModule = [
         ['name' => 'amazonButtonColor', 'type' => 'string', 'value' => false, 'group' => null],
 
         ['name' => 'klarnaaccount', 'type' => 'str', 'value' => '', 'group' => null],
-        ['name' => 'klarnaCaption', 'type' => 'str', 'value' => '', 'group' => null],
 
     ],
     'events'      => [
