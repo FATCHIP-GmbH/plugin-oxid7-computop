@@ -184,7 +184,7 @@ class Order extends Order_parent
                 break;
             case "FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED":
                 $this->setFieldData('oxfolder', 'ORDERFOLDER_NEW');
-                $this->setFieldData('oxtransstatus', 'NOT_FINISHED');
+                $this->setFieldData('oxtransstatus', 'OK');
                 if (!empty($data)) {
                     $this->setFieldData('fatchip_computop_remark', 'Auth OK  Capture pending');
                 }
