@@ -62,7 +62,6 @@ class Events
     {
         self::addFatchipComputopPaymentMethods();
         self::createFatchipComputopApiLogTable();
-        self::createFatchipComputopIdealBankTable();
         self::updateFatchipComputopOrderAttributes();
         self::addFatchipComputopPayPalExpressSeoHooks();
 
@@ -258,31 +257,6 @@ class Events
         $fromDb = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
     }
 
-    /**
-     * @throws DatabaseConnectionException
-     * @throws DatabaseErrorException
-     */
-    protected static function createFatchipComputopIdealBankTable()
-    {
-        $sql = '
-            CREATE TABLE IF NOT EXISTS `fatchip_computop_ideal_issuers` (
-                `oxid` char(32) NOT NULL,
-                `issuer_id` varchar(11) NOT NULL,
-                `name` varchar(128) NOT NULL,
-                `land` varchar(128) NOT NULL,
-                PRIMARY KEY (`oxid`)
-            ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-        ';
-
-        $fromDb = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
-
-        $sql = 'SELECT *
-                FROM `fatchip_computop_ideal_issuers`
-                WHERE 1';
-
-        $rows = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->getAll($sql);
-
-    }
 
     /**
      * Execute action on deactivate event

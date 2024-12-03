@@ -252,7 +252,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             echo $jsonEncoded;
             exit;
         } catch (Exception $e) {
-            // Log the exception or handle the error appropriately
             error_log('Error in creditCardSilent: ' . $e->getMessage());
             echo json_encode(['error' => 'An error occurred while processing the payment.']);
             exit;
@@ -337,14 +336,11 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $request['ReqId'] = $payment->getTransID();
         $request['transID'] = $payment->getTransID();
         $customParam = $this->getCustomParam($payment->getTransID());
-        $test = $customParam['custom'];
         $request['custom'] = $customParam['custom'];
-        //     $request['RefNr'] = $payment->getR();
         $request['billingAddress'] = $payment->getBillingAddress();
         $request['shippingAddress'] = $payment->getShippingAddress();
         $request['billToCustomer'] = $payment->getBillToCustomer();
         $request['msgVer'] = '2.0';
-        //$request['Capture'] = $payment->getCapture();
         $request['orderDesc'] = $payment->getOrderDesc();
         $request['credentialOnFile'] = $payment->getCredentialsOnFile();
         $request['template'] = 'ct_responsive';

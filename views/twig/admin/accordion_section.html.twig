@@ -33,20 +33,7 @@
                 {% include sModuleId ~ "/admin/fatchip_computop_form_field.html.twig" with {'value': value, 'currentBlock': currentBlock} %}
             {% endfor %}
 
-            {# Button for iDEAL Settings #}
-            {% if currentBlock == 'ideal' %}
-                <div id="bankSection" class="form-group row mt-3 general-block">
-                    <div class="col-md-12 text-left">
-                        <button type="submit" name="idealButton" class="btn btn-secondary">Update Ideal Banken</button>
-                        <br>
-                        <div class="help-button-container">
-                            <button type="button" class="btn btn-sm btn-info ml-3" data-toggle="popover" data-trigger="focus" title="Hilfe" data-content="Die iDeal Issuers sind nur bei einer Direktanbindung nötig und werden automatisch beim Installieren des Plugins abgefragt. Hier können Sie bei Änderungen die Bankenliste aktualisieren.">
-                                <i class="fa fa-question-circle"></i> Hilfe
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
+
         </div>
     </div>
 </div>
