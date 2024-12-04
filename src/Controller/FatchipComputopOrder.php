@@ -24,6 +24,7 @@ use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Field;
+use OxidEsales\Eshop\Core\Module\Module;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Request;
 use OxidEsales\Eshop\Core\Session;
@@ -34,6 +35,9 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
 use OxidEsales\Eshop\Core\ViewConfig;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
+use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ShopConfigurationDaoBridgeInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Exception\ModuleConfigurationNotFoundException;
 
 /**
  * Class OrderController
@@ -1241,15 +1245,26 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         );
     }
 
-    public
-    function getUserDataParam()
+    public function getUserDataParam()
     {
-        $test = $this->fatchipComputopShopConfig->getActiveShop();
-        $this->fatchipComputopShopConfig->getActiveShop()->getFieldData('oxname') . ' '
-        . $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxversion->value;
-        return $this->fatchipComputopShopConfig->getActiveShop()->getFieldData('oxname') . ' '
-            . $this->fatchipComputopShopConfig->getActiveShop()->getFieldData('oxversion');
+        $moduleVersion = '';
+
+        $shopConfiguration = ContainerFacade::get(ShopConfigurationDaoBridgeInterface::class)->get();
+
+        try {
+            $moduleConfig = $shopConfiguration->getModuleConfiguration('fatchip_computop_payments');
+            $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
+        } catch (ModuleConfigurationNotFoundException $e) {
+            Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
+        }
+
+        $activeShop = $this->fatchipComputopShopConfig->getActiveShop();
+        $shopName = $activeShop->getFieldData('oxname');
+        $shopVersion = $activeShop->getFieldData('oxversion');
+
+        return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
     }
+
 
     protected
     function getPaymentClassForGatewayAction()

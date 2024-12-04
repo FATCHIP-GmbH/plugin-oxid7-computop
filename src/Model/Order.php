@@ -47,6 +47,10 @@ use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Price;
 use OxidEsales\Eshop\Core\Registry;
 
+use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ShopConfigurationDaoBridgeInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Exception\ModuleConfigurationNotFoundException;
+
 use function date;
 
 /**
@@ -899,11 +903,24 @@ class Order extends Order_parent
      * @return string
      * @throws Exception
      */
-    public
-    function getUserDataParam()
+    public function getUserDataParam()
     {
-        return $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxname->value . ' '
-            . $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxversion->value;
+        $moduleVersion = '';
+
+        $shopConfiguration = ContainerFacade::get(ShopConfigurationDaoBridgeInterface::class)->get();
+
+        try {
+            $moduleConfig = $shopConfiguration->getModuleConfiguration('fatchip_computop_payments');
+            $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
+        } catch (ModuleConfigurationNotFoundException $e) {
+            Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
+        }
+
+        $activeShop = $this->fatchipComputopShopConfig->getActiveShop();
+        $shopName = $activeShop->getFieldData('oxname');
+        $shopVersion = $activeShop->getFieldData('oxversion');
+
+        return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
     }
 
     public
