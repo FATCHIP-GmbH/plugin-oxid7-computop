@@ -1,5 +1,5 @@
 {
-    "name": "fatchip-gmbh/computop-payments",
+    "name": "fatchip-gmbh/computop-payments-ox7",
     "description": "Computop payments module for OXID",
     "type": "oxideshop-module",
     "keywords": ["oxid", "modules", "computop"],
