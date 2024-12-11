@@ -275,30 +275,6 @@ class CTPaymentConfigForms
 
     const formLastschriftSelectElements =
         [
-            'lastschriftDienst' => [
-                'name' => 'lastschriftDienst',
-                'type' => 'select',
-                'value' => 'DIREKT',
-                'label' => 'Lastschrift - Dienst',
-                'required' => false,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['DIREKT', [
-                            'de_DE' => 'Direktanbindung',
-                            'en_GB' => 'direct',
-                        ]]/*,
-                        ['EVO', [
-                            'de_DE' => 'EVO Payments',
-                            'en_GB' => 'EVO Payments',
-                        ]],
-                        ['INTERCARD', [
-                            'de_DE' => 'Intercard',
-                            'en_GB' => 'Intercard',
-                        ]],*/
-                    ],
-                'description' => 'Lastschrift Zahlungen können direkt, über EVO oder über INTERCARD abgewickelt werden.',
-            ],
             'lastschriftCaption' => [
                 'name' => 'lastschriftCaption',
                 'type' => 'select',
