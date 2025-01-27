@@ -335,7 +335,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $request['msgVer'] = '2.0';
         $request['orderDesc'] = $payment->getOrderDesc();
         $request['credentialOnFile'] = $payment->getCredentialsOnFile();
-        $request['template'] = 'ct_responsive';
         $request['Response'] = 'encrypt';
         return $request;
     }
