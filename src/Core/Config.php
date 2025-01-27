@@ -321,7 +321,7 @@ class Config
             ->getContainer()
             ->get(ModuleSettingBridgeInterface::class);
         $value = $moduleSettingBridge->get('creditCardTemplate', FatchipComputopModule::MODULE_ID);
-        return $value;
+        return $value ?? 'ct_responsive';
     }
 
     /**

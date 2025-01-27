@@ -29,6 +29,7 @@ namespace Fatchip\ComputopPayments\Model;
 use Exception;
 use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Core\FatchipComputopModule;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Fatchip\CTPayment\CTAddress\CTAddress;
@@ -48,6 +49,8 @@ use OxidEsales\Eshop\Core\Price;
 use OxidEsales\Eshop\Core\Registry;
 
 use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ModuleSettingBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ShopConfigurationDaoBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Exception\ModuleConfigurationNotFoundException;
 
@@ -742,11 +745,13 @@ class Order extends Order_parent
             );
         }
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_creditcard') {
+
+            $template = $this->fatchipComputopConfig['creditCardTemplate'] ?? 'ct_responsive';
             $this->fatchipComputopPaymentClass = 'CreditCard';
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
 
                 $response = $payment->getHTTPGetURL($params);
-                $response .= $response.'&template='.$this->fatchipComputopShopConfig->getConfigParam('creditCardTemplate','ct_responsive');
+                $response .= $response.'&template='.$template;
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
 
                 $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-IFRAME', $payment);
@@ -757,7 +762,7 @@ class Order extends Order_parent
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
-                $response .= $response.'&template='.$this->fatchipComputopShopConfig->getConfigParam('creditCardTemplate','ct_responsive');
+                $response .= $response.'&template='.$template;
                 $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-PAYMENTPAGE', $payment);
 
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
