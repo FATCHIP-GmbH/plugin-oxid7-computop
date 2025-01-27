@@ -746,6 +746,7 @@ class Order extends Order_parent
             if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
 
                 $response = $payment->getHTTPGetURL($params);
+                $response .= $response.'&template='.$this->fatchipComputopShopConfig->getConfigParam('creditCardTemplate','ct_responsive');
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURL', $response);
 
                 $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-IFRAME', $payment);
@@ -756,6 +757,7 @@ class Order extends Order_parent
             }
             if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
                 $response = $payment->getHTTPGetURL($params);
+                $response .= $response.'&template='.$this->fatchipComputopShopConfig->getConfigParam('creditCardTemplate','ct_responsive');
                 $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'REDIRECT-PAYMENTPAGE', $payment);
 
                 $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl', $response);
