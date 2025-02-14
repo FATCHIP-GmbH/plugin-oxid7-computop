@@ -9,6 +9,7 @@ use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
 use Fatchip\CTPayment\CTPaymentMethods\AmazonPay;
+use Fatchip\CTPayment\CTPaymentParams;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Model\Address;
@@ -73,6 +74,11 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public function render()
     {
         $paymentId = $this->fatchipComputopBasket->getPaymentId();
+
+        /** @todo skip easycredit for handling, because it will kill the session */
+        if ( $paymentId !== 'fatchip_computop_easycredit') {
+            Registry::getSession()->handlePaymentSession();
+        }
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_klarna') {
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($paymentId);
         }
@@ -115,7 +121,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $oUser = $this->getUser();
         $payment = $this->getPaymentClassForGatewayAction();
 
-        $UrlParams = $this->getUrlParams();
+        $UrlParams = CTPaymentParams::getUrlParams($paymentId,$this->fatchipComputopConfig);
 
         $ctOrder = $this->createCTOrder();
         $redirectParams = $payment->getRedirectUrlParams();
@@ -125,7 +131,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
         $paymentParams = $this->getPaymentParams($oUser, $dynValue);
         $paymentParams['billToCustomer'] = $payment->getBillToCustomer();
-        $customParam = $this->getCustomParam($payment->getTransID());
+        $customParam = CTPaymentParams::getCustomParam($payment->getTransID(), $paymentId);
+        $params['custom'] = $customParam['custom'];
         $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
         $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams', $params);
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
@@ -173,11 +180,11 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $this->fatchipComputopPaymentClass = 'EasyCredit';
 
             $oUser = $this->getUser();
-            $UrlParams = $this->getUrlParams();
+            $UrlParams = CTPaymentParams::getUrlParams($this->fatchipComputopPaymentId,$this->fatchipComputopConfig);
             $payment = $this->getPaymentClassForGatewayAction();
             $redirectParams = $payment->getRedirectUrlParams();
             $paymentParams = $this->getPaymentParams($oUser, $dynValue);
-            $customParam = $this->getCustomParam($payment->getTransID());
+            $customParam = CTPaymentParams::getCustomParam($payment->getTransID(),$this->fatchipComputopPaymentId);
             $redirectParams = $payment->getRedirectUrlParams();
             $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
             $ctOrder = $this->createCTOrder();
@@ -190,7 +197,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 '',
                 '',
                 'Test',
-                $this->getUserDataParam(),
+               CTPaymentParams::getUserDataParam(),
                 CTEnumEasyCredit::EVENTTOKEN_GET
             );
 
@@ -273,7 +280,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 '',
                 '',
                 'Test:0000',
-                $this->getUserDataParam(),
+                CTPaymentParams::getUserDataParam(),
                 CTEnumEasyCredit::EVENTTOKEN_GET
             );
             if ($paymentClass !=='AmazonPay') {
@@ -307,7 +314,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
             $request = $this->addAdditionalRequestParameters($request, $payment, $ctOrder);
 
-            $urlParams = $this->getUrlParams(true);
+            $urlParams = CTPaymentParams::getUrlParams($this->fatchipComputopPaymentId,$this->fatchipComputopConfig);
             $request = array_merge($request, $urlParams);
 
             return $request;
@@ -327,7 +334,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $request['EtiId'] = $payment->getEtiId();
         $request['ReqId'] = $payment->getTransID();
         $request['transID'] = $payment->getTransID();
-        $customParam = $this->getCustomParam($payment->getTransID());
+        $customParam = CTPaymentParams::getCustomParam($payment->getTransID(),$this->fatchipComputopPaymentId);
         $request['custom'] = $customParam['custom'];
         $request['billingAddress'] = $payment->getBillingAddress();
         $request['shippingAddress'] = $payment->getShippingAddress();
@@ -363,8 +370,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             }
             if ($paymentId === 'fatchip_computop_amazonpay') {
                 $_POST['stoken'] = Registry::getSession()->getSessionChallengeToken();
-                $_POST['FatchipComputopLen'] = Registry::getRequest()->getRequestParameter('Len');
-                $_POST['FatchipComputopData'] = Registry::getRequest()->getRequestParameter('Data');
                 $_POST['sDeliveryAddressMD5'] = $this->getUser()->getEncodedDeliveryAddress();
             }
             $ret = parent::execute();
@@ -461,7 +466,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $payment->setAccOwner($dynValue['fatchip_computop_lastschrift_bank_account_holder']);
         $payment->setIBAN($dynValue['fatchip_computop_lastschrift_iban']);
         $params = $payment->getRedirectUrlParams();
-        $customParam = $this->getCustomParam($payment->getTransID());
+        $customParam = CTPaymentParams::getCustomParam($payment->getTransID(),$this->fatchipComputopPaymentId);
         $params['custom'] = $customParam['custom'];
         if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
             $sessionID = $this->fatchipComputopSession->getId();
@@ -484,103 +489,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
         $this->fatchipComputopLogger->logRequestResponse($params,$paymentName,'AUTH',$response);
         return $response;
-    }
-
-    public
-    function creditcardSilentModeAction()
-    {
-        $payment = $this->getPaymentClassForGatewayAction();
-        $params = $payment->getRedirectUrlParams();
-        $oUser = $this->getUser();
-        $request = Registry::getRequest();
-
-        $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
-
-        $payment->setCCBrand($dynValue['creditcardbrand']);
-        $payment->setCreditCardHolder($dynValue['creditcardholder']);
-        $payment->setCCNr($dynValue['creditcardnumber']);
-        $payment->setCCNr($dynValue['creditcardnumber']);
-        $payment->setCCExpiry($dynValue['creditcardexpiryyear'] . $dynValue['creditcardexpirymonth']);
-        $payment->setCCCVC($dynValue['creditcardcvc']);
-
-        //$this->session->offsetSet('fatchipCTRedirectParams', $params);
-
-        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
-            $sessionID = $this->session->get('sessionId');
-            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
-            $customerId = $this->session->offsetGet('sUserId');
-            $paymentName = $this->fatchipComputopPaymentId;
-            $this->utils->log(
-                'DEBUG',
-                'Redirecting to ' . $payment->getHTTPGetURL($params),
-                [
-                    'payment' => $paymentName,
-                    'UserID' => $customerId,
-                    'basket' => $basket,
-                    'SessionID' => $sessionID,
-                    'parmas' => $params
-                ]
-            );
-        }
-        $requestParams = $payment->getRedirectUrlParams();
-        $requestParams['browserInfo'] = $this->getParamBrowserInfo($dynValue);
-        unset($requestParams['Template']);
-        $this->silentParams = $payment->prepareSilentRequest($requestParams);
-        // Registry::getUtils()->redirect($paymentUrl, false);
-    }
-
-    public
-    function creditcardIframeAction()
-    {
-        $payment = $this->getPaymentClassForGatewayAction();
-        $oUser = $this->getUser();
-
-        $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
-        $initialPayment = true;
-        $payment->setCredentialsOnFile('CIT', $initialPayment);
-        $params = $payment->getRedirectUrlParams();
-        $params['browserInfo'] = $this->getParamBrowserInfo($dynValue, $request);
-        // $silentParams = $payment->prepareSilentRequest($params);
-        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
-            $sessionID = $this->fatchipComputopSession->getId();
-            $customerId = $oUser->getId();
-            $paymentName = $this->fatchipComputopPaymentClass;
-            $basketExport = var_export($this->fatchipComputopBasket, true);
-            $this->fatchipComputopLogger->log(
-                'DEBUG',
-                'Redirecting to ' . $payment->getHTTPGetURL($params),
-                [
-                    'payment' => $paymentName,
-                    'UserID' => $customerId,
-                    'basket' => $basketExport,
-                    'SessionID' => $sessionID,
-                    'params' => $params
-                ]
-            );
-        }
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        $this->fatchipComputopSession->setVariable(
-            Constants::CONTROLLER_PREFIX . 'IFrameURL',
-            $payment->getHTTPGetURL(
-                $params,
-                $this->fatchipComputopConfig['creditCardTemplate']
-            )
-        );
-        $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'IFrameURLParams', $requestParams);
-        if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-            $redirectUrl = $sShopUrl . 'index.php?cl=fatchip_computop_creditcard&fatchipComputopRedirectURL=' . $payment->getHTTPGetURL(
-                    $params,
-                    $this->fatchipComputopConfig['creditCardTemplate']
-                );
-        } else {
-            if ($this->fatchipComputopConfig['creditCardMode'] === 'PAYMENTPAGE') {
-                $redirectUrl = $sShopUrl . 'index.php?cl=' . Constants::CONTROLLER_PREFIX . $this->fatchipComputopPaymentClass . 'Controller&fnc=paymentpage&fatchipCTRedirectURL=' . $payment->getHTTPGetURL(
-                        $params,
-                        $this->fatchipComputopConfig['creditCardTemplate']
-                    );
-            }
-        }
-        $this->fatchipComputopShopUtils->redirect($redirectUrl, false);
     }
 
     /**
@@ -838,30 +746,14 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     {
 
         $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
-
-        $oDelivery = $this->fatchipComputopBasket->getCosts('oxdelivery');
-        $sDeliveryCosts = $oDelivery === null ? 0.0 : (int)($oDelivery->getBruttoPrice() * 100);
-
-        $sDeliveryCosts = (double)str_replace(
-            ',',
-            '.',
-            $sDeliveryCosts
-        );
-
-        $taxAmount = $this->fatchipComputopBasket->getBruttoSum() - $this->fatchipComputopBasket->getNettoSum();
-        $taxAmount = (int)$taxAmount * 100;
         $amount = $this->fatchipComputopBasket->getPrice()->getBruttoPrice() * 100;
         $amount = (int)$amount;
         $currency = 'EUR';
         $shopUrl =  $this->fatchipComputopShopConfig->getShopUrl().'computop/amazonpay/return/';
         $oUser = $this->getUser();
-        $UrlParams = $this->getUrlParams();
-//        $customParam = $this->getCustomParam($payment->getTransID());
-        //     $redirectParams = $payment->getRedirectUrlParams();
-        //    $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
+        $UrlParams = CTPaymentParams::getUrlParams($this->fatchipComputopPaymentId,$this->fatchipComputopConfig);
         $ctOrder = $this->createCTOrder();
         $payment = $this->initializePayment($ctOrder, 'AmazonPay');
-        // $request = $this->createAuthorizeRequest($payment, 'AmazonPay', $amount, $currency, $ctOrder);
 
         /** @var AmazonPay $payment */
         $params = $payment->getAmazonInitParams(
@@ -890,7 +782,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $sessionID = $this->fatchipComputopSession->getId();
             $customerId = $oUser->getId();
             $paymentName = $this->fatchipComputopPaymentClass;
-            $basketExport = var_export($this->fatchipComputopBasket, true);
             $this->fatchipComputopLogger->log(
                 'DEBUG',
                 'Redirecting to ' . $payment->getCTPaymentURL($params),
@@ -906,124 +797,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $this->fatchipComputopSession->setVariable('FatchipComputopResponse', $response);
     }
 
-
-    public
-    function klarnaAction()
-    {
-        /** @var KlarnaPayments $payment */
-        $payment = $this->getPaymentClass(
-            $this->fatchipComputopPaymentClass
-        );
-        // $params = $payment->getRedirectUrlParams();
-        $oUser = $this->getUser();
-        $dynValue = $this->fatchipComputopSession->getVariable('dynvalue');
-
-        $aOrderlines = $this->getKlarnaOrderlinesParams();
-        $oDelivery = $this->fatchipComputopBasket->getCosts('oxdelivery');
-        $sDeliveryCosts = $oDelivery === null ? 0.0 : (int)($oDelivery->getBruttoPrice() * 100);
-
-        $sDeliveryCosts = (double)str_replace(
-            ',',
-            '.',
-            $sDeliveryCosts
-        );
-
-        $taxAmount = $this->fatchipComputopBasket->getBruttoSum() - $this->fatchipComputopBasket->getNettoSum();
-        $taxAmount = (int)$taxAmount * 100;
-        $amount = $this->fatchipComputopBasket->getBruttoSum() * 100;
-        $amount = (int)$amount;
-
-        $taxAmount = $this->calculateTaxAmount($aOrderlines);
-        $UrlParams = $this->getUrlParams();
-        $transid = CreditCard::generateTransID();
-        $customParam = $this->getCustomParam($transid);
-
-        $oxcountryid = $oUser->getFieldData('oxcountryid');
-        $oCountry = oxNew(Country::class);
-        $oCountry->load($oxcountryid);
-        $oxisoalpha2 = $oCountry->getFieldData('oxisoalpha2');
-
-        $klarnaParams = [
-            'TaxAmount' => $taxAmount,
-            'ArticleList' => $aOrderlines,
-            'Account' => $this->fatchipComputopConfig['klarnaaccount'],
-            'bdCountryCode' => $oxisoalpha2,
-            'amount' => (int)($amount + $sDeliveryCosts),
-            'currency' => $this->fatchipComputopBasket->getBasketCurrency()->name,
-            'IPAddr' => $_SERVER['REMOTE_ADDR'],
-            'transID' => $transid,
-        ];
-        $params = array_merge($UrlParams, $klarnaParams, $customParam);
-
-        // TODO Remove
-        $test = base64_decode($aOrderlines);
-
-        if ($this->fatchipComputopConfig['debuglog'] === 'extended') {
-            $sessionID = $this->fatchipComputopSession->getId();
-            $customerId = $oUser->getId();
-            $paymentName = $this->fatchipComputopPaymentClass;
-            $basketExport = var_export($this->fatchipComputopBasket, true);
-            $this->fatchipComputopLogger->log(
-                'DEBUG',
-                'Redirecting to ' . $payment->getCTPaymentURL($params),
-                [
-                    'payment' => $paymentName,
-                    'UserID' => $customerId,
-                    'SessionID' => $sessionID,
-                    'params' => $params
-                ]
-            );
-        }
-        $response = $this->requestKlarna($params, $payment);
-        $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse', $response);
-        $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectRequest', $params);
-        Registry::getUtils()->redirect($response, false, 302);
-    }
-
-    public function getUrlParams($redirect = false)
-    {
-        $paymentClass = $this->fatchipComputopPaymentId;
-
-        if ($paymentClass === 'fatchip_computop_easycredit') {
-            $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-            $URLSuccess = $sShopUrl . 'index.php?cl=order&sid=' . Registry::getSession()->getId();
-        } else {
-            if ($redirect === true) {
-                $paymentClass = Constants::GENERAL_PREFIX . 'redirect';
-            }
-            $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-            $URLSuccess = $sShopUrl . 'index.php?cl=' . $paymentClass . '&sid=' . Registry::getSession()->getId();
-        }
-
-        $URLFailure = $sShopUrl . 'index.php?cl=payment&sid=' . Registry::getSession()->getId();
-        $URLCancel = $sShopUrl . 'index.php?cl=payment&sid=' . Registry::getSession()->getId();
-        $URLNotify = $sShopUrl . 'index.php?cl=' . Constants::GENERAL_PREFIX . 'notify' . '&sid=' . Registry::getSession()->getId();
-
-        return [
-            'UrlSuccess' => $URLSuccess,
-            'UrlFailure' => $URLFailure,
-            'UrlNotify' => $URLNotify,
-            'UrlCancel' => $URLCancel,
-        ];
-    }
-
-
-    public
-    function getCustomParam($transid)
-    {
-        $this->fatchipComputopSession->setVariable(Constants::GENERAL_PREFIX . 'TransId', $transid);
-        $orderOxId = Registry::getSession()->getVariable('sess_challenge');
-        if ($delAdressMd5 = Registry::getRequest()->getRequestParameter('sDeliveryAddressMD5') !== null) {
-            $delAdressMd5 = Registry::getRequest()->getRequestParameter('sDeliveryAddressMD5');
-        }
-        $custom = base64_encode(
-            'session='.$orderOxId
-            . '&transid=' . $transid
-            . '&stoken='.Registry::getSession()->getSessionChallengeToken()
-            .'&delAdressMd5='.$delAdressMd5);
-        return ['custom' => 'Custom='.$custom];
-    }
-
     /**
      * Returns and brings basket positions into appropriate form
      *
@@ -1033,14 +806,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public
     function getKlarnaOrderlinesParams(): string
     {
-        $aOrderlines = [];
         foreach ($this->fatchipComputopBasket->getContents() as $oBasketItem) {
             $oArticle = $oBasketItem->getArticle();
-            $test = round(
-                (($oBasketItem->getPrice()->getBruttoPrice() - $oBasketItem->getPrice()->getNettoPrice()) * 100)
-            );
-            $test2 = (int)((($oBasketItem->getPrice()->getBruttoPrice() - $oBasketItem->getPrice()->getNettoPrice(
-                    )) * 100));
+
             $articleListArray['order_lines'][] = [
                 'reference' => $oArticle->oxarticles__oxartnum->value,
                 'name' => $oBasketItem->getTitle(),
@@ -1074,7 +842,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 'total_tax_amount' => $deliveryTax
             ];
         }
-        $test = json_encode($articleListArray);
 
         $articleList = base64_encode(json_encode($articleListArray));
 
@@ -1090,8 +857,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $params,
         $payment
     ) {
-        $requestType = 'KLARNA';
-
         $response = $payment->prepareComputopRequest($params, $payment->getCTPaymentURL());
 
         return $response;
@@ -1106,32 +871,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $params,
         $payment
     ) {
-        $requestType = 'AMAZONPAY_INIT';
-        // $ctRequest = $this->cleanUrlParams($params);
-
         $response = $payment->callComputop($params, $payment->getCTPaymentURL());
 
         return $response;
-    }
-
-    /**
-     * Returns parameters for redirectURL
-     *
-     * @param $params
-     *
-     * @return array
-     */
-    public
-    function cleanUrlParams(
-        $params
-    ) {
-        $requestParams = [];
-        foreach ($params as $key => $value) {
-            if (!is_null($value) && !array_key_exists($key, $this::paramexcludes)) {
-                $requestParams[$key] = $value;
-            }
-        }
-        return $requestParams;
     }
 
     /**
@@ -1162,27 +904,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
         return null;
 
-    }
-
-    /**
-     * @throws DatabaseErrorException
-     * @throws DatabaseConnectionException
-     */
-    protected
-    function completeFatchipComputopOrder(
-        $response
-    ) {
-        /** @var string $orderOxId */
-        $orderOxId = Registry::getSession()->getVariable('sess_challenge');
-        $order = oxNew(Order::class);
-        if ($order->load($orderOxId)) {
-            /** @var string $orderNumber */
-            $orderNumber = $order->getFieldData('oxordernr');
-        }
-
-        // $newOrder = $this->customizeOrdernumber($order, $orderNumber, $response);
-
-        // $this->autoCapture($newOrder);
     }
 
     /**
@@ -1222,7 +943,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $payment->setTransID($order->getFieldData('fatchip_computop_transid'));
         }
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
-        $RefNrChangeParams['EtiId'] = $this->getUserDataParam();
+        $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
 
 
         return $this->callComputopService(
@@ -1232,27 +953,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $payment->getCTRefNrChangeURL()
         );
     }
-
-    public function getUserDataParam()
-    {
-        $moduleVersion = '';
-
-        $shopConfiguration = ContainerFacade::get(ShopConfigurationDaoBridgeInterface::class)->get();
-
-        try {
-            $moduleConfig = $shopConfiguration->getModuleConfiguration('fatchip_computop_payments');
-            $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
-        } catch (ModuleConfigurationNotFoundException $e) {
-            Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
-        }
-
-        $activeShop = $this->fatchipComputopShopConfig->getActiveShop();
-        $shopName = $activeShop->getFieldData('oxname');
-        $shopVersion = $activeShop->getFieldData('oxversion');
-
-        return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
-    }
-
 
     protected
     function getPaymentClassForGatewayAction()
@@ -1273,7 +973,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
 
         $oUser = $this->getUser();
-        $urlParams = $this->getUrlParams();
+        $urlParams = CTPaymentParams::getUrlParams($this->fatchipComputopPaymentId,$this->fatchipComputopConfig);
         $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
             Constants::getPaymentClassfromId($this->fatchipComputopPaymentId),
             $this->fatchipComputopConfig,
@@ -1283,7 +983,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $urlParams['UrlNotify'],
             $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxname->value . ' '
             . $this->fatchipComputopShopConfig->getActiveShop()->oxshops__oxversion->value,
-            $this->getUserDataParam(),
+            CTPaymentParams::getUserDataParam(),
             null,
             null,
             null,

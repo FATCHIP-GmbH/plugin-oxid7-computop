@@ -31,6 +31,7 @@ use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentParams;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
@@ -188,7 +189,7 @@ class FatchipComputopNotify extends FrontendController
             die();
         }*/
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
-        $RefNrChangeParams['EtiId'] = $this->getUserDataParam($config);
+        $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
 
 
         return $order->callComputopService(
@@ -242,8 +243,7 @@ class FatchipComputopNotify extends FrontendController
     public
     function getUserDataParam($config)
     {
-        return $config->oxshops__oxname->value . ' '
-            . $config->getActiveShop()->oxshops__oxversion->value;
+        return CTPaymentParams::getUserDataParam();
     }
 
 }
