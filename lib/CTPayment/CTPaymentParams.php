@@ -2,6 +2,7 @@
 
 namespace Fatchip\CTPayment;
 
+use Exception;
 use Fatchip\ComputopPayments\Core\Constants;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
@@ -64,15 +65,9 @@ class CTPaymentParams
             'UrlSuccess' => $urlSuccess,
             'UrlFailure' => $urlFailure,
             'UrlNotify'  => $urlNotify,
+            'UrlCancel'  => $urlCancel,
+            'UrlBack'    => $urlCancel,
         ];
-        if (
-            ($config['creditCardMode'] === 'PAYMENTPAGE' || $paymentId === 'fatchip_computop_paypal') ||
-            ($paymentId === 'fatchip_computop_amazonpay') || ($paymentId === 'fatchip_computop_easycredit')
-
-        ) {
-            $params['UrlCancel'] = $urlCancel;
-            $params['UrlBack']   = $urlCancel;
-        }
 
         return $params;
     }

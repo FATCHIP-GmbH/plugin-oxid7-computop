@@ -1,10 +1,9 @@
 <?php
 
 namespace Fatchip\ComputopPayments\Controller\Admin;
+
 use Fatchip\ComputopPayments\Model\ApiLog;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminListController;
-
-
 
 class FatchipComputopApiLogList extends AdminListController
 {

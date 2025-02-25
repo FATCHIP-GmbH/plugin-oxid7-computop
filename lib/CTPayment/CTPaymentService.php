@@ -166,18 +166,21 @@ class CTPaymentService extends Encryption
         // Set special Custom Params (Oxid Session id and TransId)
         $response = new CTResponse($requestArray);
         if (!empty($customArray)) {
-            $response->setShopTransId($customArray['transid']);
-            $response->setSessionId(($customArray['session']));
-            $response->setDelAdress(($customArray['delAdress']));
-            $response->setStoken(($customArray['stoken']));
-            $response->setInfoText(($customArray['paymentid']));
+            $response->setShopTransId($customArray['transid'] ?? '');
+            $response->setSessionId($customArray['session'] ?? '');
+            $response->setStoken($customArray['stoken'] ?? '');
+            $response->setInfoText($customArray['paymentid'] ?? '');
+            if (!empty($customArray['delAdress'])) {
+                $response->setDelAdress($customArray['delAdress']);
+            }
         } else {
-            $response->setShopTransId($rawRequest['TransId']);
-            $response->setSessionId(($rawRequest['SessionId']));
-            $response->setStoken(($rawRequest['Stoken']));
-            $response->setType($requestArray['Type']);
-            $response->setDelAdress(($rawRequest['delAdress']));
-
+            $response->setShopTransId($rawRequest['TransId'] ?? '');
+            $response->setSessionId($rawRequest['SessionId'] ?? '');
+            $response->setStoken($rawRequest['Stoken'] ?? '');
+            $response->setType($requestArray['Type'] ?? '');
+            if (!empty($rawRequest['delAdress'])) {
+                $response->setDelAdress($rawRequest['delAdress']);
+            }
         }
         return $response;
     }

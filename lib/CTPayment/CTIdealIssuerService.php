@@ -66,7 +66,7 @@ class CTIdealIssuerService extends Encryption
     {
         $queryarray = [
             'MerchantID=' . $this->merchantID,
-            'MAC=' . $this->ctHMAC(),
+            'MAC=' . $this->ctHMAC([]),
         ];
 
         $query = join("&", $queryarray);
@@ -78,20 +78,6 @@ class CTIdealIssuerService extends Encryption
             '?MerchantID=' . $this->merchantID .
             '&Len=' . $len .
             '&Data=' . $data;
-    }
-
-    /**
-     * returns hmac hash value.
-     *
-     * @return string
-     */
-    protected function ctHMAC()
-    {
-        return hash_hmac(
-            "sha256",
-            "$this->merchantID",
-            $this->mac
-        );
     }
 
     /**

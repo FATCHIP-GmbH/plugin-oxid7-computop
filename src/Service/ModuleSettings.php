@@ -34,9 +34,8 @@ final class ModuleSettings
     /** @var ModuleSettingServiceInterface */
     private $moduleSettingService;
 
-    public function __construct(
-        ModuleSettingServiceInterface $moduleSettingService
-    ) {
+    public function __construct(ModuleSettingServiceInterface $moduleSettingService)
+    {
         $this->moduleSettingService = $moduleSettingService;
     }
 

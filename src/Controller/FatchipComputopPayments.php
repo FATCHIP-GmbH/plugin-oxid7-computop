@@ -35,7 +35,6 @@ use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopPayments extends FrontendController
 {
-
     /**
      * Current class template name.
      *

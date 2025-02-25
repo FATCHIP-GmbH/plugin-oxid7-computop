@@ -70,6 +70,7 @@ class FatchipComputopNotify extends FrontendController
         $this->fatchipComputopShopUtils = Registry::getUtils();
         $this->fatchipComputopSession = Registry::getSession();
         $this->fatchipComputopLogger = new Logger();
+
         parent::init();
     }
 
@@ -154,17 +155,14 @@ class FatchipComputopNotify extends FrontendController
      * @return string
      */
     protected function getPaymentName($oOrder) {
-        if ( $paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
+        if ($paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
             return $paymentName;
-        } else {
-            exit;
         }
+        exit;
     }
 
-    private
-    function updateRefNrWithComputop(
-        $order,
-    ) {
+    private function updateRefNrWithComputop($order)
+    {
         if (!$order) {
             return null;
         }
@@ -199,8 +197,8 @@ class FatchipComputopNotify extends FrontendController
             $payment->getCTRefNrChangeURL()
         );
     }
-    protected
-    function createCTOrder($oOrder)
+
+    protected function createCTOrder($oOrder)
     {
         $ctOrder = new CTOrder();
         $configCt = oxNew(Config::class);
@@ -234,18 +232,15 @@ class FatchipComputopNotify extends FrontendController
         }
         return $ctOrder;
     }
+
     /**
      * Sets the userData paramater for Computop calls to Oxid Version and Module Version
      *
      * @return string
      * @throws Exception
      */
-    public
-    function getUserDataParam($config)
+    public function getUserDataParam($config)
     {
         return CTPaymentParams::getUserDataParam();
     }
-
 }
-
-

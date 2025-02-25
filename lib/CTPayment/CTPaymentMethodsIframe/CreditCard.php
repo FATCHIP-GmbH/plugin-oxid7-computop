@@ -203,6 +203,64 @@ class CreditCard extends CTPaymentMethodIframe
 
     protected $Custom;
 
+    /**
+     * Creditcard constructor
+     *
+     * @param array $config
+     * @param CTOrder|null $order
+     * @param null|string $urlSuccess
+     * @param null|string $urlFailure
+     * @param $urlNotify
+     * @param $orderDesc
+     * @param $userData
+     * @param $eventToken
+     * @param $isFirm
+     * @param null $klarnainvoice
+     * @param null $urlBack
+     */
+    public function __construct(
+        $config,
+        $order,
+        $urlSuccess,
+        $urlFailure,
+        $urlNotify,
+        $orderDesc,
+        $userData,
+        $eventToken = null,
+        $isFirm = null,
+        $klarnainvoice = null,
+        $urlBack
+    ) {
+        parent::__construct($config, $order, $orderDesc, $userData);
+
+        $this->setUrlSuccess($urlSuccess);
+        $this->setUrlFailure($urlFailure);
+        $this->setUrlNotify($urlNotify);
+        $this->setUrlBack($urlBack);
+
+        $this->setMsgVer('2.0');
+        $this->setUserData(base64_encode($userData));
+
+        if($config['creditCardTestMode']) {
+            $this->setOrderDesc('Test:0000');
+        }
+        else {
+            $this->setOrderDesc($orderDesc);
+        }
+
+        $this->setBillingAddress($order->getBillingAddress());
+        $this->setShippingAddress($order->getShippingAddress());
+        if ($config['creditCardAcquirer'] === 'CAPN') {
+            $this->setAmountAuth($order->getAmount());
+            $this->setBillToCustomer($order);
+            $this->setShipToCustomer($order);
+        }
+
+        //we will handle all captures manually
+        $this->setCapture('MANUAL');
+
+        $this->setCustom();
+    }
 
     /**
      * Send the user sessionid in the custom field
@@ -211,7 +269,6 @@ class CreditCard extends CTPaymentMethodIframe
      */
     public function setCustom()
     {
-
         $this->Custom = '';
     }
 
@@ -240,69 +297,6 @@ class CreditCard extends CTPaymentMethodIframe
     public function getCTRecurringURL()
     {
         return 'https://www.computop-paygate.com/direct.aspx';
-    }
-
-
-    /**
-     * Creditcard constructor
-     *
-     * @param array $config
-     * @param CTOrder|null $order
-     * @param null|string $urlSuccess
-     * @param null|string $urlFailure
-     * @param $urlNotify
-     * @param $orderDesc
-     * @param $userData
-     * @param $eventToken
-     * @param $isFirm
-     * @param null $klarnainvoice
-     * @param null $urlBack
-     */
-    public function __construct(
-        $config,
-        $order,
-        $urlSuccess,
-        $urlFailure,
-        $urlNotify,
-        $orderDesc,
-        $userData,
-        $eventToken = null,
-        $isFirm = null,
-        $klarnainvoice = null,
-        $urlBack
-    )
-    {
-        parent::__construct($config, $order, $orderDesc, $userData);
-
-        $this->setUrlSuccess($urlSuccess);
-        $this->setUrlFailure($urlFailure);
-        $this->setUrlNotify($urlNotify);
-        $this->setUrlBack($urlBack);
-
-        $this->setMsgVer('2.0');
-        $this->setUserData(base64_encode($userData));
-
-        if($config['creditCardTestMode']) {
-            $this->setOrderDesc('Test:0000');
-        }
-        else {
-            $this->setOrderDesc($orderDesc);
-        }
-
-
-        $this->setBillingAddress($order->getBillingAddress());
-        $this->setShippingAddress($order->getShippingAddress());
-        if ($config['creditCardAcquirer'] === 'CAPN') {
-            $this->setAmountAuth($order->getAmount());
-            $this->setBillToCustomer($order);
-            $this->setShipToCustomer($order);
-        }
-
-        //we will handle all captures manually
-        $this->setCapture('MANUAL');
-
-        $this->setCustom();
-
     }
 
     /**
@@ -580,7 +574,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @param string $CCBrand
      */
-    public function setCCBrand($CCBrand) {
+    public function setCCBrand($CCBrand)
+    {
         $this->CCBrand = $CCBrand;
     }
 
@@ -588,7 +583,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @return string
      */
-    public function getCCBrand() {
+    public function getCCBrand()
+    {
         return $this->CCBrand;
     }
 
@@ -596,7 +592,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @param string $CCCVC
      */
-    public function setCCCVC($CCCVC) {
+    public function setCCCVC($CCCVC)
+    {
         $this->CCCVC = $CCCVC;
     }
 
@@ -604,7 +601,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @return string
      */
-    public function getCCCVC() {
+    public function getCCCVC()
+    {
         return $this->CCCVC;
     }
 
@@ -612,7 +610,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @param string $CCExpiry
      */
-    public function setCCExpiry($CCExpiry) {
+    public function setCCExpiry($CCExpiry)
+    {
         $this->CCExpiry = $CCExpiry;
     }
 
@@ -620,7 +619,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @return string
      */
-    public function getCCExpiry() {
+    public function getCCExpiry()
+    {
         return $this->CCExpiry;
     }
 
@@ -628,7 +628,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @param string $CreditCardHolder
      */
-    public function setCreditCardHolder($CreditCardHolder) {
+    public function setCreditCardHolder($CreditCardHolder)
+    {
         $this->CreditCardHolder = $CreditCardHolder;
     }
 
@@ -636,7 +637,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @return string
      */
-    public function getCreditCardHolder() {
+    public function getCreditCardHolder()
+    {
         return $this->CreditCardHolder;
     }
 
@@ -644,7 +646,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @param string $CCNr
      */
-    public function setCCNr($CCNr) {
+    public function setCCNr($CCNr)
+    {
         $this->CCNr = $CCNr;
     }
 
@@ -652,7 +655,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @return string
      */
-    public function getCCNr() {
+    public function getCCNr()
+    {
         return $this->CCNr;
     }
 
@@ -660,7 +664,8 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @param string $TxType
      */
-    public function setTxType($TxType) {
+    public function setTxType($TxType)
+    {
         $this->TxType = $TxType;
     }
 
@@ -668,12 +673,13 @@ class CreditCard extends CTPaymentMethodIframe
      * @ignore <description>
      * @return string
      */
-    public function getTxType() {
+    public function getTxType()
+    {
         return $this->TxType;
     }
 
-    public function getBrowserInfo() {
-
+    public function getBrowserInfo()
+    {
         $browserInfoParams = [
             'javaScriptEnabled' => true, // This is already correct
             'javaEnabled' => ($_SERVER['HTTP_USER_AGENT'] ?? '') ? filter_var(strpos($_SERVER['HTTP_USER_AGENT'], 'Java') !== false, FILTER_VALIDATE_BOOLEAN) : false, // Check for Java in User-Agent
@@ -700,14 +706,16 @@ class CreditCard extends CTPaymentMethodIframe
     {
         return $this->prepareComputopRequest($ctRequest, $this->getCTPayNowURL());
     }
+
     public function getPaynowURLasJson($ctRequest)
     {
         $ctRequest['browserInfo'] = base64_encode(json_encode($this->getBrowserInfo()));
-       // $ctRequest['billingAddress'] = base64_encode(json_encode($ctRequest['billingAddress']));
+        // $ctRequest['billingAddress'] = base64_encode(json_encode($ctRequest['billingAddress']));
 
         $silentRequestParams = $this->prepareSilentRequest($ctRequest);
         return json_encode($silentRequestParams);
     }
+
     /**
      * returns url for preauthorizations for paynow silent mode
      *
@@ -751,5 +759,4 @@ class CreditCard extends CTPaymentMethodIframe
 
         return $params;
     }
-
 }

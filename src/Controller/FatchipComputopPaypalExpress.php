@@ -50,7 +50,6 @@ use VIISON\AddressSplitter\AddressSplitter;
 
 class FatchipComputopPayPalExpress extends FrontendController
 {
-
     /**
      * Current class template name.
      *
@@ -70,8 +69,9 @@ class FatchipComputopPayPalExpress extends FrontendController
 
     public function init()
     {
-        ini_set('session.cookie_samesite', 'None');
-        ini_set('session.cookie_secure', true);
+        // deactivated - throws warnings - not sure if needed
+        #ini_set('session.cookie_samesite', 'None');
+        #ini_set('session.cookie_secure', true);
         parent::init();
     }
 
@@ -193,6 +193,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                     //set the sess_challenge is needed for the ThankYouController
                     Registry::getSession()->setVariable('sess_challenge', $oOrder->getId());
                     Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeOngoing', $oResponse->getTransID());
+                    Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX.'PpeFinished',0);
                     //redirect to the order page
                     Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?cl=order');
                 } else {
@@ -244,7 +245,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             $aLog['response_details'] = json_encode($aRequestParams);
             $aLog['trans_id'] = $oResponse->getTransID();
             $aLog['pay_id'] = $oResponse->getPayID();
-            if ($oOrder->load($oResponse->getTransID())) {
+            if ($oOrder->load($oResponse->getTransID()) || $oOrder->load(Registry::getSession()->getId())) {
                 $oOrder->oxorder__oxstorno = new Field(1);
                 $oOrder->oxorder__oxtransstatus = new Field('ERROR');
                 $oOrder->save();
@@ -252,9 +253,11 @@ class FatchipComputopPayPalExpress extends FrontendController
                 Registry::getLogger()->error('PAYPAL_EXPRESS_FAILURE_HOOK: order not found transID: ' . $oResponse->getTransID());
             }
             if ($oResponse->getCode() === '21500053') {
+                Registry::getSession()->cleanUpPPEOrder();
                 $sErrorString = 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL';
             }
         } else {
+            Registry::getSession()->cleanUpPPEOrder();
             $aLog['request_details'] = 'INVALID PARAMS';
             $sErrorString = 'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR';
         }
@@ -340,27 +343,27 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $oUser->delete();
                 $oUser->load($sResponseEmailId);
             }
-                $notApplicableFields = [
-                    'oxuser__oxustid'  => '',
-                    'oxuser__oxcompany' => '',
-                    'oxuser__oxaddinfo' => '',
-                    'oxuser__oxstateid' => '',
-                    'oxuser__oxaddinfo' => '',
-                    'oxuser__oxfon' => '',
-                    'oxuser__oxfax' => '',
-                    'oxuser__oxsal' => ''
-                ];
-                $billAddress = [
-                    'oxuser__oxusername' => $oResponse->getEMail(),
-                    'oxuser__oxfname' => $oResponse->getFirstName(),
-                    'oxuser__oxlname' => $oResponse->getLastName(),
-                    'oxuser__oxstreet' => $oResponse->getAddrStreet(),
-                    'oxuser__oxstreetnr' => $oResponse->getAddrStreetNr(),
-                    'oxuser__oxcity' => $oResponse->getAddrCity(),
-                    'oxuser__oxcountryid' => $sCountryId,
-                    'oxuser__oxzip' => $oResponse->getAddrZIP(),
-                ];
-                $oUser->assign(array_merge($notApplicableFields,$billAddress));
+            $notApplicableFields = [
+                'oxuser__oxustid'  => '',
+                'oxuser__oxcompany' => '',
+                'oxuser__oxaddinfo' => '',
+                'oxuser__oxstateid' => '',
+                'oxuser__oxaddinfo' => '',
+                'oxuser__oxfon' => '',
+                'oxuser__oxfax' => '',
+                'oxuser__oxsal' => ''
+            ];
+            $billAddress = [
+                'oxuser__oxusername' => $oResponse->getEMail(),
+                'oxuser__oxfname' => $oResponse->getFirstName(),
+                'oxuser__oxlname' => $oResponse->getLastName(),
+                'oxuser__oxstreet' => $oResponse->getAddrStreet(),
+                'oxuser__oxstreetnr' => $oResponse->getAddrStreetNr(),
+                'oxuser__oxcity' => $oResponse->getAddrCity(),
+                'oxuser__oxcountryid' => $sCountryId,
+                'oxuser__oxzip' => $oResponse->getAddrZIP(),
+            ];
+            $oUser->assign(array_merge($notApplicableFields,$billAddress));
         }
         $delAdressPayPal = [
             'oxaddress__oxaddressuserid' => $oUser->getId(),
@@ -432,14 +435,16 @@ class FatchipComputopPayPalExpress extends FrontendController
     {
         if (!empty($oResponse->getName())) {
             return implode(' ', array_slice(explode(' ', (string)$oResponse->getName()), 0, -1));
-        } else return '';
+        }
+        return '';
     }
 
     protected function getLastName(CTResponse $oResponse): string
     {
         if (!empty($oResponse->getName())) {
             return array_slice(explode(' ', (string)$oResponse->getName()), -1)[0];
-        } else return '';
+        }
+        return '';
     }
 
     protected function extractStreetNr($address)

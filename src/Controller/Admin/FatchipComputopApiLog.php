@@ -24,7 +24,6 @@
  * @link       https://www.computop.com
  */
 
-
 namespace Fatchip\ComputopPayments\Controller\Admin;
 
 use Fatchip\ComputopPayments\Core\Constants;
@@ -36,5 +35,4 @@ use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 class FatchipComputopApiLog extends AdminController
 {
     protected $_sThisTemplate = '@fatchip_computop_payments/admin/' . Constants::TEMPLATE_PREFIX . 'apilog';
-
 }

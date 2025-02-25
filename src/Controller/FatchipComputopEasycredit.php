@@ -37,7 +37,6 @@ use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopEasycredit extends FrontendController
 {
-
     /**
      * Current class template name.
      *
@@ -83,8 +82,6 @@ class FatchipComputopEasycredit extends FrontendController
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         $returnUrl = $sShopUrl . 'index.php?cl=order';
         Registry::getUtils()->redirect($returnUrl, false);
-
-
     }
 
     /**
@@ -95,12 +92,12 @@ class FatchipComputopEasycredit extends FrontendController
      */
     public function getIframeUrl()
     {
-
         $redirectUrl = $this->fatchipComputopSession->getVariable('fatchipComputopIFrameURL');
         if ($redirectUrl) {
             return $redirectUrl;
         }
     }
+
     public function getDecisionParams($payID, $transID, $amount, $currency)
     {
         $params = [
@@ -114,6 +111,7 @@ class FatchipComputopEasycredit extends FrontendController
         ];
         return $params;
     }
+
     public function success() {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
@@ -126,7 +124,6 @@ class FatchipComputopEasycredit extends FrontendController
         }
         if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
             $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
-        } else {
         }
     }
 
@@ -143,7 +140,6 @@ class FatchipComputopEasycredit extends FrontendController
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         $returnUrl = $sShopUrl . 'index.php?cl=order&amp;fnc=execute&amp;FatchipComputopLen=' . $len . '&amp;FatchipComputopData=' . $data;
         return $returnUrl;
-
     }
 
     public function getResponse()

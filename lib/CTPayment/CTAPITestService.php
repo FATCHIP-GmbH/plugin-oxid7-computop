@@ -143,17 +143,6 @@ class CTAPITestService extends Encryption
     }
 
     /**
-     * ctHMAC
-     * @param $params
-     * @return string
-     */
-    protected function ctHMAC($params)
-    {
-        $data = $params['payID'].'*'.$params['transID'].'*'.$this->merchantID.'*'.$params['amount'].'*'.$params['currency'];
-        return hash_hmac("sha256", $data, $this->mac);
-    }
-
-    /**
      * calls computop api to get ideal financial institutes list
      *
      * @return bool

@@ -16,8 +16,9 @@ class FatchipComputopRedirect extends FatchipComputopPayments
 
     public function init()
     {
-        ini_set('session.cookie_samesite', 'None');
-        ini_set('session.cookie_secure', true);
+        // deactivated - throws warnings - not sure if needed
+        #ini_set('session.cookie_samesite', 'None');
+        #ini_set('session.cookie_secure', true);
         parent::init();
     }
 
@@ -33,7 +34,6 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $this->fatchipComputopLogger = new Logger();
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
     }
-
 
     public function render()
     {
@@ -65,7 +65,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         return  $this->_sThisTemplate;
     }
 
-    public function getFinishUrl() {
+    public function getFinishUrl()
+    {
         $req         = Registry::getRequest();
         $len         = $req->getRequestParameter('Len');
         $data        = $req->getRequestParameter('Data');
@@ -115,7 +116,8 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         Registry::getUtils()->redirect($returnUrl, false, 301);
     }
 
-    public function getFinishUrlIframe() {
+    public function getFinishUrlIframe()
+    {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
         if (!empty($len) && !empty($data)) {
