@@ -387,22 +387,26 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         $oOrder->oxorder__fatchip_computop_xid = new Field($oResponse->getXID());
 
-        // update order's bill info
-        $oOrder->oxorder__oxbillemail = new Field($oResponse->getEMail());
-        $oOrder->oxorder__oxbillfname = new Field($oResponse->getFirstName());
-        $oOrder->oxorder__oxbilllname = new Field($oResponse->getLastName());
-        $oOrder->oxorder__oxbillstreet = new Field($oResponse->getAddrStreet());
-        $oOrder->oxorder__oxbillstreetnr = new Field($oResponse->getAddrStreetNr());
-        $oOrder->oxorder__oxbillcity = new Field($oResponse->getAddrCity());
-        $oOrder->oxorder__oxbillcountryid = new Field($sCountryId);
-        $oOrder->oxorder__oxbillzip = new Field($oResponse->getAddrZIP());
-        $oOrder->oxorder__oxbillcompany = new Field('');
-        $oOrder->oxorder__oxbilladdinfo = new Field('');
-        $oOrder->oxorder__oxbillfon = new Field('');
-        $oOrder->oxorder__oxbillfax = new Field('');
-        $oOrder->oxorder__oxbillsal = new Field('');
-        $oOrder->oxorder__oxbillustid = new Field('');
-        $oOrder->oxorder__oxbillstateid = new Field('');
+        // Only overwrite billing address for guest users
+        if (!$this->getUser() || $this->getUser()->hasAccount() === false) {
+            // update order's bill info
+            $oOrder->oxorder__oxbillemail = new Field($oResponse->getEMail());
+            $oOrder->oxorder__oxbillfname = new Field($oResponse->getFirstName());
+            $oOrder->oxorder__oxbilllname = new Field($oResponse->getLastName());
+            $oOrder->oxorder__oxbillstreet = new Field($oResponse->getAddrStreet());
+            $oOrder->oxorder__oxbillstreetnr = new Field($oResponse->getAddrStreetNr());
+            $oOrder->oxorder__oxbillcity = new Field($oResponse->getAddrCity());
+            $oOrder->oxorder__oxbillcountryid = new Field($sCountryId);
+            $oOrder->oxorder__oxbillzip = new Field($oResponse->getAddrZIP());
+            $oOrder->oxorder__oxbillcompany = new Field('');
+            $oOrder->oxorder__oxbilladdinfo = new Field('');
+            $oOrder->oxorder__oxbillfon = new Field('');
+            $oOrder->oxorder__oxbillfax = new Field('');
+            $oOrder->oxorder__oxbillsal = new Field('');
+            $oOrder->oxorder__oxbillustid = new Field('');
+            $oOrder->oxorder__oxbillstateid = new Field('');
+        }
+
         // update order's delivery info
         $oOrder->oxorder__oxdelemail = new Field($oResponse->getEMail());
         $oOrder->oxorder__oxdelfname = new Field($this->getFirstName($oResponse));

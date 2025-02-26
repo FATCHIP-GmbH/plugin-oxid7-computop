@@ -57,13 +57,14 @@ class CTPaymentParams
         $sessionId = Registry::getSession()->getId();
 
         $successController = Constants::GENERAL_PREFIX . 'redirect';
+        $failureController = $successController;
         if ($paymentId === 'fatchip_computop_easycredit') {
             $successController = 'order';
         }
 
         $params = [
             'UrlSuccess' => self::buildUrl($shopUrl, $successController, $sessionId),
-            'UrlFailure' => self::buildUrl($shopUrl, 'payment', $sessionId),
+            'UrlFailure' => self::buildUrl($shopUrl, $failureController, $sessionId),
             'UrlNotify'  => self::buildUrl($shopUrl, Constants::GENERAL_PREFIX . 'notify', $sessionId),
         ];
 

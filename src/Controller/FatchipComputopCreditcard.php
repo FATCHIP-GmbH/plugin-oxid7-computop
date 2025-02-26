@@ -66,6 +66,7 @@ class FatchipComputopCreditcard extends FrontendController
         #ini_set('session.cookie_secure', true);
         parent::init();
     }
+
     /**
      * Class constructor, sets all required parameters for requests.
      */
@@ -81,7 +82,6 @@ class FatchipComputopCreditcard extends FrontendController
         $this->fatchipComputopLogger = new Logger();
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
     }
-
 
     /**
      * The controller renderer
