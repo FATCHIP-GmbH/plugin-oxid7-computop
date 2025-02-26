@@ -42,6 +42,13 @@ class FatchipComputopCreditcard extends FrontendController
      */
     protected $_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
 
+    /**
+     * Flag if current view is an order view
+     *
+     * @var bool
+     */
+    protected $_blIsOrderStep = true;
+
     protected $fatchipComputopConfig;
     protected $fatchipComputopSession;
     protected $fatchipComputopShopConfig;

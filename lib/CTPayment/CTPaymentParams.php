@@ -56,22 +56,15 @@ class CTPaymentParams
         $shopUrl = rtrim(Registry::getConfig()->getShopUrl(), '/') . '/';
         $sessionId = Registry::getSession()->getId();
 
+        $successController = Constants::GENERAL_PREFIX . 'redirect';
         if ($paymentId === 'fatchip_computop_easycredit') {
-            $paymentClass = $paymentId;
-            $urlSuccess   = self::buildUrl($shopUrl, 'order', $sessionId);
-        } else {
-            $paymentClass = Constants::GENERAL_PREFIX . 'redirect';
-            $urlSuccess   = self::buildUrl($shopUrl, $paymentClass, $sessionId);
+            $successController = 'order';
         }
 
-        $urlCancel  = self::buildUrl($shopUrl, $paymentClass, $sessionId);
-        $urlNotify  = self::buildUrl($shopUrl, Constants::GENERAL_PREFIX . 'notify', $sessionId);
-        $urlFailure = $urlCancel;
-
         $params = [
-            'UrlSuccess' => $urlSuccess,
-            'UrlFailure' => $urlFailure,
-            'UrlNotify'  => $urlNotify,
+            'UrlSuccess' => self::buildUrl($shopUrl, $successController, $sessionId),
+            'UrlFailure' => self::buildUrl($shopUrl, 'payment', $sessionId),
+            'UrlNotify'  => self::buildUrl($shopUrl, Constants::GENERAL_PREFIX . 'notify', $sessionId),
         ];
 
         if ($config['creditCardMode'] === 'PAYMENTPAGE') { // don't send urlcancel/back in IFRAME mode, since iframe breakout does not work currently and user can use shop navigation to leave iframe
@@ -79,8 +72,8 @@ class CTPaymentParams
         }
 
         if (in_array($paymentId, self::$aURLBackWhitelist)) {
-            $params['UrlCancel'] = $urlCancel;
-            $params['UrlBack']   = $urlCancel;
+            $params['UrlCancel'] = $params['UrlFailure'];
+            $params['UrlBack']   = $params['UrlFailure'];
         }
 
         return $params;
