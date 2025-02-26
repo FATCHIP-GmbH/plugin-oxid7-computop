@@ -44,6 +44,13 @@ class CTPaymentParams
             'email',
             'customerId'
         ];
+
+    protected static $aURLBackWhitelist = [
+        'fatchip_computop_paypal',
+        'fatchip_computop_amazonpay',
+        'fatchip_computop_easycredit',
+    ];
+
     public static function getUrlParams($paymentId = false, $config = false)
     {
         $shopUrl = rtrim(Registry::getConfig()->getShopUrl(), '/') . '/';
@@ -65,9 +72,16 @@ class CTPaymentParams
             'UrlSuccess' => $urlSuccess,
             'UrlFailure' => $urlFailure,
             'UrlNotify'  => $urlNotify,
-            'UrlCancel'  => $urlCancel,
-            'UrlBack'    => $urlCancel,
         ];
+
+        if ($config['creditCardMode'] === 'PAYMENTPAGE') { // don't send urlcancel/back in IFRAME mode, since iframe breakout does not work currently and user can use shop navigation to leave iframe
+            self::$aURLBackWhitelist[] = 'fatchip_computop_creditcard';
+        }
+
+        if (in_array($paymentId, self::$aURLBackWhitelist)) {
+            $params['UrlCancel'] = $urlCancel;
+            $params['UrlBack']   = $urlCancel;
+        }
 
         return $params;
     }

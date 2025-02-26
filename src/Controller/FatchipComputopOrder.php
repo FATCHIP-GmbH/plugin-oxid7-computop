@@ -915,7 +915,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         return $taxAmount;
     }
 
-    public function getFatchipComputopShopConfigMode()
+    public function getFatchipComputopShopCreditcardMode()
     {
         if (is_array($this->fatchipComputopConfig)) {
             return $this->fatchipComputopConfig['creditCardMode'];

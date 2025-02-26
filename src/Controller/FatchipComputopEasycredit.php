@@ -122,7 +122,7 @@ class FatchipComputopEasycredit extends FrontendController
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
-        if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
+        if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') { /// why??? what does creditcard configuration have to do with EasyCredit?
             $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
         }
     }
