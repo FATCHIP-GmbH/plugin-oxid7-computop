@@ -428,7 +428,9 @@ class FatchipComputopPayPalExpress extends FrontendController
         $basket->setUser($oUser);
         $basket->setPayment($paymentType->getFieldData("oxuserpayments__oxpaymentsid"));
         Registry::getSession()->setUser($oUser);
-        $oUser->login($oResponse->getEMail(),'',true);
+        if ($oUser->hasAccount() === false) {
+            $oUser->login($oResponse->getEMail(), '', true);
+        }
 
         $bOrderSaveState = $oOrder->save();
 
