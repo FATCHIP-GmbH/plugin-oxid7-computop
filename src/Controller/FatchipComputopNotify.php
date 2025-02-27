@@ -31,6 +31,7 @@ use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentParams;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
@@ -69,6 +70,7 @@ class FatchipComputopNotify extends FrontendController
         $this->fatchipComputopShopUtils = Registry::getUtils();
         $this->fatchipComputopSession = Registry::getSession();
         $this->fatchipComputopLogger = new Logger();
+
         parent::init();
     }
 
@@ -153,17 +155,14 @@ class FatchipComputopNotify extends FrontendController
      * @return string
      */
     protected function getPaymentName($oOrder) {
-        if ( $paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
+        if ($paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
             return $paymentName;
-        } else {
-            exit;
         }
+        exit;
     }
 
-    private
-    function updateRefNrWithComputop(
-        $order,
-    ) {
+    private function updateRefNrWithComputop($order)
+    {
         if (!$order) {
             return null;
         }
@@ -188,7 +187,7 @@ class FatchipComputopNotify extends FrontendController
             die();
         }*/
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
-        $RefNrChangeParams['EtiId'] = $this->getUserDataParam($config);
+        $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
 
 
         return $order->callComputopService(
@@ -198,8 +197,8 @@ class FatchipComputopNotify extends FrontendController
             $payment->getCTRefNrChangeURL()
         );
     }
-    protected
-    function createCTOrder($oOrder)
+
+    protected function createCTOrder($oOrder)
     {
         $ctOrder = new CTOrder();
         $configCt = oxNew(Config::class);
@@ -233,19 +232,15 @@ class FatchipComputopNotify extends FrontendController
         }
         return $ctOrder;
     }
+
     /**
      * Sets the userData paramater for Computop calls to Oxid Version and Module Version
      *
      * @return string
      * @throws Exception
      */
-    public
-    function getUserDataParam($config)
+    public function getUserDataParam($config)
     {
-        return $config->oxshops__oxname->value . ' '
-            . $config->getActiveShop()->oxshops__oxversion->value;
+        return CTPaymentParams::getUserDataParam();
     }
-
 }
-
-

@@ -46,7 +46,7 @@ class FatchipComputopAjaxApiLog extends AdminController
         $container = ContainerFactory::getInstance()->getContainer();
         $queryBuilderFactory = $container->get(QueryBuilderFactoryInterface::class);
         $queryBuilder = $queryBuilderFactory->create();
-        $count =         $queryBuilder
+        $count = $queryBuilder
             ->select('*')
             ->from(Constants::APILOG_TABLE)
             ->where('1')->execute()->rowCount();
@@ -103,6 +103,4 @@ class FatchipComputopAjaxApiLog extends AdminController
         }
         return $result;
     }
-
-
 }

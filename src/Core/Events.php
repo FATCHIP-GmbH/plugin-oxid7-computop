@@ -39,7 +39,6 @@ use Fatchip\CTPayment\CTPaymentMethods;
 
 class Events
 {
-
     public static $sQueryAlterOxorderTransid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_transid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
     public static $sQueryAlterOxorderPayid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_payid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '0' NOT NULL;";
     public static $sQueryAlterOxorderXid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_xid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
@@ -81,7 +80,6 @@ class Events
         foreach ($aSeoHooksUrlsListSql as $sSeoHookSql) {
             DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sSeoHookSql);
         }
-
     }
 
     /**

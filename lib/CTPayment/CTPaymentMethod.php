@@ -112,17 +112,6 @@ abstract class CTPaymentMethod extends Encryption
     }
 
     /**
-     * ctHMAC
-     * @param $params
-     * @return string
-     */
-    protected function ctHMAC($params)
-    {
-        $data = $params['payID'] . '*' . $params['transID'] . '*' . $this->merchantID . '*' . $params['amount'] . '*' . $params['currency'];
-        return strtoupper(hash_hmac("sha256", $data, $this->mac));
-    }
-
-    /**
      * Prepares CT Request. Takes all params, creates a querystring, determines Length and encrypts the data
      *
      * @param $params
@@ -145,8 +134,8 @@ abstract class CTPaymentMethod extends Encryption
         unset($params['PayPalMethod']);
 
         foreach ($params as $key => $value) {
-            if (!array_key_exists($key, $this::paramexcludes)) {
-                $requestParams[] = "$key=" . $value;
+            if (!array_key_exists($key, $this::paramexcludes) && !is_array($value)) {
+                $requestParams[] = $key."=".$value;
             }
         }
         $requestParams[] = "MAC=" . $this->ctHMAC($params);
@@ -206,7 +195,7 @@ abstract class CTPaymentMethod extends Encryption
         $curlUrl = $this->prepareComputopRequest($ctRequest, $url);
         curl_setopt_array($curl,
             [CURLOPT_RETURNTRANSFER => 1,
-             CURLOPT_URL => $curlUrl
+                CURLOPT_URL => $curlUrl
             ]);
         try {
             $resp = curl_exec($curl);

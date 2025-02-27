@@ -10,8 +10,8 @@ namespace Fatchip\ComputopPayments\Core;
 class Blowfish
 {
 
-    public function __construct(
-    ) {
+    public function __construct()
+    {
 
     }
 
@@ -167,12 +167,8 @@ class Blowfish
      * @param  string  $password
      * @return bool|string
      */
-    public function ctEncrypt($plaintext, $len, $password = false)
+    public function ctEncrypt($plaintext, $len, $password)
     {
-        if ($password === false) {
-            $password = $this->baseHelper->getConfigParam('password');
-        }
-
         if (mb_strlen($password) <= 0) $password = ' ';
         if (mb_strlen($plaintext) != $len) {
             #echo 'Length mismatch. The parameter len differs from actual length.';
@@ -191,12 +187,8 @@ class Blowfish
      * @param  string  $password
      * @return array
      */
-    public function ctDecrypt($cipher, $len, $password = false)
+    public function ctDecrypt($cipher, $len, $password)
     {
-        if ($password === false) {
-            $password = $this->baseHelper->getConfigParam('password');
-        }
-
         if (mb_strlen($password) <= 0) $password = ' ';
         # converts hex to bin
         $cipher = pack('H' . strlen($cipher ?? ''), $cipher);

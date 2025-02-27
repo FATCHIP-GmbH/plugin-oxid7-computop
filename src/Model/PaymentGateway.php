@@ -31,87 +31,74 @@ use OxidEsales\Eshop\Core\Registry;
 
 class PaymentGateway extends PaymentGateway_parent
 {
-
     /**
      * @var null|int
      */
     public $_iLastErrorNo;
+
     /**
      * @var null|int
      */
     public $_sLastError;
 
     /**
-     * Overrides standard oxid finalizeOrder method if the used payment method belongs to Computop.
-     * Return parent's return if payment method is no Computop method
-     *
+     * @var string[]
+     */
+    protected $aSpecialHandlingMethods = [
+        'fatchip_computop_paypal_express',
+        'fatchip_computop_lastschrift',
+        'fatchip_computop_amazonpay',
+    ];
+
+    // -----------------> START OXID CORE MODULE EXTENSIONS <-----------------
+
+    /**
      * Executes payment, returns true on success.
      *
      * @param double $dAmount Goods amount
-     * @param object &$oOrder User ordering object
+     * @param object $oOrder  User ordering object
      *
-     * @extend executePayment
      * @return bool
      */
     public function executePayment($dAmount, &$oOrder)
     {
-        if (!$oOrder->isFatchipComputopOrder()) {
-            return true;
+        if ($oOrder->isFatchipComputopOrder() === false) {
+            return parent::executePayment($dAmount, $oOrder);
         }
-        //special handling for fatchip_computop_paypal_express
-        if($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_paypal_express'){
-            return true;
-        }
-        if($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_lastschrift'){
-            return true;
-        }
-        if($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_amazonpay'){
-            return true;
-        }
-        if ($oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_easycredit') {
-            return $oOrder->handleAuthorization($dAmount, $this);
 
+        if (in_array($oOrder->oxorder__oxpaymenttype->value, $this->aSpecialHandlingMethods) || $this->fcctIsSilentCCRequest()) {
+            return true;
         }
-        $config = new Config();
-        $configArray =  $config->toArray();
+
         $this->_iLastErrorNo = null;
         $this->_sLastError = null;
-        $silentCCResponse = Registry::getSession()->getVariable('FatchipComputopRedirectResponse');
-        $silentCCRequest = Registry::getSession()->getVariable('FatchipComputopDirectRequest');
-        if ($configArray['creditCardMode'] === 'SILENT' && $silentCCRequest) {
-            return true;
-        }
-/*        if ($silentCCRequest === null && $configArray['creditCardMode'] === 'SILENT') {
-            return false;
-        }*/
+
         /** @var Order $oOrder */
         if ($oOrder->isFatchipComputopRedirectPayment()) {
             return  $oOrder->handleRedirectPayment($dAmount, $this);
         }
 
-        if ($oOrder->isFatchipComputopDirectPayment()) {
+        if ($oOrder->isFatchipComputopDirectPayment() || $oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_easycredit') {
             return $oOrder->handleAuthorization($dAmount, $this);
         }
+        return false;
     }
 
+    // -----------------> END OXID CORE MODULE EXTENSIONS <-----------------
+
+    // -----------------> START CUSTOM MODULE FUNCTIONS <-----------------
 
     /**
-     * Setter for last error number
-     *
-     * @param int $iLastErrorNr
+     * @return bool
      */
-    public function setLastErrorNr($iLastErrorNr): void
+    protected function fcctIsSilentCCRequest()
     {
-        $this->_iLastErrorNo = $iLastErrorNr;
-    }
-
-    /**
-     * Setter for last error text
-     *
-     * @param int $sLastError
-     */
-    public function setLastError($sLastError): void
-    {
-        $this->_sLastError = $sLastError;
+        $silentCCRequest = Registry::getSession()->getVariable('FatchipComputopDirectRequest');
+        $config = new Config();
+        $configArray =  $config->toArray();
+        if ($configArray['creditCardMode'] === 'SILENT' && $silentCCRequest) {
+            return true;
+        }
+        return false;
     }
 }

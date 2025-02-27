@@ -15,17 +15,30 @@ use OxidEsales\Eshop\Core\Registry;
 class ViewConfig extends ViewConfig_parent
 {
     private $b = [];
+
     protected $fatchipComputopConfig;
+
     protected $fatchipComputopBasket;
+
     protected $fatchipComputopSession;
+
     protected $fatchipComputopShopConfig;
+
     protected $fatchipComputopPaymentId;
+
     protected $fatchipComputopPaymentClass;
+
     protected $fatchipComputopShopUtils;
+
     protected $fatchipComputopLogger;
+
     protected $fatchipComputopPaymentService;
+
     public $fatchipComputopSilentParams;
+
     public $signature = '';
+
+    // -----------------> START OXID CORE MODULE EXTENSIONS <-----------------
 
     /**
      * init object construction
@@ -34,6 +47,8 @@ class ViewConfig extends ViewConfig_parent
      */
     public function __construct()
     {
+        parent::__construct();
+
         $config = new Config();
         $this->fatchipComputopConfig = $config->toArray();
         $this->fatchipComputopSession = Registry::getSession();
@@ -45,12 +60,16 @@ class ViewConfig extends ViewConfig_parent
         $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
     }
 
+    // -----------------> END OXID CORE MODULE EXTENSIONS <-----------------
+
+    // -----------------> START CUSTOM MODULE FUNCTIONS <-----------------
+    // @TODO: They ALL need a module function name prefix to not cross paths with other module
+
     /**
      * @return Config
      */
     public function getFatchipComputopConfig(): array
     {
-        $whoami = $this->fatchipComputopConfig;
         return $this->fatchipComputopConfig;
     }
 
@@ -129,14 +148,11 @@ class ViewConfig extends ViewConfig_parent
         return $payload->getButtonpayload();
     }
 
-    public function getButtonPubKey() {
+    public function getButtonPubKey()
+    {
         $payload = $this->fatchipComputopSession->getVariable('FatchipComputopResponse');
         $buttonPublicKey = $payload->getButtonpublickeyid();
         return $buttonPublicKey;
-    }
-    public function getConfig()
-    {
-        return $this->fatchipComputopShopConfig;
     }
 
     /**
@@ -189,5 +205,4 @@ class ViewConfig extends ViewConfig_parent
         $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
         return $oPaypalExpressPaypment->isActive();
     }
-
 }

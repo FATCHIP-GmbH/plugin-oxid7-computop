@@ -40,6 +40,7 @@ class FatchipComputopLastschrift extends FatchipComputopPayments
         $this->fatchipComputopShopUtils = Registry::getUtils();
         $this->fatchipComputopSession = Registry::getSession();
         $this->fatchipComputopLogger = new Logger();
+
         parent::init();
     }
 
@@ -51,6 +52,7 @@ class FatchipComputopLastschrift extends FatchipComputopPayments
     {
         $this->notifyAction();
     }
+
     /**
      * Notify action method
      *
@@ -118,5 +120,3 @@ class FatchipComputopLastschrift extends FatchipComputopPayments
         exit(0);
     }
 }
-
-

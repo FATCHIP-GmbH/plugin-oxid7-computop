@@ -16,8 +16,9 @@ class FatchipComputopRedirect extends FatchipComputopPayments
 
     public function init()
     {
-        ini_set('session.cookie_samesite', 'None');
-        ini_set('session.cookie_secure', true);
+        // deactivated - throws warnings - not sure if needed
+        #ini_set('session.cookie_samesite', 'None');
+        #ini_set('session.cookie_secure', true);
         parent::init();
     }
 
@@ -34,55 +35,118 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
     }
 
-    public function render() {
-        return $this->_sThisTemplate;
+    public function render()
+    {
+        $request = Registry::getRequest();
+        $len     = $request->getRequestParameter('Len');
+        $data    = $request->getRequestParameter('Data');
+        $custom  = $request->getRequestParameter('Custom');
+        $response = null;
+        if (!empty($len) && !empty($data)) {
+            $postParams = [
+                'Len'    => $len,
+                'Data'   => $data,
+                'Custom' => $custom,
+            ];
+            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($postParams);
+        }
+        if (is_object($response)) {
+            if ($response->getInfoText() === 'fatchip_computop_creditcard') {
+                $ccmode = $this->fatchipComputopConfig['creditCardMode'] ?? '';
+                if ($ccmode === 'IFRAME') {
+                    $this->_sThisTemplate = ($response !== null)
+                        ? '@fatchip_computop_payments/payments/fatchip_computop_iframe_return'
+                        : '@fatchip_computop_payments/payments/fatchip_computop_iframe';
+                } else if ($ccmode === 'SILENT') {
+                    return $this->_sThisTemplate;
+                }
+            }
+        }
+        return  $this->_sThisTemplate;
     }
 
-    public function getFinishUrl() {
+    public function getFinishUrl()
+    {
+        $req         = Registry::getRequest();
+        $len         = $req->getRequestParameter('Len');
+        $data        = $req->getRequestParameter('Data');
+        $customParam = $req->getRequestParameter('Custom');
+        $response    = null;
+        $custom      = null;
+
+        if (!empty($len) && !empty($data)) {
+            $params   = ['Len' => $len, 'Data' => $data, 'Custom' => $customParam];
+            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($params);
+            $custom   = $this->fatchipComputopPaymentService->getRequest();
+        }
+
+        if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX."DirectResponse", $response);
+            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX."RedirectResponse", $response);
+        }
+
+        $shopUrl    = $this->fatchipComputopShopConfig->getShopUrl();
+        $stoken   = ($response && $response->getStoken()) ? $response->getStoken() : ($custom ? $custom->getStoken() : '');
+        $sid      = ($custom && $custom->getSessionId()) ? $custom->getSessionId() : '';
+        $delAddr  = ($custom && $custom->getDelAdress()) ? $custom->getDelAdress() : '';
+        $stoken   = $stoken ?: Registry::getSession()->getVariable('sess_stoken');
+
+        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+            $queryParams = [
+                'cl'                 => 'payment',
+                'FatchipComputopLen' => $len,
+                'FatchipComputopData'=> $data,
+                'stoken'             => $stoken,
+                'sid'                => $sid,
+            ];
+        } else {
+            $queryParams = [
+                'cl'                  => 'order',
+                'fnc'                 => 'execute',
+                'FatchipComputopLen'  => $len,
+                'FatchipComputopData' => $data,
+                'stoken'              => $stoken,
+                'sid'                 => $sid,
+                'sDeliveryAddressMD5' => $delAddr,
+            ];
+        }
+
+        $returnUrl = $shopUrl . 'index.php?' . http_build_query($queryParams);
+        Registry::getUtils()->redirect($returnUrl, false, 301);
+    }
+
+    public function getFinishUrlIframe()
+    {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
-        $custom = Registry::getRequest()->getRequestParameter('Custom');
-
         if (!empty($len) && !empty($data)) {
             $PostRequestParams = [
                 'Len' => $len,
                 'Data' => $data,
-                'Custom' => $custom,
             ];
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-            $custom = $this->fatchipComputopPaymentService->getRequest();
         }
-        if ($this->fatchipComputopConfig['creditCardMode'] === 'SILENT') {
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$response);
-        }
-        $stoken = '';
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
-        if (!empty($response)) {
-            $stoken = $response->getStoken();
+        $stoken = $response->getRefNr();
+        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+            $queryParams = [
+                'cl'                 => 'payment',
+                'FatchipComputopLen' => $len,
+                'FatchipComputopData'=> $data,
+                'stoken'             => $stoken,
+            ];
+        } else {
+            $queryParams = [
+                'cl'                  => 'order',
+                'fnc'                 => 'execute',
+                'FatchipComputopLen'  => $len,
+                'FatchipComputopData' => $data,
+                'stoken'              => $stoken,
+            ];
         }
-        $sid = '';
-        $delAdress = '';
-        if ($custom) {
-            $this->fatchipComputopLogger->logRequestResponse([], 'REDIRECT', 'AUTH', $response,);
 
-            if (!empty($custom->getSessionId())) {
-                $sid = $custom->getSessionId();
-            }
-            if (empty($response->getStoken())) {
-                $stoken = $custom->getStoken();
-            }
-            if (!empty($custom->getDelAdress())) {
-                $delAdress = $custom->getDelAdress();
-            }
-        }
-        if (empty($stoken)) {
-            $stoken = Registry::getSession()->getVariable('sess_stoken');
-        }
-        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
-            . '&stoken=' . $stoken.'&sid='.$sid.'&sDeliveryAddressMD5='.$delAdress;
-
-        Registry::getUtils()->redirect($returnUrl, false, 301);
-
+        $returnUrl = $sShopUrl . 'index.php?' . http_build_query($queryParams);
+        $returnurl = json_encode($returnUrl);
+        return  $returnurl;
     }
 }

@@ -135,7 +135,9 @@ class Encryption
         $arr = [];
         foreach ($arText as $text) {
             $str = explode($sSplit, $text);
-            $arr[$str[0]] = $str[1];
+            if (count($str) > 1) {
+                $arr[$str[0]] = $str[1];
+            }
         }
         return $arr;
     }
@@ -277,6 +279,24 @@ class Encryption
     public function getMac()
     {
         return $this->mac;
+    }
+
+    /**
+     * ctHMAC
+     * @param $params
+     * @return string
+     */
+    protected function ctHMAC($params)
+    {
+        $hashParts = [
+            $params['payID'] ?? '',
+            $params['transID'] ?? '',
+            $this->getMerchantID() ?? '',
+            $params['amount'] ?? '',
+            $params['currency'] ?? '',
+        ];
+        $data = implode("*", $hashParts);
+        return strtoupper(hash_hmac("sha256", $data, $this->getMac()));
     }
 
     /**

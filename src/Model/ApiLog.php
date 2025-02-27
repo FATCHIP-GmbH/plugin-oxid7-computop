@@ -33,7 +33,7 @@ use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInt
 
 class ApiLog extends BaseModel
 {
-        public static $sTableName = "fatchip_computop_api_log";
+    public static $sTableName = "fatchip_computop_api_log";
 
     /**
      * Class constructor
@@ -289,21 +289,20 @@ class ApiLog extends BaseModel
     {
         $this->xId = $xId;
     }
-    public function loadByTransId($transId) {
+
+    public function loadByTransId($transId)
+    {
         $container = ContainerFactory::getInstance()->getContainer();
         $queryBuilderFactory = $container->get(QueryBuilderFactoryInterface::class);
         $queryBuilder = $queryBuilderFactory->create();
-        $builder =         $queryBuilder
+        $builder = $queryBuilder
             ->select('oxid')
             ->from(Constants::APILOG_TABLE)
             ->where('trans_id = :transid')->setParameter('transid', $transId);
         $result = $builder->execute()->fetchOne();
         if ($result !== false) {
             return $this->load($result);
-        } else {
-            return false;
         }
-
+        return false;
     }
 }
-

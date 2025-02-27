@@ -157,15 +157,31 @@ class CTPaymentService extends Encryption
     {
         $decryptedRequest = $this->ctDecrypt($rawRequest['Data'], $rawRequest['Len'], $this->blowfishPassword);
         $requestArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        if (isset($rawRequest['Custom'])) {
+            $decodedCustom = base64_decode($rawRequest['Custom']);
+            $customArray = $this->ctSplit(explode('&', $decodedCustom), '=');
+        }
         // uncomment below to inject schemeReferenceID into Computop Responses for testing
         // $requestArray['schemeReferenceID'] = 'schemeReferenceID_' . date('Y-m-d H-i-s');
         // Set special Custom Params (Oxid Session id and TransId)
         $response = new CTResponse($requestArray);
-        $response->setShopTransId($rawRequest['TransId']);
-        $response->setType($requestArray['Type']);
-        $response->setSessionId(($rawRequest['SessionId']));
-        $response->setStoken(($rawRequest['Stoken']));
-        $response->setDelAdress(($rawRequest['delAdress']));
+        if (!empty($customArray)) {
+            $response->setShopTransId($customArray['transid'] ?? '');
+            $response->setSessionId($customArray['session'] ?? '');
+            $response->setStoken($customArray['stoken'] ?? '');
+            $response->setInfoText($customArray['paymentid'] ?? '');
+            if (!empty($customArray['delAdress'])) {
+                $response->setDelAdress($customArray['delAdress']);
+            }
+        } else {
+            $response->setShopTransId($rawRequest['TransId'] ?? '');
+            $response->setSessionId($rawRequest['SessionId'] ?? '');
+            $response->setStoken($rawRequest['Stoken'] ?? '');
+            $response->setType($requestArray['Type'] ?? '');
+            if (!empty($rawRequest['delAdress'])) {
+                $response->setDelAdress($rawRequest['delAdress']);
+            }
+        }
         return $response;
     }
 

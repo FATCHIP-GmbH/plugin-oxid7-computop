@@ -61,6 +61,7 @@ class FatchipComputopApiLogMain extends AdminDetailsController
     {
         return $this->getObjectData(self::REQUEST);
     }
+
     /**
      * Getter for TPL
      *
@@ -70,6 +71,7 @@ class FatchipComputopApiLogMain extends AdminDetailsController
     {
         return $this->getObjectData(self::REQUESTDETAILS);
     }
+
     /**
      * Getter for TPL
      *

@@ -111,5 +111,6 @@ class Constants
             case "fatchip_computop_klarna":
                 return 'KlarnaPayments';
         }
+        return false;
     }
 }

@@ -48,11 +48,8 @@ class FatchipComputopAmazonpay extends FatchipComputopPayments
         $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
     }
 
-    public function render() {
-        $this->return();
-    }
-
-    public function return() {
+    public function render()
+    {
         $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
@@ -60,7 +57,5 @@ class FatchipComputopAmazonpay extends FatchipComputopPayments
         $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&Len=' . $len . '&Data=' . $data;
 
         Registry::getUtils()->redirect($returnUrl, false, 301);
-
-        die;
     }
 }

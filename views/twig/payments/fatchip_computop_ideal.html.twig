@@ -1,11 +1,9 @@
 <div class="payment-option">
     {% set dynvalue = oView.getDynValue() %}
-    {% set config = oViewConf.getConfig() %}
     <div class="payment-option-form">
         <input class="form-check-input" id="payment_{{ sPaymentID }}" type="radio" name="paymentid"
                value="{{ sPaymentID }}"{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} checked{% endif %}>
-        <label
-                for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
+        <label for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
     </div>
     {% if paymentmethod.getPrice() %}
         <div class="payment-option-price">
