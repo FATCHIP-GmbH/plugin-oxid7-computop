@@ -266,10 +266,9 @@
                                 <input type="hidden" name="oxid" value="{{ oxid }}">
                                 <input type="hidden" name="fnc" value="captureManual">
                                 <input type="hidden" name="capture_description" value="" class="capture_description">
-                                <input type="text" name="captureAmount"
-                                       value="{{ order.oxorder__oxtotalordersum.value }}" class="listedit">
-                                <input type="submit"
-                                       value="{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_SUBMIT" }) }}">
+                                <input type="hidden" name="captureAmount" value="{{ order.oxorder__oxtotalordersum.value }}" class="listedit" readonly>
+                                <span>{{ translate({ ident: "GENERAL_SUMTOTAL" }) }}: {{ order.getFormattedTotalOrderSum }} {{ edit.oxorder__oxcurrency.value }}</span><br>
+                                <input type="submit" value="{{ translate({ ident: "FATCHIP_COMPUTOP_CAPTURE_SUBMIT" }) }}">
                             </form>
                         </span>
                     </td>

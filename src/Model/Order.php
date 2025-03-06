@@ -389,7 +389,10 @@ class Order extends Order_parent
     public function autoCapture($oUser = false, $force = false)
     {
         $captureAmount = $this->getFieldData('fatchip_computop_amount_captured');
-        $requestCapture = Registry::getRequest()->getRequestParameter('captureAmount');
+        // captureAmount form field was set to readonly so that only the full amount can be captured, since no followup capture can be done as of now
+        // So don't work with the value sent from the form at all for now
+        #$requestCapture = Registry::getRequest()->getRequestParameter('captureAmount');
+        $requestCapture = $this->oxorder__oxtotalordersum->value;
 
         if ($this->fatchipComputopPaymentClass === null) {
             $this->fatchipComputopPaymentClass = Constants::getPaymentClassfromId($this->getFieldData('oxpaymenttype'));
