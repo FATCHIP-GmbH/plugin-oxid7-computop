@@ -77,6 +77,18 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     }
 
     /**
+     * @param $paymentId
+     * @return bool
+     */
+    protected function canKillSessionEarly($paymentId)
+    {
+        if (in_array($paymentId, ['fatchip_computop_easycredit', 'fatchip_computop_paypal_express'])) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Executes parent::render(), if basket is empty - redirects to main page
      * and exits the script (\OxidEsales\Eshop\Application\Model\Order::validateOrder()). Loads and passes payment
      * info to template engine. Refreshes basket articles info by additionally loading
@@ -90,8 +102,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     {
         $paymentId = $this->fatchipComputopBasket->getPaymentId();
 
-        /** @todo skip easycredit for handling, because it will kill the session */
-        if ($paymentId !== 'fatchip_computop_easycredit') {
+        if ($this->canKillSessionEarly($paymentId) === true) {
             Registry::getSession()->handlePaymentSession();
         }
         if ($this->fatchipComputopPaymentId === 'fatchip_computop_klarna') {
@@ -148,7 +159,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
         $ret = null;
 
-        if (Constants::isFatchipComputopRedirectPayment($paymentId) || $paymentId !== 'fatchip_computop_easycredit') {
+        if (Constants::isFatchipComputopRedirectPayment($paymentId)) {
             $lastschrift = false;
             if ($paymentId === 'fatchip_computop_lastschrift'){
                 $lastschrift = true;
@@ -226,6 +237,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     }
                 }
             }
+
+            // PPE and EasyCredit were excluded from handling in render() before, so do it now
+            Registry::getSession()->handlePaymentSession();
         }
 
         // in all other cases return parent

@@ -307,13 +307,7 @@ class PayPalExpress extends CTPaymentMethod
 
     public function getIntent(): string
     {
-        return 'authorize';
-        //$sIntent = 'capture';
-        //$sCaption = $this->config->getPaypalExpressCaption();
-        //if ($sCaption === 'MANUAL') {
-        //    $sIntent = 'authorize';
-        //}
-        //return $sIntent;
+        return 'authorize'; // This module does not work with "real" AUTO-mode, only "fake" AUTO-mode. So leave this at "authorize" and don't go to "capture" mode!
     }
 
 
