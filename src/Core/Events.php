@@ -50,6 +50,10 @@ class Events
     public static $sQueryAlterOxorderArticlesAmountRefunded = "ALTER TABLE oxorderarticles ADD COLUMN fatchip_computop_amount_refunded TINYINT(1) DEFAULT '0' NOT NULL;";
     public static $sQueryAlterOxorderShippingAmountRefunded = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_shipping_amount_refunded TINYINT(1) DEFAULT '0' NOT NULL;";
     public static $sQueryAlterOxorderOrderRemark = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_remark VARCHAR(128) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
+    public static $sQueryAlterOxorderPCNr = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_pcnr VARCHAR(32) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
+    public static $sQueryAlterOxorderCCExpiry = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_ccexpiry VARCHAR(32) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
+    public static $sQueryAlterOxorderCCBrand = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_ccbrand VARCHAR(32) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
+    public static $sQueryAlterOxorderCardHolder = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_cardholder VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
 
     /**
      * Execute action on activate event
@@ -109,6 +113,15 @@ class Events
             'fatchip_computop_amount_refunded', self::$sQueryAlterOxorderArticlesAmountRefunded);
         self::addColumnIfNotExists('oxorder',
             'fatchip_computop_shipping_amount_refunded', self::$sQueryAlterOxorderShippingAmountRefunded);
+
+        self::addColumnIfNotExists('oxorder',
+            'fatchip_computop_pcnr', self::$sQueryAlterOxorderPCNr);
+        self::addColumnIfNotExists('oxorder',
+            'fatchip_computop_ccexpiry', self::$sQueryAlterOxorderCCExpiry);
+        self::addColumnIfNotExists('oxorder',
+            'fatchip_computop_ccbrand', self::$sQueryAlterOxorderCCBrand);
+        self::addColumnIfNotExists('oxorder',
+            'fatchip_computop_cardholder', self::$sQueryAlterOxorderCardHolder);
     }
 
     /**

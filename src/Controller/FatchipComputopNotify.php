@@ -39,7 +39,7 @@ use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Registry;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
-use Fatchip\ComputopPayments\Model\Order;
+use OxidEsales\Eshop\Application\Model\Order;
 
 /**
  * Class DispatchController
@@ -113,29 +113,23 @@ class FatchipComputopNotify extends FrontendController
         }
         $paymentName = $this->getPaymentName($oOrder);
         $paymentName = Constants::getPaymentClassfromId($paymentName);
-        $this->fatchipComputopLogger->logRequestResponse([], $paymentName, 'NOTIFY', $response,);
+        $this->fatchipComputopLogger->logRequestResponse([], $paymentName, 'NOTIFY', $response);
+
+        // FCRM: Will move to payment models
+        $this->handleNotifySpecific($oOrder, $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
-            /** @var string $orderOxId */
-            $orderOxId = $response->getSessionId();
-            /** @var Order $order */
-            $order = oxNew(Order::class);
-            if ($order->load($orderOxId)) {
-                if (empty($order->getFieldData('oxordernr'))) {
-                    $orderNumber = $order->getFieldData('oxordernr');
-                } else {
-                    $orderNumber = $order->getFieldData('oxordernr');
+                $orderOxId = $response->getSessionId();
+                $order = oxNew(Order::class);
+                if ($order->load($orderOxId)) {
+                    $order->updateOrderAttributes($response);
+                    // $order->customizeOrdernumber($response);
+                    // $responseRefNr =  $this->updateRefNrWithComputop($order);
+                    // $order->autoCapture();
                 }
-                $order->updateOrderAttributes($response);
-              //  $order->customizeOrdernumber($response);
-               // $responseRefNr =  $this->updateRefNrWithComputop($order);
-              //  $order->autoCapture();
-
-
-            }
                 /* $this->inquireAndupdatePaymentStatus(
                         $order,
                         $paymentName,
@@ -150,11 +144,48 @@ class FatchipComputopNotify extends FrontendController
         exit(0);
     }
 
+    protected function handleNotifySpecific($order, CTResponse $response)
+    {
+        if ($order->oxorder__oxpaymenttype->value == 'fatchip_computop_creditcard') {
+            $this->handleNotifyCreditcard($order, $response);
+        }
+    }
+
+    protected function handleNotifyCreditcard($order, CTResponse $response)
+    {
+        $changed = false;
+
+        if (!empty($response->getPCNr())) {
+            $order->assign(['fatchip_computop_pcnr' => $response->getPCNr()]);
+            $changed = true;
+        }
+
+        if (!empty($response->getCCExpiry())) {
+            $order->assign(['fatchip_computop_ccexpiry' => $response->getCCExpiry()]);
+            $changed = true;
+        }
+
+        if (!empty($response->getCCBrand())) {
+            $order->assign(['fatchip_computop_ccbrand' => $response->getCCBrand()]);
+            $changed = true;
+        }
+
+        if (!empty($response->getCardHolder())) {
+            $order->assign(['fatchip_computop_cardholder' => $response->getCardHolder()]);
+            $changed = true;
+        }
+
+        if ($changed === true) {
+            $order->save();
+        }
+    }
+
     /**
-     * @param $response CTResponse
+     * @param $oOrder
      * @return string
      */
-    protected function getPaymentName($oOrder) {
+    protected function getPaymentName($oOrder)
+    {
         if ($paymentName = $oOrder->getFieldData('oxorder__oxpaymenttype')) {
             return $paymentName;
         }
@@ -175,20 +206,15 @@ class FatchipComputopNotify extends FrontendController
             $paymentClass = $this->fatchipComputopPaymentClass;
         }
         $ctOrder = $this->createCTOrder($order);
-        if ($paymentClass !== 'PaypalExpress'
-            && $paymentClass !== 'AmazonPay'
-        ) {
-            $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->fatchipComputopConfig, $ctOrder);
-        } else {
+        if (in_array($paymentClass, ['PaypalExpress', 'AmazonPay']) === true) {
             $payment = $this->paymentService->getPaymentClass($paymentClass);
+        } else {
+            $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->fatchipComputopConfig, $ctOrder);
         }
         $payID = $order->getFieldData('fatchip_computop_payid');
- /*       if ($order->getFieldData('oxordernr') === "0") {
-            die();
-        }*/
+
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
         $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
-
 
         return $order->callComputopService(
             $RefNrChangeParams,
