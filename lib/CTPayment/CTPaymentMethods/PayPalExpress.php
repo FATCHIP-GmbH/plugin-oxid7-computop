@@ -219,6 +219,7 @@ class PayPalExpress extends CTPaymentMethod
         $params['Currency'] = $oOrder->getCurrency();
         $params['Amount'] = $this->formatAmount($oOrder->getAmount());
         $params['TransID'] = $oOrder->getTransID();
+        $params['orderDesc'] = $params['TransID'];
         $params['ReqId'] = $this->generateRequestId();
         $params['EtiID'] = $this->getEtiID();
         $params['TxType'] = 'Auth';

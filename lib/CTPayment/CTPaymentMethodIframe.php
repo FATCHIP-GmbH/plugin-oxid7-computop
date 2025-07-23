@@ -202,6 +202,7 @@ abstract class CTPaymentMethodIframe extends CTPaymentMethod
         }
 
         $this->transID = self::generateTransID();
+        $this->setOrderDesc($this->transID);
         $this->setResponse('encrypt');
 
         mt_srand((double)microtime() * 1000000);

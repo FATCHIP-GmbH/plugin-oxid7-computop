@@ -243,9 +243,8 @@ class CreditCard extends CTPaymentMethodIframe
 
         if($config['creditCardTestMode']) {
             $this->setOrderDesc('Test:0000');
-        }
-        else {
-            $this->setOrderDesc($orderDesc);
+        } else {
+            $this->setOrderDesc($this->transID);
         }
 
         $this->setBillingAddress($order->getBillingAddress());

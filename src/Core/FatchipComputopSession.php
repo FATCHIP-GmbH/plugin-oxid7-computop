@@ -65,7 +65,6 @@ class FatchipComputopSession extends FatchipComputopSession_parent
             'FatchipComputopErrorCode',
             'FatchipComputopErrorMessage',
             'paymentid',
-            'sess_challenge',
             Constants::CONTROLLER_PREFIX . 'DirectResponse',
             Constants::CONTROLLER_PREFIX . 'RedirectResponse',
             Constants::CONTROLLER_PREFIX . 'DirectRequest',

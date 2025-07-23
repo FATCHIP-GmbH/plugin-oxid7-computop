@@ -129,6 +129,7 @@ class AmazonPay extends CTPaymentMethodIframe
     {
         $params = [
             'transID' => $transID,
+            'orderDesc' => $transID,
             'CountryCode' => $countryCode,
             'amount' => $amount,
             'currency' => $currency,

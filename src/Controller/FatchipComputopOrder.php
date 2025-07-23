@@ -834,6 +834,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             );
         }
         $response = $this->requestAmazonpayInit($params, $payment);
+        $this->fatchipComputopLogger->logRequestResponse($params, $this->fatchipComputopPaymentClass, 'AMAZONPAY', $response);
         $this->fatchipComputopSession->setVariable('FatchipComputopResponse', $response);
     }
 
@@ -1014,7 +1015,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             null,
             null,
             null,
-            $urlParams['UrlCancel']
+            isset($urlParams['UrlCancel']) ? $urlParams['UrlCancel'] : null,
         );
         return $payment;
     }
