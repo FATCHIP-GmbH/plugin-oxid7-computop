@@ -267,12 +267,29 @@ class Order extends Order_parent
         // send order by email to shop owner and current user
         // skipping this action in case of order recalculation
         if (!$blRecalculatingOrder) {
+            $this->computopPopulateBasket($oBasket);
+
             $iRet = $this->sendOrderByEmail($oUser, $oBasket, $oUserPayment);
         } else {
             $iRet = self::ORDER_STATE_OK;
         }
 
         return $iRet;
+    }
+
+    /**
+     * Populates article property in Basketitems without checking stock because this has already been done before customer was redirected
+     * Needed for scenario where last stock item of a product is bought.
+     * Only execute when customer returned from payment.
+     *
+     * @param Basket $oBasket
+     * @return void
+     */
+    protected function computopPopulateBasket($oBasket)
+    {
+        foreach ($oBasket->getContents() as $key => $oContent) {
+            $oProd = $oContent->getArticle(false);
+        }
     }
 
     public function updateComputopFatchipOrderStatus(string $orderStatus, array $data = [])
