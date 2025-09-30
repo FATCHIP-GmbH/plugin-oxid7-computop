@@ -27,8 +27,9 @@
 
 namespace Fatchip\ComputopPayments\Controller;
 
-use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
 use OxidEsales\Eshop\Core\Registry;
@@ -49,14 +50,6 @@ class FatchipComputopCreditcard extends FrontendController
      */
     protected $_blIsOrderStep = true;
 
-    protected $fatchipComputopConfig;
-    protected $fatchipComputopSession;
-    protected $fatchipComputopShopConfig;
-    protected $fatchipComputopPaymentId;
-    protected $fatchipComputopPaymentClass;
-    protected $fatchipComputopShopUtils;
-    protected $fatchipComputopLogger;
-    public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
 
     public function init()
@@ -74,83 +67,20 @@ class FatchipComputopCreditcard extends FrontendController
     {
         parent::__construct();
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopSession = Registry::getSession();
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopShopUtils = Registry::getUtils();
-        $this->fatchipComputopLogger = new Logger();
-        $this->fatchipComputopPaymentService =  new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService =  new CTPaymentService(Config::getInstance()->getConnectionConfig());
     }
 
-    /**
-     * The controller renderer
-     *
-     *
-     * @return string
-     */
-    public function render()
-    {
-        $response = $this->getResponse();
-        if (!empty($response) && $this->fatchipComputopConfig['creditCardMode'] === 'SILENT' ) {
-            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
-        } else {
-            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
-            if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME' && (!empty($response) && $response->getStatus() === 'AUTHORIZED')) {
-                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
-            } elseif ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-                $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe';
-            }
-        }
-
-        return parent::render();
-    }
     /**
      * Returns iframe url or redirects directly to it
-     *
      *
      * @return mixed
      */
     public function getIframeUrl()
     {
-        $redirectUrl = $this->fatchipComputopSession->getVariable('FatchipComputopIFrameURL');
+        $redirectUrl = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX.'RedirectUrl');
         if (!empty($redirectUrl)) {
             return $redirectUrl;
         }
         return false;
-    }
-
-    public function success()
-    {
-        if ($this->fatchipComputopConfig['creditCardMode'] === 'IFRAME') {
-            $this->_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_iframe_return';
-        }
-    }
-
-    public function getFinishUrl()
-    {
-        $response = $this->getResponse();
-        if (!empty($response)) {
-            $len = Registry::getRequest()->getRequestParameter('Len');
-            $data = Registry::getRequest()->getRequestParameter('Data');
-            $returnUrl = $this->fatchipComputopShopConfig->getShopUrl() . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data . '&stoken='.$response->getRefNr();
-            return json_encode($returnUrl);
-        }
-        return false;
-    }
-
-    public function getResponse()
-    {
-        $response = false;
-        $len = Registry::getRequest()->getRequestParameter('Len');
-        $data = Registry::getRequest()->getRequestParameter('Data');
-        if (!empty($len) && !empty($data)) {
-            $PostRequestParams = [
-                'Len' => $len,
-                'Data' => $data,
-            ];
-            $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
-        }
-        return $response;
     }
 }

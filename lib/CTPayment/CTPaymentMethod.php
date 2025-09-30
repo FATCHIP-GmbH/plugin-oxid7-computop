@@ -27,7 +27,7 @@
 namespace Fatchip\CTPayment;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
@@ -69,11 +69,6 @@ abstract class CTPaymentMethod extends Encryption
     protected $utils;
 
     protected $encryption;
-
-    public function __construct()
-    {
-        $this->config = new Config();
-    }
 
     /**
      * @param string $PayID
@@ -121,13 +116,14 @@ abstract class CTPaymentMethod extends Encryption
     public function prepareComputopRequest($params, $url, $addTemplate = '')
     {
         $additionFlag = false;
-        $config = new Config();
-        $this->config = $config->toArray();
 
-        $this->merchantID = $this->config['merchantID'];
-        $this->blowfishPassword = $this->config['blowfishPassword'];
-        $this->mac = $this->config['mac'];
-        $this->encryption = $this->config['encryption'];
+        //FCRM_TODO: Eliminate this - lib must not access anything outside of the lib
+        $config = Config::getInstance()->getConnectionConfig();
+
+        $this->merchantID = $config['merchantID'];
+        $this->blowfishPassword = $config['blowfishPassword'];
+        $this->mac = $config['mac'];
+        $this->encryption = $config['encryption'];
         $requestParams = [];
 
         // StefTest:
@@ -142,7 +138,8 @@ abstract class CTPaymentMethod extends Encryption
 
         $request = join('&', $requestParams);
         $len = mb_strlen($request);  // Length of the plain text string
-        $data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
+        #$data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
+        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($request, $len);
 
         $url .=
             '?MerchantID=' . $this->merchantID .
@@ -173,7 +170,8 @@ abstract class CTPaymentMethod extends Encryption
         $requestParams[] = "MAC=" . $this->ctHMAC($params);
         $request = join('&', $requestParams);
         $len = mb_strlen($request);  // Length of the plain text string
-        $data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
+        #$data = $this->ctEncrypt($request, $len, $this->blowfishPassword, $this->encryption);
+        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($request, $len);
 
         return ['MerchantID' => $this->merchantID, 'Len' => $len, 'Data' => $data];
     }
@@ -221,31 +219,32 @@ abstract class CTPaymentMethod extends Encryption
         $resp = str_replace('amp;', '', $resp);
 
         parse_str($resp, $arr);
-        $plaintext = $this->ctDecrypt($arr['Data'], $arr['Len'], $this->blowfishPassword);
+        #$plaintext = $this->ctDecrypt($arr['Data'], $arr['Len'], $this->blowfishPassword);
+        $responseArray = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->decrypt($arr['Data'], $arr['Len']);
+        /*
+                $matches = [];
+                preg_match('/buttonpayload=({.*})/', $plaintext, $matches);
 
-        $matches = [];
-        preg_match('/buttonpayload=({.*})/', $plaintext, $matches);
+                if (isset($matches[1])) {
+                    $buttonPayloadJson = $matches[1];
+                } else {
+                    $buttonPayloadJson = null;
+                }
 
-        if (isset($matches[1])) {
-            $buttonPayloadJson = $matches[1];
-        } else {
-            $buttonPayloadJson = null;
-        }
+                $plaintextWithoutButtonPayload = preg_replace('/buttonpayload=({.*})/', '', $plaintext);
+                $keyValuePairs = explode('&', $plaintextWithoutButtonPayload);
+                $responseArray = [];
+                foreach ($keyValuePairs as $pair) {
+                    $parts = explode('=', $pair, 2);
+                    if (count($parts) === 2) {
+                        $responseArray[$parts[0]] = $parts[1];
+                    }
+                }
 
-        $plaintextWithoutButtonPayload = preg_replace('/buttonpayload=({.*})/', '', $plaintext);
-        $keyValuePairs = explode('&', $plaintextWithoutButtonPayload);
-        $responseArray = [];
-        foreach ($keyValuePairs as $pair) {
-            $parts = explode('=', $pair, 2);
-            if (count($parts) === 2) {
-                $responseArray[$parts[0]] = $parts[1];
-            }
-        }
-
-        if ($buttonPayloadJson) {
-            $responseArray['buttonpayload'] = $buttonPayloadJson;
-        }
-
+                if ($buttonPayloadJson) {
+                    $responseArray['buttonpayload'] = $buttonPayloadJson;
+                }
+        */
         // Erzeuge die Antwort
         $response = new CTResponse($responseArray);
         return $response;

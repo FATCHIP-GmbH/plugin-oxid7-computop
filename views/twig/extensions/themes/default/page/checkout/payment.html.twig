@@ -14,18 +14,14 @@
 
 {% block select_payment %}
     {% set dynvalue = oView.getDynValue() %}
-    {% set fatchipcomutopoptions = oView.getFatchipComputopConfig() %}
 
-    {% if sPaymentID == 'fatchip_computop_lastschrift'  %}
-        {% include "@fatchip_computop_payments/payments/fatchip_computop_debitnote" %}
-    {% elseif sPaymentID == 'fatchip_computop_ideal' %}
-        {% include "@fatchip_computop_payments/payments/fatchip_computop_ideal" %}
-    {% elseif sPaymentID == 'fatchip_computop_easycredit' %}
-        {% include "@fatchip_computop_payments/payments/fatchip_computop_easycredit" %}
-    {% elseif sPaymentID == 'fatchip_computop_creditcard' %}
-        {% include "@fatchip_computop_payments/payments/fatchip_computop_creditcard_iframe" %}
-    {% elseif sPaymentID == 'fatchip_computop_amazonpay' %}
-        {% include "@fatchip_computop_payments/payments/fatchip_computop_amazonpay" %}
+    {% if attribute(paymentmethod, 'isComputopPaymentMethod') is defined and paymentmethod.isComputopPaymentMethod() is same as(true) %}
+        {% set paymentModel = paymentmethod.computopGetPaymentModel() %}
+        {% if paymentModel.getCustomFrontendTemplate() is not same as(false) %}
+            {% include paymentModel.getCustomFrontendTemplate() %}
+        {% else %}
+            {{ parent() }}
+        {% endif %}
     {% else %}
         {{ parent() }}
     {% endif %}

@@ -31,11 +31,11 @@ namespace Fatchip\CTPayment;
 class CTResponse
 {
 
-  /**
-   * OK oder AUTHORIZED (URLSuccess) sowie FAILED (URLFailure)
-   *
-   * @var string
-   */
+    /**
+     * OK oder AUTHORIZED (URLSuccess) sowie FAILED (URLFailure)
+     *
+     * @var string
+     */
     protected $status = null;
 
     /**
@@ -1231,8 +1231,8 @@ class CTResponse
 
     /**
      * @ignore <description>
-    * @param string $eMail
-    */
+     * @param string $eMail
+     */
     public function setEMail($eMail) {
         $this->EMail = $eMail;
     }
@@ -1951,7 +1951,7 @@ class CTResponse
         $this->buttonpublickeyid = $buttonpublickeyid;
     }
 
-    public function setStoken(mixed $param)
+    public function setStoken($param)
     {
         $this->stoken = $param;
     }
@@ -1964,7 +1964,7 @@ class CTResponse
         return $this->stoken;
     }
 
-    public function setDelAdress(mixed $param)
+    public function setDelAdress($param)
     {
         $this->delAdress = $param;
 

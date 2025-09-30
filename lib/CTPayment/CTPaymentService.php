@@ -27,7 +27,6 @@
 
 namespace Fatchip\CTPayment;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
@@ -40,15 +39,8 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class CTPaymentService extends Encryption
 {
-
-    protected $fatchipComputopConfig;
-    protected $fatchipComputopSession;
-    protected $fatchipComputopShopConfig;
-    protected $fatchipComputopPaymentId;
     protected $fatchipComputopPaymentClass;
-    protected $fatchipComputopShopUtils;
     protected $fatchipComputopLogger;
-    public $fatchipComputopSilentParams;
 
     /**
      * CTPaymentService constructor
@@ -61,11 +53,6 @@ class CTPaymentService extends Encryption
         $this->blowfishPassword = $config['blowfishPassword'];
         $this->mac = $config['mac'];
         $this->encryption = $config['encryption'];
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopSession = Registry::getSession();
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopShopUtils = Registry::getUtils();
         $this->fatchipComputopLogger = new Logger();
     }
 
@@ -155,8 +142,10 @@ class CTPaymentService extends Encryption
      */
     public function getDecryptedResponse(array $rawRequest)
     {
-        $decryptedRequest = $this->ctDecrypt($rawRequest['Data'], $rawRequest['Len'], $this->blowfishPassword);
-        $requestArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        #$decryptedRequest = $this->ctDecrypt($rawRequest['Data'], $rawRequest['Len'], $this->blowfishPassword);
+        #$requestArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        $requestArray = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->decrypt($rawRequest['Data'], $rawRequest['Len']);
+
         if (isset($rawRequest['Custom'])) {
             $decodedCustom = base64_decode($rawRequest['Custom']);
             $customArray = $this->ctSplit(explode('&', $decodedCustom), '=');
@@ -222,9 +211,9 @@ class CTPaymentService extends Encryption
 
     public function handleDirectPaymentResponse($response)
     {
-        $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
+        Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
 
-        $directRequest = $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+        $directRequest = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
         if ($response->getStatus() === null) {
             return CTEnumStatus::OK;
         }
@@ -240,9 +229,9 @@ class CTPaymentService extends Encryption
             case CTEnumStatus::AUTHORIZE_REQUEST:
                 return CTEnumStatus::OK;
             case CTEnumStatus::FAILED:
-                $this->fatchipComputopSession->setVariable('FatchipComputopErrorCode', $response->getCode());
-                $this->fatchipComputopSession->setVariable('FatchipComputopErrorMessage', $response->getDescription());
-                $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+                Registry::getSession()->setVariable('FatchipComputopErrorCode', $response->getCode());
+                Registry::getSession()->setVariable('FatchipComputopErrorMessage', $response->getDescription());
+                $sShopUrl = Registry::getConfig()->getShopUrl();
                 $returnUrl = $sShopUrl . 'index.php?cl=payment';
                 Registry::getUtils()->redirect($returnUrl, false, 301);
                 break;
@@ -251,14 +240,14 @@ class CTPaymentService extends Encryption
 
     public function handleRedirectResponse($response)
     {
-        $this->fatchipComputopSession->setVariable('FatchipComputopRedirectResponse', $response);
-        $redirectRequest = $this->fatchipComputopSession->getVariable(
+        Registry::getSession()->setVariable('FatchipComputopRedirectResponse', $response);
+        $redirectRequest = Registry::getSession()->getVariable(
             Constants::CONTROLLER_PREFIX . 'RedirectUrlRequestParams'
         );
-       $directSilent =  $this->fatchipComputopSession->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
-       if ($directSilent) {
-           $redirectRequest = $directSilent;
-       }
+        $directSilent =  Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+        if ($directSilent) {
+            $redirectRequest = $directSilent;
+        }
 
         $this->fatchipComputopLogger->logRequestResponse(
             $redirectRequest,
@@ -266,22 +255,22 @@ class CTPaymentService extends Encryption
             'REDIRECT',
             $response
         );
-       if ( Registry::getSession()->getUser()) {
-           $encodedDeliveryAdress =  Registry::getSession()->getUser()->getEncodedDeliveryAddress();
+        if ( Registry::getSession()->getUser()) {
+            $encodedDeliveryAdress =  Registry::getSession()->getUser()->getEncodedDeliveryAddress();
 
-       }
+        }
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
-            $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
-                . 'index.php?cl=order&fnc=execute&action=result&stoken='
-                . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
+                $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
+                    . 'index.php?cl=order&fnc=execute&action=result&stoken='
+                    . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
                 break;
             case CTEnumStatus::FAILED:
-                $this->fatchipComputopSession->setVariable('FatchipComputopErrorCode', $response->getCode());
-                $this->fatchipComputopSession->setVariable('FatchipComputopErrorMessage', $response->getDescription());
-                $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+                Registry::getSession()->setVariable('FatchipComputopErrorCode', $response->getCode());
+                Registry::getSession()->setVariable('FatchipComputopErrorMessage', $response->getDescription());
+                $sShopUrl = Registry::getConfig()->getShopUrl();
                 $returnUrl = $sShopUrl . 'index.php?cl=payment';
 
                 Registry::getSession()->deleteVariable('sess_challenge');

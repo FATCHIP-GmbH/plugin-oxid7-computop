@@ -27,11 +27,13 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
+use Fatchip\ComputopPayments\Helper\Payment;
+use Fatchip\ComputopPayments\Model\Method\AmazonPay;
+use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTPaymentParams;
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTResponse;
 use OxidEsales\Eshop\Application\Controller\FrontendController;
@@ -47,12 +49,8 @@ use OxidEsales\Eshop\Application\Model\Order;
  */
 class FatchipComputopNotify extends FrontendController
 {
-    protected $fatchipComputopConfig;
-    protected $fatchipComputopShopConfig;
     protected $paymentClass;
-    protected $fatchipComputopShopUtils;
     protected $paymentService;
-    protected $fatchipComputopSession;
     protected $fatchipComputopLogger;
 
     /**
@@ -63,12 +61,7 @@ class FatchipComputopNotify extends FrontendController
      */
     public function init()
     {
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->paymentService = new CTPaymentService($this->fatchipComputopConfig);
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopShopUtils = Registry::getUtils();
-        $this->fatchipComputopSession = Registry::getSession();
+        $this->paymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
         $this->fatchipComputopLogger = new Logger();
 
         parent::init();
@@ -112,11 +105,11 @@ class FatchipComputopNotify extends FrontendController
             exit;
         }
         $paymentName = $this->getPaymentName($oOrder);
-        $paymentName = Constants::getPaymentClassfromId($paymentName);
-        $this->fatchipComputopLogger->logRequestResponse([], $paymentName, 'NOTIFY', $response);
+        $ctPayment = Payment::getInstance()->getComputopPaymentModel($paymentName);
+        $this->fatchipComputopLogger->logRequestResponse([], $ctPayment->getLibClassName(), 'NOTIFY', $response);
 
-        // FCRM: Will move to payment models
-        $this->handleNotifySpecific($oOrder, $response);
+        // Custom notify handling specific to payment method
+        $ctPayment->handleNotifySpecific($oOrder, $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -144,42 +137,6 @@ class FatchipComputopNotify extends FrontendController
         exit(0);
     }
 
-    protected function handleNotifySpecific($order, CTResponse $response)
-    {
-        if ($order->oxorder__oxpaymenttype->value == 'fatchip_computop_creditcard') {
-            $this->handleNotifyCreditcard($order, $response);
-        }
-    }
-
-    protected function handleNotifyCreditcard($order, CTResponse $response)
-    {
-        $changed = false;
-
-        if (!empty($response->getPCNr())) {
-            $order->assign(['fatchip_computop_pcnr' => $response->getPCNr()]);
-            $changed = true;
-        }
-
-        if (!empty($response->getCCExpiry())) {
-            $order->assign(['fatchip_computop_ccexpiry' => $response->getCCExpiry()]);
-            $changed = true;
-        }
-
-        if (!empty($response->getCCBrand())) {
-            $order->assign(['fatchip_computop_ccbrand' => $response->getCCBrand()]);
-            $changed = true;
-        }
-
-        if (!empty($response->getCardHolder())) {
-            $order->assign(['fatchip_computop_cardholder' => $response->getCardHolder()]);
-            $changed = true;
-        }
-
-        if ($changed === true) {
-            $order->save();
-        }
-    }
-
     /**
      * @param $oOrder
      * @return string
@@ -199,22 +156,19 @@ class FatchipComputopNotify extends FrontendController
         }
         $config = Registry::getConfig();
 
-        $paymentId = $order->getFieldData('oxpaymenttype');
-        if ($this->fatchipComputopPaymentClass === null) {
-            $paymentClass = Constants::getPaymentClassfromId($paymentId);
-        } else {
-            $paymentClass = $this->fatchipComputopPaymentClass;
-        }
         $ctOrder = $this->createCTOrder($order);
-        if (in_array($paymentClass, ['PaypalExpress', 'AmazonPay']) === true) {
-            $payment = $this->paymentService->getPaymentClass($paymentClass);
+
+        $ctPayment = Payment::getInstance()->getComputopPaymentModel($order->getFieldData('oxpaymenttype'));
+        if ($ctPayment->isIframeLibMethod() === true) {
+            $payment = $this->paymentService->getIframePaymentClass($ctPayment->getLibClassName(), Config::getInstance()->getConnectionConfig(), $ctOrder);
         } else {
-            $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->fatchipComputopConfig, $ctOrder);
+            $payment = $this->paymentService->getPaymentClass($ctPayment->getLibClassName());
         }
+
         $payID = $order->getFieldData('fatchip_computop_payid');
 
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
-        $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
+        $RefNrChangeParams['EtiId'] = $this->getUserDataParam($config);
 
         return $order->callComputopService(
             $RefNrChangeParams,
@@ -227,7 +181,6 @@ class FatchipComputopNotify extends FrontendController
     protected function createCTOrder($oOrder)
     {
         $ctOrder = new CTOrder();
-        $configCt = oxNew(Config::class);
         $config = Registry::getConfig();
         $oUser = $oOrder->getUser();
 
@@ -250,7 +203,7 @@ class FatchipComputopNotify extends FrontendController
         // Mandatory for paypalStandard
         $orderDesc = $config->getActiveShop()->oxshops__oxname->value . ' '
             . $config->getActiveShop()->oxshops__oxversion->value;
-        if($configCt->getCreditCardTestMode()) {
+        if(Config::getInstance()->getConfigParam('creditCardTestMode')) {
             $ctOrder->setOrderDesc('Test:0000');
         } else {
             $ctOrder->setOrderDesc($orderDesc);
@@ -267,6 +220,7 @@ class FatchipComputopNotify extends FrontendController
      */
     public function getUserDataParam($config)
     {
-        return CTPaymentParams::getUserDataParam();
+        return $config->oxshops__oxname->value . ' '
+            . $config->getActiveShop()->oxshops__oxversion->value;
     }
 }

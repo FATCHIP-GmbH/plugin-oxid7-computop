@@ -129,7 +129,6 @@ class AmazonPay extends CTPaymentMethodIframe
     {
         $params = [
             'transID' => $transID,
-            'orderDesc' => $transID,
             'CountryCode' => $countryCode,
             'amount' => $amount,
             'currency' => $currency,
@@ -346,7 +345,7 @@ class AmazonPay extends CTPaymentMethodIframe
     }
     public function getCredentialsOnFile()
     {
-      //  return $this->credentialOnFile;
+        //  return $this->credentialOnFile;
     }
 
     /**
@@ -356,7 +355,7 @@ class AmazonPay extends CTPaymentMethodIframe
     {
         $credentialsOnFile['type']['unscheduled'] = $unscheduled;
         $credentialsOnFile['initialPayment'] = $initalPayment;
-      //  $this->credentialOnFile = base64_encode(json_encode($credentialsOnFile));
+        //  $this->credentialOnFile = base64_encode(json_encode($credentialsOnFile));
     }
 
     public function setCustom()

@@ -26,6 +26,7 @@
 
 namespace Fatchip\CTPayment\CTPaymentMethodsIframe;
 
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
@@ -241,18 +242,21 @@ class CreditCard extends CTPaymentMethodIframe
         $this->setMsgVer('2.0');
         $this->setUserData(base64_encode($userData));
 
-        if($config['creditCardTestMode']) {
+        // FCRM_TODO Eliminate config usage in lib
+        if(Config::getInstance()->getConfigParam('creditCardTestMode')) {
             $this->setOrderDesc('Test:0000');
         } else {
-            $this->setOrderDesc($this->transID);
+            $this->setOrderDesc($orderDesc);
         }
 
-        $this->setBillingAddress($order->getBillingAddress());
-        $this->setShippingAddress($order->getShippingAddress());
-        if ($config['creditCardAcquirer'] === 'CAPN') {
-            $this->setAmountAuth($order->getAmount());
-            $this->setBillToCustomer($order);
-            $this->setShipToCustomer($order);
+        if (!empty($order)) {
+            $this->setBillingAddress($order->getBillingAddress());
+            $this->setShippingAddress($order->getShippingAddress());
+            if (Config::getInstance()->getConfigParam('creditCardAcquirer') === 'CAPN') {
+                $this->setAmountAuth($order->getAmount());
+                $this->setBillToCustomer($order);
+                $this->setShipToCustomer($order);
+            }
         }
 
         //we will handle all captures manually
@@ -758,4 +762,5 @@ class CreditCard extends CTPaymentMethodIframe
 
         return $params;
     }
+
 }

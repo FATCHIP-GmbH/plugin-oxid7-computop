@@ -27,9 +27,9 @@
 
 namespace Fatchip\CTPayment;
 
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\CTPayment\CTEnums\CTEnumLanguages;
 use Fatchip\CTPayment\CTOrder;
+use OxidEsales\Eshop\Core\Registry;
 
 /**
  * Class CTPaymentMethodIframe
@@ -37,11 +37,11 @@ use Fatchip\CTPayment\CTOrder;
  */
 abstract class CTPaymentMethodIframe extends CTPaymentMethod
 {
-  /**
-   * Betrag in der kleinsten Währungseinheit (z.B. EUR Cent).
-   * Bitte wenden Sie sich an den Helpdesk, wenn Sie Beträge < 100 (kleinste Wäh-rungseinheit) buchen möchten.
-   * @var int
-   */
+    /**
+     * Betrag in der kleinsten Währungseinheit (z.B. EUR Cent).
+     * Bitte wenden Sie sich an den Helpdesk, wenn Sie Beträge < 100 (kleinste Wäh-rungseinheit) buchen möchten.
+     * @var int
+     */
     protected $amount;
 
     /**
@@ -173,13 +173,13 @@ abstract class CTPaymentMethodIframe extends CTPaymentMethod
      */
     protected $RTF = null;
 
-   /**
-    * CTPaymentMethodIFrame constructor
-    * @param array $config
-    * @param CTOrder\CTOrder $order
-    * @param string $orderDesc
-    * @param string $userData
-    */
+    /**
+     * CTPaymentMethodIFrame constructor
+     * @param array $config
+     * @param CTOrder\CTOrder $order
+     * @param string $orderDesc
+     * @param string $userData
+     */
     public function __construct($config, $order = null, $orderDesc = null, $userData = null)
     {
         if (is_array($order) || is_null($order)) {
@@ -192,7 +192,7 @@ abstract class CTPaymentMethodIframe extends CTPaymentMethod
         $this->setOrderDesc($orderDesc);
         $this->setUserData($userData);
         $this->setEtiId($userData);
-        $this->setIPAddr(Config::getRemoteAddress());
+        $this->setIPAddr(Registry::getUtilsServer()->getRemoteAddress());
         if ($order->getShippingAddress()) {
             $this->setSdZip($order->getShippingAddress()->getZip());
         }
@@ -202,7 +202,6 @@ abstract class CTPaymentMethodIframe extends CTPaymentMethod
         }
 
         $this->transID = self::generateTransID();
-        $this->setOrderDesc($this->transID);
         $this->setResponse('encrypt');
 
         mt_srand((double)microtime() * 1000000);
@@ -514,11 +513,11 @@ abstract class CTPaymentMethodIframe extends CTPaymentMethod
      * @param $ctRequest
      * @return string
      */
-/*    public function getHTTPGetURL($ctRequest)
-    {
-        return $this->prepareComputopRequest($ctRequest, $this->getCTPaymentURL());
-   }
-*/
+    /*    public function getHTTPGetURL($ctRequest)
+        {
+            return $this->prepareComputopRequest($ctRequest, $this->getCTPaymentURL());
+       }
+    */
     /**
      * Prepares CT Request. Takes all params, creates a querystring, determines Length and encrypts the data
      *

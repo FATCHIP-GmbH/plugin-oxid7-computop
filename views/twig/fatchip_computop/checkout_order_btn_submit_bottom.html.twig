@@ -1,5 +1,5 @@
 {% set payment = oView.getPayment() %}
-{% if payment.oxpayments__oxid.value == oViewConf.getAmazonPaymentId() %}
+{% if payment.oxpayments__oxid.value == 'fatchip_computop_amazonpay' %}
     {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/amazonpay.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
       <div id="AmazonPayWrapper">
           <div class="pull-right">

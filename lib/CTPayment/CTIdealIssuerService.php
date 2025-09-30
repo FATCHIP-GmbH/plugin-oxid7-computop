@@ -72,7 +72,8 @@ class CTIdealIssuerService extends Encryption
         $query = join("&", $queryarray);
 
         $len = strlen($query);  // Length of the plain text string
-        $data = $this->ctEncrypt($query, $len, $this->blowfishPassword, $this->encryption);
+        #$data = $this->ctEncrypt($query, $len, $this->blowfishPassword, $this->encryption);
+        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($query, $len);
 
         return 'https://www.computop-paygate.com/idealIssuerList.aspx' .
             '?MerchantID=' . $this->merchantID .
@@ -105,8 +106,9 @@ class CTIdealIssuerService extends Encryption
 
             $respArray = [];
             parse_str($resp, $respArray);
-            $decryptedRequest = $this->ctDecrypt($respArray['Data'], $respArray['Len'], $this->blowfishPassword);
-            $decryptedArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+            #$decryptedRequest = $this->ctDecrypt($respArray['Data'], $respArray['Len'], $this->blowfishPassword);
+            #$decryptedArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+            $decryptedArray = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->decrypt($respArray['Data'], $respArray['Len']);
             $issuerList = $decryptedArray['IdealIssuerList'];
 
         } catch (Exception $e) {
