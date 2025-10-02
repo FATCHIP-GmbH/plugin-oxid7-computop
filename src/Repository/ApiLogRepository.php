@@ -35,9 +35,9 @@ class ApiLogRepository
      * @return bool|string|null
      * @throws \Exception
      */
-    public function saveApiLog(ApiLog $apiLogEntry): bool|string|null
+    public function saveApiLog(ApiLog $apiLogEntry)
     {
-       // $oApiLog  = oxNew(ApiLog::class);
+        // $oApiLog  = oxNew(ApiLog::class);
         $apiLogEntry->assign([
             'request' => $apiLogEntry->getRequest(),
             'response' =>       $apiLogEntry->getResponse(),

@@ -28,9 +28,10 @@
 namespace Fatchip\ComputopPayments\Controller;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
+use Fatchip\ComputopPayments\Helper\Config;
+use Fatchip\ComputopPayments\Helper\Encryption;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\PayPalExpress;
@@ -57,14 +58,6 @@ class FatchipComputopPayPalExpress extends FrontendController
      */
     protected $_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_paypalexpress';
 
-    protected $fatchipComputopConfig;
-    protected $fatchipComputopSession;
-    protected $fatchipComputopShopConfig;
-    protected $fatchipComputopPaymentId;
-    protected $fatchipComputopPaymentClass;
-    protected $fatchipComputopShopUtils;
-    protected $fatchipComputopLogger;
-    public $fatchipComputopSilentParams;
     protected $fatchipComputopPaymentService;
 
     public function init()
@@ -82,13 +75,7 @@ class FatchipComputopPayPalExpress extends FrontendController
     {
         parent::__construct();
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopSession = Registry::getSession();
-        $this->fatchipComputopShopConfig = Registry::getConfig();
-        $this->fatchipComputopShopUtils = Registry::getUtils();
-        $this->fatchipComputopLogger = new Logger();
-        $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
     }
 
     /**
@@ -132,7 +119,7 @@ class FatchipComputopPayPalExpress extends FrontendController
      */
     public function getPayPalExpressUrl()
     {
-        $redirectUrl = $this->fatchipComputopSession->getVariable('FatchipComputopPayPalExpressURL');
+        $redirectUrl = Registry::getSession()->getVariable('FatchipComputopPayPalExpressURL');
         if ($redirectUrl) {
             return $redirectUrl;
         }
@@ -167,7 +154,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                 'Data' => $sData,
             ]);
 
-            $this->fatchipComputopSession->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$oResponse);
+            Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse',$oResponse);
 
             $aResponseLog['raw'] = $oResponse->toArray();
             $aLog['trans_id'] = $oResponse->getTransID();
@@ -267,7 +254,7 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oApiLog->save();
 
         Registry::getUtilsView()->addErrorToDisplay($sErrorString);
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $sShopUrl = Registry::getConfig()->getShopUrl();
         $returnUrl = $sShopUrl . 'index.php?cl=payment';
 
         Registry::getUtils()->redirect($returnUrl, false, 301);
@@ -480,7 +467,7 @@ class FatchipComputopPayPalExpress extends FrontendController
             $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
         }
 
-        $sShopUrl = $this->fatchipComputopShopConfig->getShopUrl();
+        $sShopUrl = Registry::getConfig()->getShopUrl();
         $stoken = $response->getRefNr();
         $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
             . '&stoken=' . $stoken;
@@ -551,7 +538,7 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
-            Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
+            Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
         }
         $isLoaded = $oUser->loadActiveUser();
         //load user in case one is logged in
@@ -602,24 +589,30 @@ class FatchipComputopPayPalExpress extends FrontendController
                 //$oCTOrder->setPayId($oOrder->oxorder__oxpaymentid->value);
                 //$aLog['pay_id'] = $oCTOrder->getPayId();
 
-                $aFrontendRequestParams = $oPaypalExpressPaypment->generateFrontendRequestParams($oCTOrder);
+                $aFrontendRequestParams = $oPaypalExpressPaypment->generateFrontendRequestParams($oCTOrder, Config::getInstance()->getConnectionConfig());
 
-                $aLog['request'] = 'CREATEORDER_ACTION';
-                $aLog['request_details'] = json_encode($aFrontendRequestParams);
-                // raw used only for logging and therefor here will be removed.
-                unset($aFrontendRequestParams['raw']);
+                $dataQuery = urldecode(http_build_query($aFrontendRequestParams));
+                $length = mb_strlen($dataQuery);
 
-                $aResponse = $this->httpPost($oPaypalExpressPaypment::CREATE_ORDER_URL, $aFrontendRequestParams);
+                $data = Encryption::getInstance()->encrypt($dataQuery, $length);
+                $payload = [
+                    'MerchantID' => Config::getInstance()->getConfigParam('merchantID'),
+                    'Len' => $length,
+                    'Data' => $data,
+                ];
+
+                $aResponse = $this->httpPost($oPaypalExpressPaypment::CREATE_ORDER_URL, $payload);
                 if (!empty($aResponse['response'])) {
                     parse_str($aResponse['response'], $parsedResponse);
-                    $aResponse['raw'] = $parsedResponse;
-                    $oOrder->oxorder__fatchip_computop_transid = new Field($aResponse['raw']['TransID'] ?? '');
-                    $oOrder->oxorder__fatchip_computop_payid = new Field($aResponse['raw']['PayID'] ?? '');
-                    $aLog['pay_id'] = $aResponse['raw']['PayID'] ?? '';
+                    $oOrder->oxorder__fatchip_computop_transid = new Field($parsedResponse['TransID'] ?? '');
+                    $oOrder->oxorder__fatchip_computop_payid = new Field($parsedResponse['PayID'] ?? '');
+                    $aLog['pay_id'] = $parsedResponse['PayID'] ?? '';
                     $oOrder->save();
                 }
 
-                $aLog['response_details'] = json_encode($aResponse);
+                $aLog['request'] = 'CREATEORDER_ACTION';
+                $aLog['request_details'] = json_encode($aFrontendRequestParams);
+                $aLog['response_details'] = json_encode($parsedResponse);
                 $oApiLog->assign($aLog);
 
                 if (!$oApiLog->save()) {
@@ -630,11 +623,11 @@ class FatchipComputopPayPalExpress extends FrontendController
                     die($aResponse['response']);
                 } else {
                     Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
-                    Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
+                    Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
                 }
             } else {
                 Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
-                Registry::getUtils()->redirect($this->fatchipComputopShopConfig->getShopUrl() . 'index.php?=basket', false, 301);
+                Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
             }
 
         } catch (OutOfStockException $oEx) {

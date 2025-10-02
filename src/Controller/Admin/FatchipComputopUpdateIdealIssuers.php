@@ -26,6 +26,7 @@
 
 namespace Fatchip\ComputopPayments\Controller\Admin;
 
+use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use Fatchip\CTPayment\CTAPITestService;
 
@@ -34,15 +35,6 @@ use Fatchip\CTPayment\CTAPITestService;
  */
 class FatchipComputopUpdateIdealIssuers extends AdminController
 {
-    private $config;
-
-    public function __construct()
-    {
-        $config = new \Fatchip\ComputopPayments\Core\Config();
-        $this->config = $config->toArray();
-        parent::__construct();
-    }
-
     /**
      * assigns error and count of updated items to view
      *
@@ -50,7 +42,7 @@ class FatchipComputopUpdateIdealIssuers extends AdminController
      */
     public function getIssuerListAction()
     {
-        $service = new CTAPITestService($this->config);
+        $service = new CTAPITestService(Config::getInstance()->getConnectionConfig());
         try {
             $success = $service->getIdealIssuers();
         } catch (Exception $e) {

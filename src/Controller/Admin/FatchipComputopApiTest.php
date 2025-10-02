@@ -27,7 +27,7 @@
 namespace Fatchip\ComputopPayments\Controller\Admin;
 
 use Exception;
-use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use Fatchip\CTPayment\CTAPITestService;
 
@@ -36,15 +36,6 @@ use Fatchip\CTPayment\CTAPITestService;
  */
 class FatchipComputopApiTest extends AdminController
 {
-    private $config;
-
-    public function __construct()
-    {
-        $config = new Config();
-        $this->config = $config->toArray();
-        parent::__construct();
-    }
-
     /**
      * assigns error and count of updated items to view
      *
@@ -52,7 +43,7 @@ class FatchipComputopApiTest extends AdminController
      */
     public function apiTestAction()
     {
-        $service = new CTAPITestService($this->config);
+        $service = new CTAPITestService(Config::getInstance()->getConnectionConfig());
         try {
             $success = $service->doAPITest();
         } catch (Exception $e) {

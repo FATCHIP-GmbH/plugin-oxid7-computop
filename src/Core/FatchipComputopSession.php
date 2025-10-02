@@ -2,28 +2,13 @@
 
 namespace Fatchip\ComputopPayments\Core;
 
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopSession extends FatchipComputopSession_parent
 {
-    protected $fatchipComputopConfig;
-
-    protected $fatchipComputopSession;
-
-    protected $fatchipComputopShopConfig;
-
-    protected $fatchipComputopPaymentId;
-
-    protected $fatchipComputopPaymentClass;
-
-    protected $fatchipComputopShopUtils;
-
-    protected $fatchipComputopLogger;
-
-    public $fatchipComputopSilentParams;
-
     protected $fatchipComputopPaymentService;
 
     protected $errorCode;
@@ -43,9 +28,7 @@ class FatchipComputopSession extends FatchipComputopSession_parent
         $data = Registry::getRequest()->getRequestParameter('Data');
         $paymentClass = Registry::getRequest()->getRequestParameter('cl');
         if (!empty($len) && !empty($data) && $paymentClass === 'fatchip_computop_redirect' && $_SERVER['HTTP_REFERER'] === 'https://www.computop-paygate.com/') {
-            $config = new Config();
-            $this->fatchipComputopConfig = $config->toArray();
-            $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+            $this->fatchipComputopPaymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
             $response = $this->fatchipComputopPaymentService->getRequest();
             if ($response && $response->getSessionId()) {
                 return false;
@@ -107,9 +90,7 @@ class FatchipComputopSession extends FatchipComputopSession_parent
             return;
         }
 
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $this->fatchipComputopPaymentService = new CTPaymentService($this->fatchipComputopConfig);
+        $this->fatchipComputopPaymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
 
         $postRequestParams = [
             'Len'    => $len,

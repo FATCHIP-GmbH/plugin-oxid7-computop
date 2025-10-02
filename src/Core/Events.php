@@ -39,6 +39,8 @@ use Fatchip\CTPayment\CTPaymentMethods;
 
 class Events
 {
+    const CT_CONFIG_CONVERTED = "ct_config_converted";
+
     public static $sQueryAlterOxorderTransid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_transid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
     public static $sQueryAlterOxorderPayid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_payid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '0' NOT NULL;";
     public static $sQueryAlterOxorderXid = "ALTER TABLE oxorder ADD COLUMN fatchip_computop_xid VARCHAR(64) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL;";
@@ -67,6 +69,10 @@ class Events
         self::createFatchipComputopApiLogTable();
         self::updateFatchipComputopOrderAttributes();
         self::addFatchipComputopPayPalExpressSeoHooks();
+
+        if (self::isConfigConversionNeeded() === true) {
+            self::convertConfig();
+        }
 
         $dbMetaDataHandler = oxNew(DbMetaDataHandler::class);
         $dbMetaDataHandler->updateViews();
@@ -113,7 +119,6 @@ class Events
             'fatchip_computop_amount_refunded', self::$sQueryAlterOxorderArticlesAmountRefunded);
         self::addColumnIfNotExists('oxorder',
             'fatchip_computop_shipping_amount_refunded', self::$sQueryAlterOxorderShippingAmountRefunded);
-
         self::addColumnIfNotExists('oxorder',
             'fatchip_computop_pcnr', self::$sQueryAlterOxorderPCNr);
         self::addColumnIfNotExists('oxorder',
@@ -132,9 +137,7 @@ class Events
         foreach (CTPaymentMethods::paymentMethods as $paymentMethod) {
             $descriptions = [];
             $descriptions['de']['title'] = $paymentMethod['description'];
-            $descriptions['de']['desc'] = $paymentMethod['description'];
             $descriptions['en']['title'] = $paymentMethod['description'];
-            $descriptions['en']['desc'] = $paymentMethod['description'];
             self::createPaymentMethod($paymentMethod['name'], $descriptions);
         }
     }
@@ -179,8 +182,7 @@ class Events
                     $languageId = (int)$languageId;
                     $payment->loadInLang($languageId, $paymentId);
                     $params = [
-                        'oxpayments__oxdesc' => $values['title'],
-                        'oxpayments__oxlongdesc' => $values['desc']
+                        'oxpayments__oxdesc' => $values['title']
                     ];
                     $payment->assign($params);
                     $payment->save();
@@ -268,6 +270,21 @@ class Events
         $fromDb = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
     }
 
+    /**
+     * @return bool
+     */
+    protected static function canDeactivateModule()
+    {
+        $oRequest = Registry::getRequest();
+        if ($oRequest->getRequestParameter('cl') == 'module_config' && $oRequest->getRequestParameter('fnc') == 'save') {
+            return false; // Dont deactivate payment methods when changing config in admin ( this triggers module deactivation )
+        }
+
+        if(Registry::getConfig()->isAdmin() === false) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Execute action on deactivate event
@@ -276,8 +293,10 @@ class Events
      */
     public static function onDeactivate()
     {
-        foreach (CTPaymentMethods::paymentMethods as $paymentMethod) {
-            self::deactivatePaymentMethod($paymentMethod['name']);
+        if(self::canDeactivateModule() === true) {
+            foreach (CTPaymentMethods::paymentMethods as $paymentMethod) {
+                self::deactivatePaymentMethod($paymentMethod['name']);
+            }
         }
     }
 
@@ -297,10 +316,67 @@ class Events
         if (!$aColumns || $aColumns === []) {
             try {
                 DatabaseProvider::getDb()->Execute($sQuery);
-            } catch (Exception) {
+            } catch (Exception $e) {
             }
             return true;
         }
         return false;
+    }
+
+    protected static function fetchMerchantIdFromApiLog()
+    {
+        $sResponse = DatabaseProvider::getDb()->getOne("SELECT response_details FROM `fatchip_computop_api_log` WHERE response_details LIKE '%\"MID\":%' ORDER BY creation_date DESC LIMIT 1;");
+        if (!empty($sResponse)) {
+            $aResponse = json_decode($sResponse, true);
+            if (!empty($aResponse['MID'])) {
+                return $aResponse['MID'];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Determines if config has been converted from old format to new format yet
+     *
+     * @return bool
+     */
+    public static function isConfigConversionNeeded(): bool
+    {
+        $isConfigConverted = DatabaseProvider::getDb()->getOne("SELECT oxid FROM `oxconfig` WHERE oxvarname = '".self::CT_CONFIG_CONVERTED."' LIMIT 1;");
+        if (empty($isConfigConverted)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function convertConfig()
+    {
+        include __DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."metadata.php";
+        if (isset($aModule) && !empty($aModule['settings'])) {
+            foreach ($aModule['settings'] as $aSetting) {
+                $value = \Fatchip\ComputopPayments\Helper\Config::getInstance()->getConfigParam($aSetting['name']);
+                if ($aSetting['type'] == "bool") {
+                    if (strtolower($value) == 'an') {
+                        \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam($aSetting['name'], 1);
+                    }
+                    if (strtolower($value) == 'aus') {
+                        \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam($aSetting['name'], 0);
+                    }
+                }
+
+                // Convert oxvartype to correct new type
+                DatabaseProvider::getDb()->Execute("UPDATE oxconfig SET oxvartype = '".$aSetting['type']."' WHERE oxmodule = 'module:".FatchipComputopModule::MODULE_ID."' AND oxvarname = '".$aSetting['name']."'");
+            }
+
+            $merchantId = \Fatchip\ComputopPayments\Helper\Config::getInstance()->getConfigParam('merchantID');
+            if (empty($merchantId)) {
+                $merchantId = self::fetchMerchantIdFromApiLog();
+                if (!empty($merchantId)) {
+                    \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam('merchantID', $merchantId);
+                    \Fatchip\ComputopPayments\Helper\Config::getInstance()->setConfigParam('encryption', "aes"); // set to aes, since only aes was working in older versions
+                }
+            }
+        }
+        DatabaseProvider::getDb()->Execute("INSERT INTO oxconfig (oxid, oxshopid, oxvarname, oxvartype) VALUES ('".hash("md5", self::CT_CONFIG_CONVERTED.rand(0, 9999))."', 1, '".self::CT_CONFIG_CONVERTED."', 'str')");
     }
 }

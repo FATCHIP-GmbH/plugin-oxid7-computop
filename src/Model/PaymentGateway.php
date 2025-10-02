@@ -26,7 +26,14 @@
 
 namespace Fatchip\ComputopPayments\Model;
 
-use Fatchip\ComputopPayments\Core\Config;
+use Fatchip\ComputopPayments\Helper\Config;
+use Fatchip\ComputopPayments\Helper\Payment;
+use Fatchip\ComputopPayments\Model\Method\AmazonPay;
+use Fatchip\ComputopPayments\Model\Method\DirectDebit;
+use Fatchip\ComputopPayments\Model\Method\Easycredit;
+use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
+use Fatchip\ComputopPayments\Model\Method\RedirectPayment;
+use Fatchip\ComputopPayments\Model\Method\ServerToServerPayment;
 use OxidEsales\Eshop\Core\Registry;
 
 class PaymentGateway extends PaymentGateway_parent
@@ -45,9 +52,8 @@ class PaymentGateway extends PaymentGateway_parent
      * @var string[]
      */
     protected $aSpecialHandlingMethods = [
-        'fatchip_computop_paypal_express',
-        'fatchip_computop_lastschrift',
-        'fatchip_computop_amazonpay',
+        PayPalExpress::ID,
+        AmazonPay::ID,
     ];
 
     // -----------------> START OXID CORE MODULE EXTENSIONS <-----------------
@@ -70,16 +76,19 @@ class PaymentGateway extends PaymentGateway_parent
             return true;
         }
 
+        $ctPayment = Payment::getInstance()->getComputopPaymentModel($oOrder->oxorder__oxpaymenttype->value);
+
         $this->_iLastErrorNo = null;
         $this->_sLastError = null;
 
-        /** @var Order $oOrder */
-        if ($oOrder->isFatchipComputopRedirectPayment()) {
-            return  $oOrder->handleRedirectPayment($dAmount, $this);
+        $oOrder->ctSetOrderNumber();
+
+        if ($ctPayment instanceof ServerToServerPayment || $ctPayment instanceof Easycredit) {
+            return $oOrder->handleAuthorization($dAmount);
         }
 
-        if ($oOrder->isFatchipComputopDirectPayment() || $oOrder->oxorder__oxpaymenttype->value === 'fatchip_computop_easycredit') {
-            return $oOrder->handleAuthorization($dAmount, $this);
+        if ($ctPayment instanceof RedirectPayment) {
+            return $oOrder->handleRedirectPayment($dAmount);
         }
         return false;
     }
@@ -94,9 +103,7 @@ class PaymentGateway extends PaymentGateway_parent
     protected function fcctIsSilentCCRequest()
     {
         $silentCCRequest = Registry::getSession()->getVariable('FatchipComputopDirectRequest');
-        $config = new Config();
-        $configArray =  $config->toArray();
-        if ($configArray['creditCardMode'] === 'SILENT' && $silentCCRequest) {
+        if (Config::getInstance()->getConfigParam('creditCardMode') === 'SILENT' && $silentCCRequest) {
             return true;
         }
         return false;

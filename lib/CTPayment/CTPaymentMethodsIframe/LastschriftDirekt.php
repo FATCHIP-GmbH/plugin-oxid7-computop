@@ -45,7 +45,7 @@ class LastschriftDirekt extends Lastschrift
      */
     protected      $orderDesc2;
 
-    private string $billToCustomer;
+    private  $billToCustomer;
 
 
     /**

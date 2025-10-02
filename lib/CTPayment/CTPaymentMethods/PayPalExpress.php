@@ -29,8 +29,8 @@
 namespace Fatchip\CTPayment\CTPaymentMethods;
 
 use Fatchip\ComputopPayments\Core\Blowfish;
-use Fatchip\ComputopPayments\Core\Config;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Helper\Encryption;
 use Fatchip\CTPayment\CTPaymentMethod;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -212,7 +212,7 @@ class PayPalExpress extends CTPaymentMethod
         return $params;
     }
 
-    public function generateFrontendRequestParams(CTOrder $oOrder)
+    public function generateFrontendRequestParams(CTOrder $oOrder, $config)
     {
         $params = [];
         $params['Capture'] = 'Manual';//$this->config->getPaypalExpressCaption() === 'AUTO' ? 'Auto' : 'Manual';
@@ -240,44 +240,7 @@ class PayPalExpress extends CTPaymentMethod
             'sid' => Registry::getSession()->getId(),
         ]);
 
-        $dataQuery = urldecode(http_build_query($params));
-        $length = mb_strlen($dataQuery);
-
-        $config = new Config();
-        $this->fatchipComputopConfig = $config->toArray();
-        $paymentService = new CTPaymentService($this->fatchipComputopConfig);
-         $data =  $paymentService->ctEncrypt($dataQuery, $length,$paymentService->blowfishPassword,$paymentService->encryption);
-        $payload = [
-            'MerchantID' => $this->getComputopMerchantId(),
-            'Len' => $length,
-            'Data' => $data,
-            'raw' => $dataQuery
-        ];
-
-        return $payload;
-    }
-
-    public function getComputopMerchantId(): ?string
-    {
-        return $this->config->getMerchantID();
-    }
-
-    public function getPaypalClientId(): ?string
-    {
-        if (!$this->isTestModeActive()) {
-            return $this->config->getPaypalExpressClientID();
-        }
-
-        return 'AUeU8a0ihEF4KCezWdehyi7IbSSrVjr7cis1dKM2jeoX2MZ-bTDwnTQv75_n8ZAbnOJHpFd1Rc6PGO4H';
-    }
-
-    public function getPaypalMerchantId(): ?string
-    {
-        if (!$this->isTestModeActive()) {
-            return $this->config->getPaypalExpressMerchantID();
-        }
-
-        return 'KP89GMC7465RA';
+        return $params;
     }
 
     public function generateRequestId(): string
@@ -290,27 +253,6 @@ class PayPalExpress extends CTPaymentMethod
         //TODO: make it configurable
         return 'OXID7-EXPERIMENTAL-DEV1';
     }
-
-    public function getCreateOrderActionUrl(): string
-    {
-        return Registry::getConfig()->getShopUrl() . 'index.php?cl=fatchip_computop_paypal_express&fnc=createOrder';
-    }
-
-    public function getOnApproveActionUrl(): string
-    {
-        return Registry::getConfig()->getShopUrl() . 'index.php?cl=fatchip_computop_paypal_express&fnc=onApprove';
-    }
-
-    public function getOnCancelActionUrl(): string
-    {
-        return Registry::getConfig()->getShopUrl() . 'index.php?cl=fatchip_computop_paypal_express&fnc=onCancel';
-    }
-
-    public function getIntent(): string
-    {
-        return 'authorize'; // This module does not work with "real" AUTO-mode, only "fake" AUTO-mode. So leave this at "authorize" and don't go to "capture" mode!
-    }
-
 
     public function isActive(): bool
     {
@@ -337,42 +279,5 @@ class PayPalExpress extends CTPaymentMethod
         }
 
         return false;
-    }
-
-    public function getPartnerAttributionId()
-    {
-        if (!$this->isTestModeActive()) {
-            return $this->config->getPaypalExpressPartnerAttributionID();
-        }
-
-        return 'Computop_PSP_PCP_Test';
-    }
-
-    public function isTestModeActive(): bool
-    {
-        return $this->config->getPaypalExpressTestMode() === 'An';
-    }
-
-    public function getPayPalExpressConfig(): array
-    {
-        return [
-            'computop' => [
-                'merchantId' => $this->getComputopMerchantId(),
-                'partnerAttributionId' => $this->getPartnerAttributionId(),
-                'actions' => [
-                    'urls' => [
-                        'createOrder' => $this->getCreateOrderActionUrl(),
-                        'onApprove' => $this->getOnApproveActionUrl(),
-                        'onCancel' => $this->getOnCancelActionUrl()
-                    ]
-                ]
-            ],
-            'paypal' => [
-                'active' => $this->isActive(),
-                'intent' => $this->getIntent(),
-                'clientId' => $this->getPaypalClientId(),
-                'merchantId' => $this->getPaypalMerchantId()
-            ]
-        ];
     }
 }

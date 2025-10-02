@@ -151,7 +151,7 @@ class Encryption
     {
         $cipher = self::blowfishCipher;
         if ($this->encryption !== 'blowfish') {
-            $pwLength = strlen($this->blowfishPassword);
+            $pwLength = strlen($this->getBlowfishPassword());
             if ($pwLength <= 16) {
                 $keyLength = 16; // aes-128-cbc
                 $cipher = self::aes128Cipher;

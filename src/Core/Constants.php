@@ -37,80 +37,11 @@ class Constants
     const TEMPLATE_PREFIX = 'fatchip_computop_';
     const APILOG_TABLE = self::GENERAL_PREFIX . 'api_log';
 
-    const directPayments = [
-        'fatchip_computop_lastschrift',
-
-    ];
-
-    const redirectPayments = [
-        'fatchip_computop_klarna',
-        'fatchip_computop_paypal_standard',
-        'fatchip_computop_lastschrift',
-        'fatchip_computop_creditcard',
-        'fatchip_computop_twint',
-        'fatchip_computop_ideal',
-        'fatchip_computop_amazonpay'
-
-    ];
-
-    const amazonpayPaymentId = 'fatchip_computop_amazonpay';
-
     const PAYMENTSTATUSPARTIALLYPAID = 'FATCHIP_COMPUTOP_PAYMENTSTATUS_PARTIALLY_PAID';
     const PAYMENTSTATUSPAID = 'FATCHIP_COMPUTOP_PAYMENTSTATUS_PAID';
     const PAYMENTSTATUSOPEN = 'FATCHIP_COMPUTOP_PAYMENTSTATUS_OPEN';
     const PAYMENTSTATUSRESERVED = 'FATCHIP_COMPUTOP_PAYMENTSTATUS_RESERVED';
     const PAYMENTSTATUSREVIEWNECESSARY = 'FATCHIP_COMPUTOP_PAYMENTSTATUS_REVIEW_NECESSARY';
     const PAYMENTSTATUSREFUNDED = 'FATCHIP_COMPUTOP_PAYMENTSTATUS_REFUNDED';
-
-
-    public static function isFatchipComputopPayment(string $paymentId): bool
-    {
-        return strpos($paymentId, self::GENERAL_PREFIX) !== false;
-    }
-
-    public static function isFatchipComputopDirectPayment(string $paymentId): bool
-    {
-        return in_array($paymentId, self::directPayments);
-    }
-
-    public static function isFatchipComputopRedirectPayment(string $paymentId): bool
-    {
-        return in_array($paymentId, self::redirectPayments);
-    }
-
-    public static function getPaymentClassfromId(string $paymentId): string
-    {
-        switch ($paymentId) {
-            case "fatchip_computop_lastschrift":
-                return 'LastschriftDirekt';
-
-            case "fatchip_computop_paypal":
-                return 'Paypal';
-
-            case "fatchip_computop_paypal_standard":
-                return 'PaypalStandard';
-
-            case "fatchip_computop_amazonpay":
-                return 'AmazonPay';
-
-            case "fatchip_computop_creditcard":
-                return 'CreditCard';
-
-            case "fatchip_computop_easycredit":
-                return 'EasyCredit';
-
-            case "fatchip_computop_paypal_express":
-                return 'PayPalExpress';
-
-            case "fatchip_computop_ideal":
-                return 'Ideal';
-
-            case "fatchip_computop_twint":
-                return 'Twint';
-
-            case "fatchip_computop_klarna":
-                return 'KlarnaPayments';
-        }
-        return false;
-    }
+    const PAYMENTSTATUSNOTCAPTURED = 'FATCHIP_COMPUTOP_PAYMENTSTATUS_NOT_CAPTURED';
 }

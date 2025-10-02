@@ -127,7 +127,8 @@ class CTAPITestService extends Encryption
 
         $this->checkOpenSSLSupport();
 
-        $data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        #$data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($request, $len);
 
         if (!$data) {
             throw new Exception('Failed Encrypting Data. ');
@@ -233,8 +234,9 @@ class CTAPITestService extends Encryption
 
         $respArray = [];
         parse_str($resp, $respArray);
-        $decryptedRequest = $this->ctDecrypt($respArray['Data'], $respArray['Len'], $this->blowfishPassword);
-        $decryptedArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        #$decryptedRequest = $this->ctDecrypt($respArray['Data'], $respArray['Len'], $this->blowfishPassword);
+        #$decryptedArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
+        $decryptedArray = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->decrypt($respArray['Data'], $respArray['Len']);
         $stringissuerList = $decryptedArray['IdealIssuerList'];
         $issuerList = explode('|', $stringissuerList);
         $issuers = [];
@@ -244,7 +246,7 @@ class CTAPITestService extends Encryption
         }
         foreach ($issuerList AS $issuer) {
             $data = explode(',', $issuer);
-                if (!empty($data[0])) {
+            if (!empty($data[0])) {
                 $issuers[$i]['oxid'] = Registry::getUtilsObject()->generateUId();
                 $issuers[$i]['issuer_id'] = $data[0];
                 $issuers[$i]['name'] = $data[1];
@@ -259,14 +261,14 @@ class CTAPITestService extends Encryption
             if ($issuer['land'] === 'Nederland') {
                 $issuer['land'] = 'NL';
             }
-        $sql = '
+            $sql = '
             INSERT INTO `fatchip_computop_ideal_issuers` (`oxid`, `issuer_id`, `name`, `land`) VALUES
             ("' . $issuer['oxid'] . '", "' . $issuer['issuer_id'] . '", "' . $issuer['name']  . '", "' . $issuer['land'] . '")
 
             ;';
 
             // replace netherland with NL
-         $success =   DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
+            $success =   DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
         }
         if ($success !== 1) {
             return false;
@@ -311,7 +313,8 @@ class CTAPITestService extends Encryption
         $request = join('&', $requestParams);
         $len = mb_strlen($request);  // Length of the plain text string
 
-        $data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        #$data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
+        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($request, $len);
 
         if (!$data) {
             throw new Exception('Failed Encrypting Data. ');
