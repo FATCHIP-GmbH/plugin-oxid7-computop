@@ -160,22 +160,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             // if order is validated and finalized complete Order on thankyou
             if ($ret === 'thankyou' || $ret === 'thankyou?mailerror=1') {
                 Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectUrl');
-
-                /** @var CTResponse $response */
-                $response = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
                 Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectResponse');
-                if (!empty($response)) {
-                    $orderId = Registry::getSession()->getVariable('sess_challenge');
-
-                    $order = oxNew(Order::class);
-                    if ($order->load($orderId)) {
-                        // $order->customizeOrdernumber($response);
-                        $order->updateOrderAttributes($response);
-                        $order->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-                        $order->autocapture($this->getUser(), false);
-                        $this->updateRefNrWithComputop($order);
-                    }
-                }
             }
         } else {
             if ($ctPayment instanceof PayPalExpress) {
@@ -191,7 +176,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                             $oOrder->updateOrderAttributes($oResponse);
                             $oOrder->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
                             $this->updateRefNrWithComputop($oOrder);
-                            $oOrder->autocapture($oOrder->getUser(), false);
+                            $oOrder->autoCapture($oOrder->getUser(), false);
                         }
                     }
                 }
@@ -213,7 +198,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                             $oOrder->updateOrderAttributes($oResponse);
                             $oOrder->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
                             $this->updateRefNrWithComputop($oOrder);
-                            $oOrder->autocapture($oOrder->getUser(), false);
+                            $oOrder->autoCapture($oOrder->getUser(), false);
                         }
                     }
                 }
