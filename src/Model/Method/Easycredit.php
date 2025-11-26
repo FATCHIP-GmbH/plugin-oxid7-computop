@@ -57,7 +57,7 @@ class Easycredit extends ServerToServerPayment
         $params = [];
 
         $session = Registry::getSession();
-        if (!empty($session->getVariable('fatchip_computop_transid'))) {
+        if (!empty($session->getVariable('fatchip_computop_TransId'))) {
             $decisionPayId = $session->getVariable('fatchipComputopEasyCreditPayId');
 
             $params['EventToken'] = CTEnumEasyCredit::EVENTTOKEN_CON;

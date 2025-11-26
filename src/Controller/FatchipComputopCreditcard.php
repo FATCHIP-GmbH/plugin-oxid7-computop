@@ -52,14 +52,6 @@ class FatchipComputopCreditcard extends FrontendController
 
     protected $fatchipComputopPaymentService;
 
-    public function init()
-    {
-        // deactivated - throws warnings - not sure if needed
-        #ini_set('session.cookie_samesite', 'None');
-        #ini_set('session.cookie_secure', true);
-        parent::init();
-    }
-
     /**
      * Class constructor, sets all required parameters for requests.
      */

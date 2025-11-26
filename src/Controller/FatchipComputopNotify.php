@@ -50,6 +50,9 @@ use OxidEsales\Eshop\Application\Model\Order;
 class FatchipComputopNotify extends FrontendController
 {
     protected $paymentClass;
+    /**
+     * @var CTPaymentService
+     */
     protected $paymentService;
     protected $fatchipComputopLogger;
 
@@ -93,15 +96,17 @@ class FatchipComputopNotify extends FrontendController
         $customParams = explode('&', base64_decode($custom));
         $session = explode('=', $customParams[0])[1];
         $transId = explode('=', $customParams[1])[1];
+        $orderid = explode('=', $customParams[2])[1];
         $PostRequestParams = [
             'Len' => $len,
             'Data' => $data,
             'SessionId' => $session,
             'TransId' => $transId,
+            'OrderId' => $orderid,
         ];
         $response = $this->paymentService->getDecryptedResponse($PostRequestParams);
         $oOrder = oxNew(Order::class);
-        if ($oOrder->load($session) !== true) {
+        if ($oOrder->load($orderid) !== true) {
             exit;
         }
         $paymentName = $this->getPaymentName($oOrder);
@@ -115,7 +120,7 @@ class FatchipComputopNotify extends FrontendController
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
-                $orderOxId = $response->getSessionId();
+                $orderOxId = $response->getOrderid();
                 $order = oxNew(Order::class);
                 if ($order->load($orderOxId)) {
                     $order->updateOrderAttributes($response);

@@ -81,7 +81,6 @@ class Creditcard extends RedirectPayment
     {
         $params = [
             'RefNr' => Registry::getSession()->getSessionChallengeToken(), // FCRM_TODO: RefNr is misused here to secure session for reentry from iframe payment... Repair it to use correct refNr
-            'UserData' => Registry::getSession()->getId()
         ];
         if ((bool)Config::getInstance()->getConfigParam('creditCardMode') === true) {
             $params['orderDesc'] = 'Test:0000';

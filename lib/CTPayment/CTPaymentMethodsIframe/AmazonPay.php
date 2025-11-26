@@ -81,7 +81,7 @@ class AmazonPay extends CTPaymentMethodIframe
         $this->setUrlBack($urlBack);
 
         $this->setMsgVer('2.0');
-        $this->setUserData(base64_encode($userData));
+        $this->setUserData($userData);
 
         if($config['creditCardTestMode']) {
             $this->setOrderDesc('Test:0000');

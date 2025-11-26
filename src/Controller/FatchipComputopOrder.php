@@ -161,17 +161,18 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             if ($ret === 'thankyou' || $ret === 'thankyou?mailerror=1') {
                 Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectUrl');
 
+                /** @var CTResponse $response */
                 $response = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
                 Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX .'RedirectResponse');
                 if (!empty($response)) {
-                    $orderOxId = $response->getSessionId();
+                    $orderId = Registry::getSession()->getVariable('sess_challenge');
+
                     $order = oxNew(Order::class);
-                    $oUser = $this->getUser();
-                    if ($order->load($orderOxId)) {
+                    if ($order->load($orderId)) {
                         // $order->customizeOrdernumber($response);
                         $order->updateOrderAttributes($response);
                         $order->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-                        $order->autocapture($oUser, false);
+                        $order->autocapture($this->getUser(), false);
                         $this->updateRefNrWithComputop($order);
                     }
                 }
@@ -201,9 +202,14 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                     /** @var CTResponse $oResponse */
                     $oResponse = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
                     if ($oResponse) {
-                        $orderOxId = Registry::getSession()->getVariable('sess_challenge');
+                        $params = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+                        $response =  Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse');
+                        $this->fatchipComputopLogger->logRequestResponse($params,'EasyCredit','AUTH_ACCEPT',$response);
+
+                        $orderId = Registry::getSession()->getVariable('sess_challenge');
                         $oOrder = oxNew(Order::class);
-                        if ($oOrder->load($orderOxId)) {
+                        if ($oOrder->load($orderId)){
+                            // $oOrder->customizeOrdernumber($oResponse);
                             $oOrder->updateOrderAttributes($oResponse);
                             $oOrder->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
                             $this->updateRefNrWithComputop($oOrder);
