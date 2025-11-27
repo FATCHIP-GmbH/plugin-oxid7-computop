@@ -6,6 +6,7 @@ use Fatchip\ComputopPayments\Helper\Api;
 use Fatchip\ComputopPayments\Helper\Checkout;
 use Fatchip\ComputopPayments\Helper\Payment;
 use Fatchip\ComputopPayments\Model\Method\BaseMethod;
+use Fatchip\CTPayment\CTPaymentParams;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Application\Model\Address;
@@ -26,10 +27,12 @@ class Authorization extends Base
      */
     public function generateRequest(BaseMethod $methodInstance, $amount, $currency, $refNr, ?Order $order = null, $encrypt = false, $log = false)
     {
+        $transactionId = $this->getTransactionId($order);
+
         $this->addParameter('Currency', $currency);
         $this->addParameter('Amount', Api::getInstance()->formatAmount($amount, $currency));
 
-        $this->addParameter('TransID', $this->getTransactionId($order));
+        $this->addParameter('TransID', $transactionId);
         $this->addParameter('ReqId', Api::getInstance()->getRequestId());
         $this->addParameter('EtiID', Api::getInstance()->getIdentString());
 
@@ -43,6 +46,10 @@ class Authorization extends Base
         $this->addParameter('Response', 'encrypt');
 
         $this->addParameter('orderDesc', $this->getParameter('TransID'));
+
+        if ($methodInstance->isCustomParamNeeded() === true) {
+            $this->addParameters(CTPaymentParams::getCustomParam($transactionId, $methodInstance->getPaymentId()));
+        }
 
         $dynValue = Registry::getSession()->getVariable('dynvalue');
 

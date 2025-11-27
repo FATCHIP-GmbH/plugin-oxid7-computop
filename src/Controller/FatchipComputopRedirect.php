@@ -80,7 +80,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
 
         $shopUrl  = Registry::getConfig()->getShopUrl();
         $stoken   = ($response && $response->getStoken()) ? $response->getStoken() : ($custom ? $custom->getStoken() : '');
-        $sid      = ($custom && $custom->getSessionId()) ? $custom->getSessionId() : '';
+        $sid      = ($custom && $custom->getSessionId()) ? $custom->getSessionId() : Registry::getSession()->getId();
         $delAddr  = ($custom && $custom->getDelAdress()) ? $custom->getDelAdress() : '';
         $stoken   = $stoken ?: Registry::getSession()->getVariable('sess_stoken');
 
@@ -101,8 +101,11 @@ class FatchipComputopRedirect extends FatchipComputopPayments
                 'stoken'              => $stoken,
                 'ord_agb'             => '1',
                 'sid'                 => $sid,
-                'sDeliveryAddressMD5' => $delAddr,
             ];
+
+            if (!empty($delAddr)) {
+                $queryParams['sDeliveryAddressMD5'] = $delAddr;
+            }
         }
 
         $returnUrl = $shopUrl . 'index.php?' . http_build_query($queryParams);

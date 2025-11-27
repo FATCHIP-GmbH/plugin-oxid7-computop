@@ -81,6 +81,11 @@ abstract class BaseMethod
     protected $isRealAutoCaptureMethod = false;
 
     /**
+     * @var bool
+     */
+    protected $isCustomParamNeeded = true;
+
+    /**
      * Get oxid payment id of this payment method
      *
      * @return string
@@ -165,6 +170,14 @@ abstract class BaseMethod
     public function isRealAutoCaptureMethod()
     {
         return $this->isRealAutoCaptureMethod;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustomParamNeeded()
+    {
+        return $this->isCustomParamNeeded;
     }
 
     /**

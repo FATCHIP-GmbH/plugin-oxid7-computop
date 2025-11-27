@@ -529,6 +529,8 @@ class FatchipComputopPayPalExpress extends FrontendController
             'trans_id' => $sTransId
         ];
         $oOrder = oxNew(Order::class);
+        $oOrder->setComputopIsPPEInit(true);
+
         $oUser = oxNew(User::class);
         $oSession = Registry::getSession();
         $oBasket = $oSession->getBasket();

@@ -81,6 +81,11 @@ class Order extends Order_parent
 
     protected $fatchipComputopPaymentService;
 
+    /**
+     * @var bool
+     */
+    protected $blComputopIsPPEInit = false;
+
     public $oxorder__fatchip_computop_transid;
 
     public $oxorder__fatchip_computop_payid;
@@ -189,7 +194,7 @@ class Order extends Order_parent
             }
 
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-            $this->autocapture($oUser, false);
+            $this->autoCapture($oUser, false);
         }
 
         return $ret;
@@ -773,7 +778,7 @@ class Order extends Order_parent
             $this->updateOrderAttributes($response);
 
             $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-            $this->autocapture($this->getUser(), false);
+            $this->autoCapture($this->getUser(), false);
         }
 
         return $success;
@@ -1109,5 +1114,40 @@ class Order extends Order_parent
         if (empty($this->getFieldData('oxordernr'))) {
             $this->setNumber();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function getComputopIsPPEInit()
+    {
+        return $this->blComputopIsPPEInit;
+    }
+
+    /**
+     * @param  bool $blComputopIsPPEInit
+     * @return void
+     */
+    public function setComputopIsPPEInit($blComputopIsPPEInit)
+    {
+        $this->blComputopIsPPEInit = $blComputopIsPPEInit;
+    }
+
+    /**
+     * Send order to shop owner and user
+     *
+     * @param \OxidEsales\Eshop\Application\Model\User        $oUser    order user
+     * @param \OxidEsales\Eshop\Application\Model\Basket      $oBasket  current order basket
+     * @param \OxidEsales\Eshop\Application\Model\UserPayment $oPayment order payment
+     *
+     * @return bool
+     */
+    protected function sendOrderByEmail($oUser = null, $oBasket = null, $oPayment = null)
+    {
+        if ($this->getComputopIsPPEInit() === true) {
+            // Dont send emails in PPE init mode
+            return self::ORDER_STATE_OK;
+        }
+        return parent::sendOrderByEmail($oUser, $oBasket, $oPayment);
     }
 }

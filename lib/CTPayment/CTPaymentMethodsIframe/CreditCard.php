@@ -240,7 +240,7 @@ class CreditCard extends CTPaymentMethodIframe
         $this->setUrlBack($urlBack);
 
         $this->setMsgVer('2.0');
-        $this->setUserData(base64_encode($userData));
+        $this->setUserData($userData);
 
         // FCRM_TODO Eliminate config usage in lib
         if(Config::getInstance()->getConfigParam('creditCardTestMode')) {
