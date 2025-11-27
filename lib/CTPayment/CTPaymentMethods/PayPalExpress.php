@@ -30,6 +30,7 @@ namespace Fatchip\CTPayment\CTPaymentMethods;
 
 use Fatchip\ComputopPayments\Core\Blowfish;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Helper\Api;
 use Fatchip\ComputopPayments\Helper\Encryption;
 use Fatchip\CTPayment\CTPaymentMethod;
 use Fatchip\CTPayment\CTAddress\CTAddress;
@@ -250,8 +251,7 @@ class PayPalExpress extends CTPaymentMethod
 
     public function getEtiID(): string
     {
-        //TODO: make it configurable
-        return 'OXID7-EXPERIMENTAL-DEV1';
+        return Api::getInstance()->getIdentString();
     }
 
     public function isActive(): bool

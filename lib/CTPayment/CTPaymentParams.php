@@ -4,6 +4,7 @@ namespace Fatchip\CTPayment;
 
 use Exception;
 use Fatchip\ComputopPayments\Core\Constants;
+use Fatchip\ComputopPayments\Helper\Api;
 use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
@@ -132,26 +133,6 @@ class CTPaymentParams
 
     public static function getUserDataParam()
     {
-        $moduleVersion = '';
-
-        try {
-            $shopConfig =  ContainerFactory::getInstance()
-                ->getContainer()
-                ->get(ShopConfigurationDaoBridgeInterface::class)->get();
-            try {
-                $moduleConfig = $shopConfig->getModuleConfiguration('fatchip_computop_payments');
-                $moduleVersion = 'ModuleVersion: '.$moduleConfig->getVersion();
-            } catch (ModuleConfigurationNotFoundException $e) {
-                Registry::getLogger()->error('ModuleConfig not found: ' . $e->getMessage());
-            }
-        } catch (Exception $e) {
-            Registry::getLogger()->error('ModuleConfig fetch error: ' . $e->getMessage());
-        }
-
-        $activeShop = Registry::getConfig()->getActiveShop();
-        $shopName = $activeShop->oxshops__oxname->value;
-        $shopVersion = $activeShop->oxshops__oxversion->value;
-
-        return sprintf('%s %s %s', $shopName, $shopVersion, $moduleVersion);
+        return Api::getInstance()->getIdentString();
     }
 }

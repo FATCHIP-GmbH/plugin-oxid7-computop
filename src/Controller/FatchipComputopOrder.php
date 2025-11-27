@@ -383,6 +383,11 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     private function initializePayment($ctOrder, $paymentClass)
     {
         try {
+            $orderDesc = '';
+            if ((bool)Config::getInstance()->getConfigParam('creditCardTestMode') === true) {
+                $orderDesc = 'Test:0000';
+            }
+
             $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
                 $paymentClass,
                 Config::getInstance()->getConnectionConfig(),
@@ -390,7 +395,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 '',
                 '',
                 '',
-                'Test:0000',
+                $orderDesc,
                 CTPaymentParams::getUserDataParam(),
                 CTEnumEasyCredit::EVENTTOKEN_GET
             );
