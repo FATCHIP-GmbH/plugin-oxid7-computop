@@ -1,3 +1,8 @@
+### 1.2.1
+* Fixed problem with session id response parameters
+* Fixed problem creditcard testmode
+* set EtiId to shopversion for better support identification
+
 ### 1.2.0
 * Refactoring of configuration to oxid standard
 * Fixed problem with AmazonPay double und auto capturing
