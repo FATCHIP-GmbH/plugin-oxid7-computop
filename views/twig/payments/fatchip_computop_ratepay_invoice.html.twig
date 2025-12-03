@@ -3,33 +3,36 @@
     <div class="payment-option-form">
         <input class="form-check-input" id="payment_{{ sPaymentID }}" type="radio" name="paymentid"
                value="{{ sPaymentID }}"{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} checked{% endif %}>
-        <label
-                for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
+        <label for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
+
 
         <div class="payment-option-info{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} activePayment{% endif %}">
             <div class="form-floating mb-3">
-                <p class="none">
-                    <label for="fatchip_computop_easycredit_birthday">{{ translate({ ident: "FATCHIP_COMPUTOP_BIRTHDAY_PLEASE_ENTER" }) }}:</label>
-                </p>
+                <input id="{{ sPaymentID }}_telephone" class="form-control" autocomplete="off" type="text" size="20" maxlength="64" required
+                       placeholder="{{ translate({ ident: "FATCHIP_COMPUTOP_TELEPHONE" }) }}"
+                       name="dynvalue[{{ sPaymentID }}_telephone]" value="{% if dynvalue.fatchip_computop_ratepay_invoice_telephone %}{{ dynvalue.fatchip_computop_ratepay_invoice_telephone }}{% else %}{{ oView.ctGetTelephoneNumber() }}{% endif %}"
+                       {% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %}required="required"{% endif %}>
+                <label for="{{ sPaymentID }}_telephone">{{ translate({ ident: "FATCHIP_COMPUTOP_TELEPHONE" }) }}</label>
             </div>
 
             {% if oView.showBirthdate() %}
-                <div class="form-floating mb-3" style="display: inline-block">
-                    <select name="dynvalue[fatchip_computop_easycredit_birthdate_day]" class="form-select col-3" style="width:auto; display: inline-block">
+                <label>{{ translate({ ident: "FATCHIP_COMPUTOP_BIRTHDAY" }) }}</label>
+                <div class="form-floating mb-3">
+                    <select name="dynvalue[{{ sPaymentID }}_birthday]" class="form-select col-3" style="width:auto; display: inline-block">
                         {% for sDay in oView.getBirthdateDays() %}
                             <option value="{{ sDay }}"
                                     {% if sDay == oView.getBirthdayField('day') %}selected{% endif %}>{{ sDay }}</option>
                         {% endfor %}
                     </select>
                     &nbsp;
-                    <select name="dynvalue[fatchip_computop_easycredit_birthdate_month]" class="form-select"  style="width:auto; display: inline-block">
+                    <select name="dynvalue[{{ sPaymentID }}_birthmonth]" class="form-select" style="width:auto; display: inline-block">
                         {% for sMonth in oView.getBirthdateMonths() %}
                             <option value="{{ sMonth }}"
                                     {% if sMonth == oView.getBirthdayField('month') %}selected{% endif %}>{{ sMonth }}</option>
                         {% endfor %}
                     </select>
                     &nbsp;
-                    <select name="dynvalue[fatchip_computop_easycredit_birthdate_year]" class="form-select"  style="width:auto; display: inline-block">
+                    <select name="dynvalue[{{ sPaymentID }}_birthyear]" class="form-select" style="width:auto; display: inline-block">
                         {% for sYear in oView.getYearRange() %}
                             <option value="{{ sYear }}"
                                     {% if sYear == oView.getBirthdayField('year') %}selected{% endif %}>{{ sYear }}</option>
@@ -37,6 +40,10 @@
                     </select>
                 </div>
             {% endif %}
+
+            <div class="form-floating mb-3 desc ctRatepayLegalText">
+                {{ translate({ ident: "FATCHIP_COMPUTOP_RATEPAY_POLICY" }) }}
+            </div>
 
             {% block checkout_payment_longdesc %}
                 {% if paymentmethod.oxpayments__oxlongdesc.value %}

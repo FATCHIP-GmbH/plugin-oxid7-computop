@@ -1,0 +1,111 @@
+<div class="payment-option">
+    {% set dynvalue = oView.getDynValue() %}
+    <div class="payment-option-form">
+        <input class="form-check-input" id="payment_{{ sPaymentID }}" type="radio" name="paymentid"
+               value="{{ sPaymentID }}"{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} checked{% endif %}>
+        <label for="payment_{{ sPaymentID }}">{{ paymentmethod.oxpayments__oxdesc.value }}</label>
+
+        <div class="payment-option-info{% if oView.getCheckedPaymentId() == paymentmethod.oxpayments__oxid.value %} activePayment{% endif %}">
+            <link rel="stylesheet" href="{{ oViewConf.getModuleUrl('fatchip_computop_payments', 'css/computop_frontend.css') }}" />
+            {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/computop.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
+
+            <div class="form-floating mb-3">
+                <input id="{{ sPaymentID }}_accountholder" class="form-control" autocomplete="off" type="text" size="20" maxlength="64"
+                       placeholder="{{ translate({ ident: "FATCHIP_COMPUTOP_BANK_ACCOUNT_HOLDER" }) }}"
+                       name="dynvalue[{{ sPaymentID }}_accountholder]" value="{% if dynvalue.fatchip_computop_ratepay_invoice_telephone %}{{ dynvalue.fatchip_computop_ratepay_debit_accountholder }}{% else %}{{ oxcmp_user.oxuser__oxfname.value }} {{ oxcmp_user.oxuser__oxlname.value }}{% endif %}">
+                <label for="{{ sPaymentID }}_accountholder">{{ translate({ ident: "FATCHIP_COMPUTOP_BANK_ACCOUNT_HOLDER" }) }}</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input id="{{ sPaymentID }}_iban" class="form-control" autocomplete="off" type="text" size="20" maxlength="64"
+                       placeholder="{{ translate({ ident: "FATCHIP_COMPUTOP_IBAN" }) }}"
+                       name="dynvalue[{{ sPaymentID }}_iban]" value="{{ dynvalue.fatchip_computop_ratepay_debit_iban }}">
+                <label for="{{ sPaymentID }}_iban">{{ translate({ ident: "FATCHIP_COMPUTOP_IBAN" }) }}</label>
+            </div>
+            {% if oView.showBICInput() %}
+                <div class="form-floating mb-3">
+                    <input id="{{ sPaymentID }}_bic" class="form-control" autocomplete="off" type="text" size="20" maxlength="64"
+                           placeholder="{{ translate({ ident: "FATCHIP_COMPUTOP_BIC" }) }}"
+                           name="dynvalue[{{ sPaymentID }}_bic]" value="{{ dynvalue.fatchip_computop_ratepay_debit_bic }}">
+                    <label for="{{ sPaymentID }}_bic">{{ translate({ ident: "FATCHIP_COMPUTOP_BIC" }) }}</label>
+                </div>
+            {% endif %}
+            <div class="form-floating mb-3">
+                <input id="{{ sPaymentID }}_telephone" class="form-control" autocomplete="off" type="text" size="20" maxlength="64" required
+                       placeholder="{{ translate({ ident: "FATCHIP_COMPUTOP_TELEPHONE" }) }}"
+                       name="dynvalue[{{ sPaymentID }}_telephone]" value="{% if dynvalue.fatchip_computop_ratepay_invoice_telephone %}{{ dynvalue.fatchip_computop_ratepay_invoice_telephone }}{% else %}{{ oView.ctGetTelephoneNumber() }}{% endif %}">
+                <label for="{{ sPaymentID }}_telephone">{{ translate({ ident: "FATCHIP_COMPUTOP_TELEPHONE" }) }}</label>
+            </div>
+
+            {% if oView.showBirthdate() %}
+                <label>{{ translate({ ident: "FATCHIP_COMPUTOP_BIRTHDAY" }) }}</label>
+                <div class="form-floating mb-3">
+                    <select name="dynvalue[{{ sPaymentID }}_birthday]" class="form-select col-3" style="width:auto; display: inline-block">
+                        {% for sDay in oView.getBirthdateDays() %}
+                            <option value="{{ sDay }}"
+                                    {% if sDay == oView.getBirthdayField('day') %}selected{% endif %}>{{ sDay }}</option>
+                        {% endfor %}
+                    </select>
+                    &nbsp;
+                    <select name="dynvalue[{{ sPaymentID }}_birthmonth]" class="form-select" style="width:auto; display: inline-block">
+                        {% for sMonth in oView.getBirthdateMonths() %}
+                            <option value="{{ sMonth }}"
+                                    {% if sMonth == oView.getBirthdayField('month') %}selected{% endif %}>{{ sMonth }}</option>
+                        {% endfor %}
+                    </select>
+                    &nbsp;
+                    <select name="dynvalue[{{ sPaymentID }}_birthyear]" class="form-select" style="width:auto; display: inline-block">
+                        {% for sYear in oView.getYearRange() %}
+                            <option value="{{ sYear }}"
+                                    {% if sYear == oView.getBirthdayField('year') %}selected{% endif %}>{{ sYear }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+
+            <div class="mb-3 desc ctRatepayMandateText">
+                <input type="hidden" name="dynvalue[{{ sPaymentID }}_accept_sepa_mandate]" value="0">
+                <input type="checkbox" name="dynvalue[{{ sPaymentID }}_accept_sepa_mandate]" id="computop_ratepay_direct_debug_accept_sepa_mandate" value="1" required onchange="ctHideElement('ctRatepayDirectDebitAcceptMandateError');">
+                <label for="computop_ratepay_direct_debug_accept_sepa_mandate" style="display: inline;">{{ translate({ ident: "FATCHIP_COMPUTOP_RATEPAY_MANDATE_ACCEPT" }) }} <a href="#" onclick="ctToggleMandateText();return false;">{{ translate({ ident: "FATCHIP_COMPUTOP_RATEPAY_MANDATE_UNFOLD_TEXT" }) }}</a></label>
+                <div id="ctRatepayMandateText" style="display:none" class="ctRatepayMandateTextBox">
+                    {{ translate({ ident: "FATCHIP_COMPUTOP_RATEPAY_MANDATE_TEXT" }) }}
+                </div>
+                <div class="invalid-feedback" id="ctRatepayDirectDebitAcceptMandateError" style="display:none">
+                    {{ translate({ ident: "FATCHIP_COMPUTOP_RATEPAY_ACCEPT_MANDATE_ERROR" }) }}
+                </div>
+            </div>
+            <div class="form-floating mb-3 desc ctRatepayLegalText">
+                {{ translate({ ident: "FATCHIP_COMPUTOP_RATEPAY_POLICY" }) }}
+            </div>
+
+            {% capture assign = "fatchip_computop_ratepay_onsubmit" %}
+                ctAddPaymentFormSubmitEvent(function(e) {
+                ctValidateRatepayDirectDebitForm(e);
+                }, '{{ sPaymentID }}');
+            {% endcapture %}
+            {{ script({ add: fatchip_computop_ratepay_onsubmit, dynamic: __oxid_include_dynamic }) }}
+
+            {% block checkout_payment_longdesc %}
+                {% if paymentmethod.oxpayments__oxlongdesc.value %}
+
+                    <div class="alert alert-info desc">
+                        {{ paymentmethod.oxpayments__oxlongdesc.value }}
+                    </div>
+
+                {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+    {% if paymentmethod.getPrice() %}
+        <div class="payment-option-price">
+            {% set oPaymentPrice = paymentmethod.getPrice() %}
+            {% if oViewConf.isFunctionalityEnabled('blShowVATForPayCharge') %}
+                {{ format_price(oPaymentPrice.getNettoPrice(), { currency: currency }) }}
+                {% if oPaymentPrice.getVatValue() > 0 %}
+                    {{ translate({ ident: "PLUS_VAT" }) }} {{ format_price(oPaymentPrice.getVatValue(), { currency: currency }) }}
+                {% endif %}
+            {% else %}
+                {{ format_price(oPaymentPrice.getBruttoPrice(), { currency: currency }) }}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
