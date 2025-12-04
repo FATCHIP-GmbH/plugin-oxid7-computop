@@ -106,6 +106,8 @@ $aModule = [
         ['group' => 'COMPUTOP_AMAZONPAY',          'name' => 'amazonMarketplace',                 'type' => 'select',   'value' => 'EU',            'position' => 604, 'constraints' => 'EU|UK|US|JP'],
 
         ['group' => 'COMPUTOP_IDEAL',              'name' => 'idealDirektOderUeberSofort',        'type' => 'select',   'value' => 'DIREKT',        'position' => 700, 'constraints' => 'DIREKT|PPRO'],
+
+        ['group' => 'COMPUTOP_RATEPAYDIRECTDEBIT', 'name' => 'ratepayDirectDebitRequestBic',      'type' => 'bool',     'value' => '0',             'position' => 800],
     ],
     'events'      => [
         'onActivate'   => 'Fatchip\ComputopPayments\Core\Events::onActivate',

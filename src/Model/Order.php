@@ -994,6 +994,7 @@ class Order extends Order_parent
 
         if ($this->computopGetPaymentModel() instanceof Base) {
             $params[$apiPrefix.'ZIPCode'] = $this->getFieldData($oxidPrefix.'zip');
+            $params[$apiPrefix.'StreetHouseNumber'] = $this->getFieldData($oxidPrefix.'streetnr');
         }
 
         return $params;

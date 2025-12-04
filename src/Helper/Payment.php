@@ -30,6 +30,8 @@ class Payment
         Creditcard::ID      => array('title' => 'Kreditkarte',          'model' => \Fatchip\ComputopPayments\Model\Method\Creditcard::class),
         PayPal::ID          => array('title' => 'PayPal',               'model' => \Fatchip\ComputopPayments\Model\Method\PayPal::class),
         PayPalExpress::ID   => array('title' => 'PayPalExpress',        'model' => \Fatchip\ComputopPayments\Model\Method\PayPalExpress::class),
+        RPDirectDebit::ID   => array('title' => 'Ratepay Lastschrift',  'model' => \Fatchip\ComputopPayments\Model\Method\Ratepay\DirectDebit::class),
+        Invoice::ID         => array('title' => 'Ratepay Rechnung',     'model' => \Fatchip\ComputopPayments\Model\Method\Ratepay\Invoice::class),
         DirectDebit::ID     => array('title' => 'Lastschrift',          'model' => \Fatchip\ComputopPayments\Model\Method\DirectDebit::class),
         Ideal::ID           => array('title' => 'iDEAL',                'model' => \Fatchip\ComputopPayments\Model\Method\Ideal::class),
         Klarna::ID          => array('title' => 'Klarna',               'model' => \Fatchip\ComputopPayments\Model\Method\Klarna::class),

@@ -10,13 +10,11 @@
         fatchipComputopFieldEmpty: 'Bitte füllen Sie das Pflichtfeld aus',
 
         init: function () {
-            console.log('FatchipComputopIbanComponentInit');
             this.registerEvents();
         },
 
         registerEvents: function () {
             var paymentId =  document.querySelector('input[name=paymentid]:checked').value;
-            console.log('paymentid:' + paymentId);
             var elem = document.getElementById('fatchip_computop_lastschrift_iban');
 
             const buttons = document.getElementsByClassName("btn btn-highlight btn-lg w-100");
@@ -117,7 +115,6 @@ window.onload = (event) => {
     });
 
     var radioButtons = document.getElementsByName('paymentid');
-    console.log('RadioButtons:' + radioButtons);
     for (var i = 0; i < radioButtons.length; i++) {
         var button = radioButtons[i];
         button.onclick = function() {
