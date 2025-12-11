@@ -1,3 +1,6 @@
+### 1.2.2
+* Added payment methods Ratepay direct debit and Ratepay invoice
+
 ### 1.2.1
 * Fixed problem with session id response parameters
 * Fixed problem creditcard testmode
