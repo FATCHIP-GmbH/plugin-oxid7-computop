@@ -1,3 +1,6 @@
+### 1.2.3
+* set selected language in CTPaymentMethodIframe
+
 ### 1.2.2
 * Added payment methods Ratepay direct debit and Ratepay invoice
 
