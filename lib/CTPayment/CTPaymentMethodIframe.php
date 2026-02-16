@@ -185,6 +185,7 @@ abstract class CTPaymentMethodIframe extends CTPaymentMethod
         if (is_array($order) || is_null($order)) {
             $order = new CTOrder\CTOrder();
         }
+        $this->setLanguage(strtolower(Registry::getLang()->getLanguageAbbr()));
         $amount = round($order->getAmount(), 0);
         $intAmount = (int)$amount;
         $this->setAmount($intAmount);
