@@ -26,6 +26,7 @@ $aLang = [
     'FATCHIP_COMPUTOPE_VOUCHER' => 'Voucher',
     'FATCHIP_COMPUTOP_DISCOUNT' => 'Discount',
 
+    'FATCHIP_COMPUTOP_BANKNAME' => 'Bank name',
     'FATCHIP_COMPUTOP_BANK_ACCOUNT_HOLDER' => 'Account holder',
     'FATCHIP_COMPUTOP_IBAN' => 'IBAN',
     'FATCHIP_COMPUTOP_BIC' => 'BIC',
