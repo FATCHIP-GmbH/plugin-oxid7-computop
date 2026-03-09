@@ -121,6 +121,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             Registry::getSession()->deleteVariable("ctAmazonAuthResponse");
         }
 
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
+
         return parent::render();
     }
 
