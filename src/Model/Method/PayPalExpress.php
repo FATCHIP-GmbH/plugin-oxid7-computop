@@ -5,6 +5,7 @@ namespace Fatchip\ComputopPayments\Model\Method;
 use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Application\Model\Payment;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Application\Model\Order;
 
 class PayPalExpress extends RedirectPayment
 {
@@ -25,12 +26,43 @@ class PayPalExpress extends RedirectPayment
      *
      * @var string
      */
-    protected $apiEndpoint = "paypalComplete.aspx";
+    #protected $apiEndpoint = "paypalComplete.aspx";
+    protected $apiEndpoint = "ExternalServices/paypalorders.aspx";
 
     /**
      * @var bool
      */
     protected $isIframeLibMethod = false;
+
+    /**
+     * Returns redirect url for success case
+     *
+     * @return string|null
+     */
+    public function getSuccessUrl()
+    {
+        return $this->buildReturnUrl($this->getShopUrl().'computop/paypalexpress/success/');
+    }
+
+    /**
+     * Returns redirect url for failure case
+     *
+     * @return string|null
+     */
+    public function getFailureUrl()
+    {
+        return $this->buildReturnUrl($this->getShopUrl().'computop/paypalexpress/failure/');
+    }
+
+    /**
+     * Returns URL for notify controller
+     *
+     * @return string|null
+     */
+    public function getNotifyUrl()
+    {
+        return $this->getShopUrl().'computop/paypalexpress/notify/';
+    }
 
     public function isActive(): bool
     {
@@ -38,7 +70,7 @@ class PayPalExpress extends RedirectPayment
         $oPayment = oxNew(Payment::class);
 
         try {
-            if (($oPayment->load('fatchip_computop_paypal_express') == false) || ($oPayment->oxpayments__oxactive && $oPayment->oxpayments__oxactive->value === 0)) {
+            if (($oPayment->load(self::ID) == false) || ($oPayment->oxpayments__oxactive && $oPayment->oxpayments__oxactive->value === 0)) {
                 return false;
             }
 
@@ -116,6 +148,20 @@ class PayPalExpress extends RedirectPayment
                 'clientId' => $this->getPaypalClientId(),
                 'merchantId' => $this->getPaypalMerchantId()
             ]
+        ];
+    }
+
+    /**
+     * Return parameters specific to this payment type
+     *
+     * @param  Order|null $order
+     * @return array
+     */
+    public function getPaymentSpecificParameters(?Order $order, $dynValue, $ctOrder = false)
+    {
+        return [
+            'Capture' => 'Manual',
+            'TxType' => 'Auth',
         ];
     }
 }

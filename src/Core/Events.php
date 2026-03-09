@@ -311,12 +311,15 @@ class Events
      */
     public static function addColumnIfNotExists($sTableName, $sColumnName, $sQuery): bool
     {
-        $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM {$sTableName} LIKE '{$sColumnName}'");
+        $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM `".$sTableName."` LIKE :column", [ // Tablename can't be added as param
+            'column' => $sColumnName,
+        ]);
 
-        if (!$aColumns || $aColumns === []) {
+        if (empty($aColumns)) {
             try {
                 DatabaseProvider::getDb()->Execute($sQuery);
             } catch (Exception $e) {
+                // Do nothing
             }
             return true;
         }
@@ -342,7 +345,10 @@ class Events
      */
     public static function isConfigConversionNeeded(): bool
     {
-        $isConfigConverted = DatabaseProvider::getDb()->getOne("SELECT oxid FROM `oxconfig` WHERE oxvarname = '".self::CT_CONFIG_CONVERTED."' LIMIT 1;");
+        $isConfigConverted = DatabaseProvider::getDb()->getOne("SELECT oxid FROM `oxconfig` WHERE oxvarname = :varname LIMIT 1;", [
+            'varname' => self::CT_CONFIG_CONVERTED,
+        ]);
+
         if (empty($isConfigConverted)) {
             return true;
         }
@@ -365,7 +371,11 @@ class Events
                 }
 
                 // Convert oxvartype to correct new type
-                DatabaseProvider::getDb()->Execute("UPDATE oxconfig SET oxvartype = '".$aSetting['type']."' WHERE oxmodule = 'module:".FatchipComputopModule::MODULE_ID."' AND oxvarname = '".$aSetting['name']."'");
+                DatabaseProvider::getDb()->Execute("UPDATE oxconfig SET oxvartype = :vartype WHERE oxmodule = :module AND oxvarname = :varname", [
+                    'vartype' => $aSetting['type'],
+                    'module' => 'module:'.FatchipComputopModule::MODULE_ID,
+                    'varname' => $aSetting['name'],
+                ]);
             }
 
             $merchantId = \Fatchip\ComputopPayments\Helper\Config::getInstance()->getConfigParam('merchantID');
@@ -377,6 +387,11 @@ class Events
                 }
             }
         }
-        DatabaseProvider::getDb()->Execute("INSERT INTO oxconfig (oxid, oxshopid, oxvarname, oxvartype) VALUES ('".hash("md5", self::CT_CONFIG_CONVERTED.rand(0, 9999))."', 1, '".self::CT_CONFIG_CONVERTED."', 'str')");
+        DatabaseProvider::getDb()->Execute("INSERT INTO oxconfig (oxid, oxshopid, oxvarname, oxvartype) VALUES (:oxid, :shopid, :varname, :vartype)", [
+            'oxid' => hash("md5", self::CT_CONFIG_CONVERTED.rand(0, 9999)),
+            'shopid' => 1,
+            'varname' => self::CT_CONFIG_CONVERTED,
+            'vartype' => 'str',
+        ]);
     }
 }

@@ -32,6 +32,7 @@ use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\ComputopPayments\Core\Logger;
 use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Helper\Encryption;
+use Fatchip\ComputopPayments\Model\Api\Request\Authorization;
 use Fatchip\ComputopPayments\Model\ApiLog;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\PayPalExpress;
@@ -519,31 +520,21 @@ class FatchipComputopPayPalExpress extends FrontendController
      */
     public function createOrder()
     {
-        /** @var PaypalExpress $oPaypalExpressPaypment */
-        $oPaypalExpressPaypment = $this->fatchipComputopPaymentService->getPaymentClass('PayPalExpress');
-        $sTransId = $oPaypalExpressPaypment::generateTransID(12);
-        $oApiLog = oxNew(ApiLog::class);
-        $aLog = [
-            'payment_name' => $oPaypalExpressPaypment::paymentClass,
-            'creation_date' => date('Y-m-d H:i:s', time()),
-            'trans_id' => $sTransId
-        ];
         $oOrder = oxNew(Order::class);
         $oOrder->setComputopIsPPEInit(true);
 
-        $oUser = oxNew(User::class);
         $oSession = Registry::getSession();
         $oBasket = $oSession->getBasket();
-        $oBasket->setPayment('fatchip_computop_paypal_express');
-        //TODO: make it configuraable
-        $oBasket->setShipping('oxidstandard');
+        $oBasket->setPayment(\Fatchip\ComputopPayments\Model\Method\PayPalExpress::ID);
+        $oBasket->setShipping('oxidstandard'); //TODO: make it configurable
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
             Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
         }
-        $isLoaded = $oUser->loadActiveUser();
-        //load user in case one is logged in
+
+        $oUser = oxNew(User::class);
+        $isLoaded = $oUser->loadActiveUser(); // load user in case one is logged in
         if (!$isLoaded) {
             //create a temp user [paypal_guest]
             $oUser->oxuser__oxusername = new Field('PAYPAL_TMP_USER_' . $oSession->getId());
@@ -583,46 +574,19 @@ class FatchipComputopPayPalExpress extends FrontendController
             if ($iOrderfinalizationState === 0 || $iOrderfinalizationState === 1) {
                 $oOrder->oxorder__oxtransstatus = new Field('NOT_FINISHED');
                 $oOrder->save();
-                //create ctorder
-                $oCTOrder = new CTOrder();
-                $oCTOrder->setAmount($oBasket->getPrice()->getBruttoPrice());
-                $oCTOrder->setCurrency($oBasket->getBasketCurrency()->name);
-                $oCTOrder->setTransID($sTransId);
-                //$oCTOrder->setPayId($oOrder->oxorder__oxpaymentid->value);
-                //$aLog['pay_id'] = $oCTOrder->getPayId();
 
-                $aFrontendRequestParams = $oPaypalExpressPaypment->generateFrontendRequestParams($oCTOrder, Config::getInstance()->getConnectionConfig());
+                $authRequest = new Authorization();
+                $response = $authRequest->sendRequest($oOrder, $oBasket->getPrice()->getBruttoPrice());
 
-                $dataQuery = urldecode(http_build_query($aFrontendRequestParams));
-                $length = mb_strlen($dataQuery);
-
-                $data = Encryption::getInstance()->encrypt($dataQuery, $length);
-                $payload = [
-                    'MerchantID' => Config::getInstance()->getConfigParam('merchantID'),
-                    'Len' => $length,
-                    'Data' => $data,
-                ];
-
-                $aResponse = $this->httpPost($oPaypalExpressPaypment::CREATE_ORDER_URL, $payload);
-                if (!empty($aResponse['response'])) {
-                    parse_str($aResponse['response'], $parsedResponse);
-                    $oOrder->oxorder__fatchip_computop_transid = new Field($parsedResponse['TransID'] ?? '');
-                    $oOrder->oxorder__fatchip_computop_payid = new Field($parsedResponse['PayID'] ?? '');
-                    $aLog['pay_id'] = $parsedResponse['PayID'] ?? '';
+                if (!empty($response)) {
+                    $oOrder->oxorder__fatchip_computop_transid = new Field($response['TransID'] ?? '');
+                    $oOrder->oxorder__fatchip_computop_payid = new Field($response['PayID'] ?? '');
                     $oOrder->save();
                 }
 
-                $aLog['request'] = 'CREATEORDER_ACTION';
-                $aLog['request_details'] = json_encode($aFrontendRequestParams);
-                $aLog['response_details'] = json_encode($parsedResponse);
-                $oApiLog->assign($aLog);
-
-                if (!$oApiLog->save()) {
-                    Registry::getLogger()->error('createOrder: not able to save log, log dump - ' . print_r($aLog, true));
-                }
-
-                if ((int)$aResponse['status_code'] === 200) {
-                    die($aResponse['response']);
+                if (!empty($response)) {
+                    echo http_build_query($response);
+                    exit;
                 } else {
                     Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
                     Registry::getUtils()->redirect(Registry::getConfig()->getShopUrl() . 'index.php?=basket', false, 301);
@@ -645,96 +609,5 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
 
         exit;
-    }
-
-    /**
-     * Handle onApprove action
-     * @return void
-     * @throws Exception
-     */
-    public function onApprove()
-    {
-        $sMerchantId = Registry::getRequest()->getRequestParameter('merchantId');
-        $sPayId = Registry::getRequest()->getRequestParameter('payId');
-        $sOrderId = Registry::getRequest()->getRequestParameter('orderId');
-
-        $aRequestParams = [
-            'MerchantId' => $sMerchantId,
-            'PayId' => $sPayId,
-            'OrderId' => $sOrderId
-        ];
-
-        $oApiLog = oxNew(ApiLog::class);
-
-        $aLog = [
-            'request' => 'ON_APPROVE_ACTION',
-            'request_details' => json_encode($aRequestParams),
-            'creation_date' => date('Y-m-d H:i:s', time()),
-            'payment_name' => PaypalExpress::paymentClass
-        ];
-
-        $oApiLog->assign($aLog);
-        $oApiLog->save();
-
-        $sTargetRedirectUrl = PaypalExpress::ON_APPROVE_URL . '?rd=' . base64_encode(http_build_query($aRequestParams));
-        Registry::getLogger()->error('onApproveAction: ' . $sTargetRedirectUrl);
-        header("Location: $sTargetRedirectUrl");
-        exit;
-    }
-
-    /**
-     * Handle onCancel Action
-     * @return void
-     */
-    public function onCancel()
-    {
-        $mid = "YOUR_MERCHANTID";
-        $payid = $data['orderID'];
-        $rd = "MerchantId=$mid&PayId=$payid&OrderId=" . $data['orderID'];
-
-        $url = 'https://www.computop-paygate.com/cbPayPal.aspx?rd=' . base64_encode($rd) . "&ua=cancel&token=" . $data['orderID'];
-        header("Location: $url");
-        exit;
-    }
-
-    public function onError()
-    {
-
-    }
-
-    private function httpPost($url, $data, $headers = []): array
-    {
-        $ch = curl_init($url);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-
-        // Set default headers
-        $defaultHeaders = [
-            //'Content-Type: application/x-www-form-urlencoded'
-        ];
-
-        // Merge default headers with custom headers
-        $allHeaders = array_merge($defaultHeaders, $headers);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeaders);
-
-        $response = curl_exec($ch);
-        $error = curl_error($ch);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        curl_close($ch);
-
-        if ($error) {
-            return [
-                'status_code' => $statusCode,
-                'error' => $error
-            ];
-        }
-
-        return [
-            'status_code' => $statusCode,
-            'response' => $response
-        ];
     }
 }

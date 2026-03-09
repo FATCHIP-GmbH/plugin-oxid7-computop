@@ -27,6 +27,7 @@
 namespace Fatchip\CTPayment;
 
 use Exception;
+use Fatchip\ComputopPayments\Helper\Api;
 use Fatchip\ComputopPayments\Helper\Config;
 use OxidEsales\Eshop\Core\Registry;
 
@@ -189,12 +190,14 @@ abstract class CTPaymentMethod extends Encryption
      */
     public function callComputop($ctRequest, $url)
     {
-        $curl = curl_init();
         $curlUrl = $this->prepareComputopRequest($ctRequest, $url);
-        curl_setopt_array($curl,
-            [CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_URL => $curlUrl
-            ]);
+
+        $curl = curl_init();
+        $curl = Api::getInstance()->setCurlSecurityOptions($curl);
+
+        curl_setopt($curl, CURLOPT_URL, $curlUrl);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
         try {
             $resp = curl_exec($curl);
 

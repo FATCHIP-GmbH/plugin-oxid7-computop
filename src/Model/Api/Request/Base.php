@@ -81,7 +81,7 @@ class Base
     public function getTransactionId(Order $order = null)
     {
         if (empty($this->transactionId)) {
-            if (!empty($order)) {
+            if (false && !empty($order)) { //@TODO: Reactivate whenn all payment methods use the new classes
                 $this->transactionId = $order->oxorder__oxordernr->value;
             } else {
                 $this->transactionId = Payment::getInstance()->getTransactionId();
@@ -260,7 +260,8 @@ class Base
 
         $paymentName = '';
         if (!empty($order)) {
-            $paymentName = get_class($order->computopGetPaymentModel());
+            $class = explode('\\', get_class($order->computopGetPaymentModel()));
+            $paymentName = end($class);
         }
         Api::getInstance()->addLogEntry($params, $response, $paymentName, $requestType);
 
@@ -275,11 +276,11 @@ class Base
     protected function sendCurlRequest($uri, $params = [])
     {
         $curl = curl_init();
+        $curl = Api::getInstance()->setCurlSecurityOptions($curl);
 
-        curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP | CURLPROTO_FTPS);
         curl_setopt($curl, CURLOPT_URL, $uri);
         curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($params) ? http_build_query($params) : $params);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, is_array($params) ? http_build_query($params, '', '&', PHP_QUERY_RFC3986) : $params);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
         $response = curl_exec($curl);
