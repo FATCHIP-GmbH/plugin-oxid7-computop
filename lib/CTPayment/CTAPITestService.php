@@ -26,6 +26,7 @@
 
 namespace Fatchip\CTPayment;
 
+use Fatchip\ComputopPayments\Helper\Api;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Exception\StandardException AS Exception;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
@@ -42,13 +43,11 @@ class CTAPITestService extends Encryption
 
 
     /**
-     * CTIdealIssuerService constructor.
+     * CTAPITestService constructor.
      *
      * @param $config array plugin configuration
      */
-    public function __construct(
-        $config
-    )
+    public function __construct($config)
     {
         $this->merchantID = $config['merchantID'];
         $this->blowfishPassword = $config['blowfishPassword'];
@@ -151,11 +150,10 @@ class CTAPITestService extends Encryption
     public function doAPITest()
     {
         $curl = curl_init();
+        $curl = Api::getInstance()->setCurlSecurityOptions($curl);
 
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $this->getUrl(),
-        ));
+        curl_setopt($curl, CURLOPT_URL, $this->getUrl());
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
         $resp = curl_exec($curl);
 
@@ -211,125 +209,4 @@ class CTAPITestService extends Encryption
             return false;
         }
     }
-
-    /**
-     * calls computop api to get ideal financial institutes list
-     *
-     * @return bool
-     */
-    public function getIdealIssuers()
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $this->getIssuerListURL(),
-        ));
-
-        $resp = curl_exec($curl);
-
-        if (FALSE === $resp) {
-            throw new Exception(curl_error($curl), curl_errno($curl));
-        }
-
-        $respArray = [];
-        parse_str($resp, $respArray);
-        #$decryptedRequest = $this->ctDecrypt($respArray['Data'], $respArray['Len'], $this->blowfishPassword);
-        #$decryptedArray = $this->ctSplit(explode('&', $decryptedRequest), '=');
-        $decryptedArray = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->decrypt($respArray['Data'], $respArray['Len']);
-        $stringissuerList = $decryptedArray['IdealIssuerList'];
-        $issuerList = explode('|', $stringissuerList);
-        $issuers = [];
-        $i = 1;
-        if (!is_array($issuerList)) {
-            return false;
-        }
-        foreach ($issuerList AS $issuer) {
-            $data = explode(',', $issuer);
-            if (!empty($data[0])) {
-                $issuers[$i]['oxid'] = Registry::getUtilsObject()->generateUId();
-                $issuers[$i]['issuer_id'] = $data[0];
-                $issuers[$i]['name'] = $data[1];
-                $issuers[$i]['land'] = $data[2];
-                $i++;
-            }
-        }
-
-        $sql = 'truncate fatchip_computop_ideal_issuers;';
-        DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
-        foreach ($issuers AS $issuer) {
-            if ($issuer['land'] === 'Nederland') {
-                $issuer['land'] = 'NL';
-            }
-            $sql = '
-            INSERT INTO `fatchip_computop_ideal_issuers` (`oxid`, `issuer_id`, `name`, `land`) VALUES
-            ("' . $issuer['oxid'] . '", "' . $issuer['issuer_id'] . '", "' . $issuer['name']  . '", "' . $issuer['land'] . '")
-
-            ;';
-
-            // replace netherland with NL
-            $success =   DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC)->execute($sql);
-        }
-        if ($success !== 1) {
-            return false;
-        }
-
-        if (strpos($resp, 'Unexpected exception') !== false) {
-            throw new Exception('Wrong Credentials');
-            return false;
-        } else {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * creates uri which will be used to download the issuers
-     *
-     * data fields are read from class props and encrypted
-     *
-     * @return string url
-     * @see ctEncrypt()
-     *
-     * @see ctHMAC()
-     */
-    public function getIssuerListURL()
-    {
-        mt_srand((double)microtime() * 1000000);
-        $reqId = (string)mt_rand();
-        $reqId .= date('yzGis');
-
-        $testParams = [
-            'MerchantID' => $this->getMerchantID(),
-            'msgVer' => '2.0',
-        ];
-
-        $requestParams = [];
-        foreach ($testParams as $key => $value) {
-            $requestParams[] = "$key=" . $value;
-        }
-        $requestParams[] = "MAC=" . $this->ctHMAC($testParams);
-
-        $request = join('&', $requestParams);
-        $len = mb_strlen($request);  // Length of the plain text string
-
-        #$data = $this->ctEncrypt($request, $len, $this->getBlowfishPassword(), $this->encryption);
-        $data = \Fatchip\ComputopPayments\Helper\Encryption::getInstance()->encrypt($request, $len);
-
-        if (!$data) {
-            throw new Exception('Failed Encrypting Data. ');
-            return false;
-        }
-
-        $url = 'https://www.computop-paygate.com/idealIssuerList.aspx';
-        $url .=
-            '?MerchantID=' . $this->merchantID .
-            '&Len=' . $len .
-            '&Data=' . $data;
-        return $url;
-    }
-
-
-
-
 }

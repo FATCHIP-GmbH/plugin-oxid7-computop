@@ -141,6 +141,14 @@ class Order extends Order_parent
     {
         $ret = parent::finalizeOrder($oBasket, $oUser, $blRecalculatingOrder);
 
+        if ($ret === self::ORDER_STATE_ORDEREXISTS) { // order already exists - probably a multiple clicks on "buy" button case
+            $sRedirectUrl = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
+            if (!empty($sRedirectUrl)) {
+                Registry::getUtils()->redirect($sRedirectUrl);
+            }
+        }
+
+
         $paymentId = $oBasket->getPaymentId() ?: '';
         if (Payment::getInstance()->isComputopPaymentMethod($paymentId) === false || $ret === self::ORDER_STATE_PAYMENTERROR) {
             return $ret;
@@ -178,7 +186,7 @@ class Order extends Order_parent
             }
         }
 
-        if ($ret === self::ORDER_STATE_ORDEREXISTS || $status !== null) {
+        if ($ret === self::ORDER_STATE_ORDEREXISTS || $status !== null) { // Returning customer - finish finalizeOrder
             // check Status and set Order appropiatelay
             $ret = $this->finalizeRedirectOrder($oBasket, $oUser, $blRecalculatingOrder);
         }
@@ -261,6 +269,10 @@ class Order extends Order_parent
         // check if this order is already stored
         $orderId = \OxidEsales\Eshop\Core\Registry::getSession()->getVariable('sess_challenge');
         $this->load($orderId);
+
+        if (empty($this->oxorder__oxuserid)) {
+            $this->oxorder__oxuserid = new \OxidEsales\Eshop\Core\Field($oUser->getId());
+        }
 
         // payment information
         $oUserPayment = $this->setPayment($oBasket->getPaymentId());

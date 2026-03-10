@@ -148,4 +148,23 @@ class Api
     {
         return trim(Config::getInstance()->getConfigParam('refnr_prefix') ?? '').$orderNr.trim(Config::getInstance()->getConfigParam('refnr_suffix') ?? '');
     }
+
+    /**
+     * Used to set curl security options in all places uniformaly
+     *
+     * @param $curl
+     * @return mixed
+     */
+    public function setCurlSecurityOptions($curl)
+    {
+        curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 0);
+        curl_setopt($curl, CURLOPT_USERAGENT, 'FatchipComputop/1.0 (+https)');
+
+        return $curl;
+    }
 }

@@ -121,7 +121,21 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             Registry::getSession()->deleteVariable("ctAmazonAuthResponse");
         }
 
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
+
         return parent::render();
+    }
+
+    /**
+     * Action to trigger reentry after payment, which will then trigger the execute function
+     *
+     * @return string|null
+     */
+    public function ctReentry()
+    {
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
+
+        return $this->execute();
     }
 
     /**
@@ -152,7 +166,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 $_POST['stoken'] = Registry::getSession()->getSessionChallengeToken();
                 $_POST['FatchipComputopLen'] = Registry::getRequest()->getRequestParameter('Len');
                 $_POST['FatchipComputopData'] = Registry::getRequest()->getRequestParameter('Data');
-                $_POST['sDeliveryAddressMD5'] = $this->getUser()->getEncodedDeliveryAddress();
+                $_POST['sDeliveryAddressMD5'] = $this->computopGetAddressHash();
             }
 
             $ret = parent::execute();
@@ -994,5 +1008,30 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             return Payment::getInstance()->getComputopPaymentModel($paymentId);
         }
         return false;
+    }
+
+    /**
+     * Calculates and returns a hash based on the delivery address of the user.
+     * The hash is initially generated from the encoded delivery address of the current user.
+     * If a delivery address ID is provided in the request parameters or stored in the session,
+     * the corresponding delivery address is loaded and its encoded delivery address is appended
+     * to the original hash.
+     *
+     * @return string Returns a concatenated and encoded hash representing the delivery address data.
+     */
+    protected function computopGetAddressHash()
+    {
+        $sAddressHash = $this->getUser()->getEncodedDeliveryAddress();
+
+        if (!($soxAddressId = Registry::getRequest()->getRequestEscapedParameter('deladrid'))) {
+            $soxAddressId = \OxidEsales\Eshop\Core\Registry::getSession()->getVariable('deladrid');
+        }
+        if ($soxAddressId) {
+            $oDelAdress = oxNew(\OxidEsales\Eshop\Application\Model\Address::class);
+            $oDelAdress->load($soxAddressId);
+
+            $sAddressHash .= $oDelAdress->getEncodedDeliveryAddress();
+        }
+        return $sAddressHash;
     }
 }

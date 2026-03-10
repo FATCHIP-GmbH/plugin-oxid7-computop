@@ -141,5 +141,6 @@ class FatchipComputopSession extends FatchipComputopSession_parent
 
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
     }
 }

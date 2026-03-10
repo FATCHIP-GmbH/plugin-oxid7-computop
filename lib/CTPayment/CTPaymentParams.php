@@ -60,11 +60,12 @@ class CTPaymentParams
         $sessionId = Registry::getSession()->getId();
 
         $successController = Constants::GENERAL_PREFIX . 'redirect';
-        $failureController = $successController;
+        $failureController = Constants::GENERAL_PREFIX . 'cancel';
         if ($paymentId === 'fatchip_computop_easycredit') {
             $successController = 'order';
         }
 
+        // Dont bother adding additional parameters here - Computop ignores them anyways.......
         $params = [
             'UrlSuccess' => self::buildUrl($shopUrl, $successController, $sessionId),
             'UrlFailure' => self::buildUrl($shopUrl, $failureController, $sessionId),

@@ -147,23 +147,6 @@ class Ideal extends CTPaymentMethodIframe
     }
 
     /**
-     * returns IssuerListURL
-     * @return string
-     */
-    public function getIssuerListURL()
-    {
-        $queryarray = array();
-        $queryarray[] = 'merchantID=' . $this->getMerchantID();
-
-        $query = join("&", $queryarray);
-
-        $Len = strlen($query);  // Length of the plain text string
-        $data = $this->ctEncrypt($query, $Len, $this->getBlowfishPassword(), $this->encryption);
-
-        return 'https://www.computop-paygate.com/idealIssuerList.aspx' .  '?merchantID=' . $this->getMerchantID() . '&Len=' . $Len . "&Data=" . $data;
-    }
-
-    /**
      * Send the user sessionid in the custom field
      * CT returns the custom parameter unencrypted in the reuqests response.
      * This is only used for restoring the session after iframe payments as a workaround for Safari 6+ browsers
