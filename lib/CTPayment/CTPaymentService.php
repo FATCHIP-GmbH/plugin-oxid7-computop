@@ -268,7 +268,7 @@ class CTPaymentService extends Encryption
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
                 $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
-                    . 'index.php?cl=order&fnc=execute&action=result&stoken='
+                    . 'index.php?cl=order&fnc=ctReentry&action=result&stoken='
                     . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
                 break;
             case CTEnumStatus::FAILED:

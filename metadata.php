@@ -62,7 +62,8 @@ $aModule = [
         'fatchip_computop_notify'               => \Fatchip\ComputopPayments\Controller\FatchipComputopNotify::class,
         'fatchip_computop_ideal'                => \Fatchip\ComputopPayments\Controller\FatchipComputopIdeal::class,
         'fatchip_computop_twint'                => \Fatchip\ComputopPayments\Controller\FatchipComputopTwint::class,
-        'fatchip_computop_redirect'             => \Fatchip\ComputopPayments\Controller\FatchipComputopRedirect::class
+        'fatchip_computop_redirect'             => \Fatchip\ComputopPayments\Controller\FatchipComputopRedirect::class,
+        'fatchip_computop_cancel'               => \Fatchip\ComputopPayments\Controller\FatchipComputopCancel::class
     ],
     'blocks'      => [
     ],

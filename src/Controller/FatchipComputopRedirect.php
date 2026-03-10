@@ -98,7 +98,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         } else {
             $queryParams = [
                 'cl'                  => 'order',
-                'fnc'                 => 'execute',
+                'fnc'                 => 'ctReentry',
                 'FatchipComputopLen'  => $len,
                 'FatchipComputopData' => $data,
                 'stoken'              => $stoken,
@@ -138,7 +138,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         } else {
             $queryParams = [
                 'cl'                  => 'order',
-                'fnc'                 => 'execute',
+                'fnc'                 => 'ctReentry',
                 'FatchipComputopLen'  => $len,
                 'FatchipComputopData' => $data,
                 'stoken'              => $stoken,

@@ -470,7 +470,7 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         $sShopUrl = Registry::getConfig()->getShopUrl();
         $stoken = $response->getRefNr();
-        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
+        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=ctReentry&FatchipComputopLen=' . $len . '&FatchipComputopData=' . $data
             . '&stoken=' . $stoken;
         return json_encode($returnUrl);
     }

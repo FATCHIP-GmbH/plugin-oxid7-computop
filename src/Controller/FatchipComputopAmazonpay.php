@@ -54,7 +54,7 @@ class FatchipComputopAmazonpay extends FatchipComputopPayments
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
         $custom = Registry::getRequest()->getRequestParameter('Custom');
-        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=execute&Len=' . $len . '&Data=' . $data;
+        $returnUrl = $sShopUrl . 'index.php?cl=order&fnc=ctReentry&Len=' . $len . '&Data=' . $data;
 
         Registry::getUtils()->redirect($returnUrl, false, 301);
     }

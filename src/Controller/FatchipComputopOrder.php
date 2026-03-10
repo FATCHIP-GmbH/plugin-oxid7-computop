@@ -127,6 +127,18 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     }
 
     /**
+     * Action to trigger reentry after payment, which will then trigger the execute function
+     *
+     * @return string|null
+     */
+    public function ctReentry()
+    {
+        Registry::getSession()->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
+
+        return $this->execute();
+    }
+
+    /**
      * Checks for order rules confirmation ("ord_agb", "ord_custinfo" form values)(if no
      * rules agreed - returns to order view), loads basket contents (plus applied
      * price/amount discount if available - checks for stock, checks user data (if no
