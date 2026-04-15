@@ -396,12 +396,8 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
     private function initializePayment($ctOrder, $paymentClass)
     {
+        // Only used by Creditcard Silent Mode
         try {
-            $orderDesc = '';
-            if ((bool)Config::getInstance()->getConfigParam('creditCardTestMode') === true) {
-                $orderDesc = 'Test:0000';
-            }
-
             $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
                 $paymentClass,
                 Config::getInstance()->getConnectionConfig(),
@@ -409,10 +405,17 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 '',
                 '',
                 '',
-                $orderDesc,
+                '',
                 CTPaymentParams::getUserDataParam(),
                 CTEnumEasyCredit::EVENTTOKEN_GET
             );
+
+            if ((bool)Config::getInstance()->getConfigParam('creditCardTestMode') === true) {
+                $payment->setOrderDesc('Test:0000');
+            } else {
+                $payment->setOrderDesc($payment->getTransID());
+            }
+
             if ($paymentClass !=='AmazonPay') {
                 $payment->setCredentialsOnFile();
             }

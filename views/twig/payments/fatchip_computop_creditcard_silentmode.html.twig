@@ -52,6 +52,11 @@
         background-color: #0056b3;
     }
 </style>
+
+{% capture assign = "fatchip_computop_creditcard_shopurl" %}
+    var ctShopUrl = '{{ oViewConf.ctGetShopUrl() }}';
+{% endcapture %}
+{{ script({ add: fatchip_computop_creditcard_shopurl, dynamic: __oxid_include_dynamic }) }}
 {{ script({ include: oViewConf.getModuleUrl('fatchip_computop_payments','js/creditcard.js'), priority: 30, dynamic: __oxid_include_dynamic }) }}
 
 <div class="credit-card-form">
@@ -72,8 +77,9 @@
             <label for="card-brand">Card Brand</label>
             <select id="card-brand" name="brand" class="form-control" required>
                 <option value="">Select Card Brand</option>
-                <option value="VISA">Visa</option>
-                <option value="MasterCard">Mastercard</option>
+                {% for sKey, sLabel in oViewConf.ctGetSilentModeCCTypes() %}
+                    <option value="{{ sKey }}">{{ sLabel }}</option>
+                {% endfor %}
             </select>
         </div>
         <div class="form-group">

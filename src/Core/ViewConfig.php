@@ -151,4 +151,24 @@ class ViewConfig extends ViewConfig_parent
     {
         return Registry::getConfig()->getCurrentShopUrl();
     }
+
+    /**
+     * Returns enabled silent mode credit card types
+     *
+     * @return array
+     */
+    public function ctGetSilentModeCCTypes(): array
+    {
+        $aTypes = [];
+        if ((bool)Config::getInstance()->getConfigParam('creditCardSilentModeBrandsVisa') === true) {
+            $aTypes['VISA'] = 'Visa';
+        }
+        if ((bool)Config::getInstance()->getConfigParam('creditCardSilentModeBrandsMaster') === true) {
+            $aTypes['MasterCard'] = 'Mastercard';
+        }
+        if ((bool)Config::getInstance()->getConfigParam('creditCardSilentModeBrandsAmex') === true) {
+            $aTypes['AMEX'] = 'American Express';
+        }
+        return $aTypes;
+    }
 }
