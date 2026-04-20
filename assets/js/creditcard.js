@@ -91,7 +91,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'sDeliveryAddressMD5': sDeliveryAddressMD5Value,
                 'silentMode': silentMode
             });
-            const fetchUrl = `${window.location.origin}/index.php?${urlParams.toString()}`;
+
+            let ccShopUrl = window.location.origin;
+            if (typeof ctShopUrl !== 'undefined') {
+                ccShopUrl = ctShopUrl;
+            }
+
+            const fetchUrl = `${ccShopUrl}/index.php?${urlParams.toString()}`;
             expiryDateInput.value = year + month;
             fetch(fetchUrl)
                 .then(response => response.json())
