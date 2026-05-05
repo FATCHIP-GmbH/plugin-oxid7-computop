@@ -12,6 +12,7 @@ $aLang = [
     'SHOP_MODULE_GROUP_COMPUTOP_KLARNA'                     => 'Klarna',
     'SHOP_MODULE_GROUP_COMPUTOP_AMAZONPAY'                  => 'Amazon',
     'SHOP_MODULE_GROUP_COMPUTOP_IDEAL'                      => 'Ideal',
+    'SHOP_MODULE_GROUP_COMPUTOP_RATEPAY'                    => 'Ratepay',
     'SHOP_MODULE_GROUP_COMPUTOP_RATEPAYDIRECTDEBIT'         => 'Ratepay Direct Debit',
 
     'SHOP_MODULE_merchantID'                                => 'MerchantID',
@@ -82,6 +83,8 @@ $aLang = [
     'SHOP_MODULE_idealDirektOderUeberSofort'                => 'iDEAL - Service',
     'SHOP_MODULE_idealDirektOderUeberSofort_DIREKT'         => 'iDEAL Direct',
     'SHOP_MODULE_idealDirektOderUeberSofort_PPRO'           => 'via PPRO',
+
+    'SHOP_MODULE_ratepaySnippetId'                          => 'Device Fingerprint Snippet-Id',
 
     'SHOP_MODULE_ratepayDirectDebitRequestBic'              => 'Request BIC',
 

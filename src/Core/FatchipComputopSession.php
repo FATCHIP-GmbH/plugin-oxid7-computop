@@ -47,6 +47,8 @@ class FatchipComputopSession extends FatchipComputopSession_parent
         $sessionVars = [
             'FatchipComputopErrorCode',
             'FatchipComputopErrorMessage',
+            'FatchipComputopDeviceIdentToken',
+            'FatchipComputopDfpSent',
             'paymentid',
             Constants::CONTROLLER_PREFIX . 'DirectResponse',
             Constants::CONTROLLER_PREFIX . 'RedirectResponse',

@@ -1,0 +1,20 @@
+{% set ctRatepayToken = oView.computopGetRatepayFingerprintToken() %}
+{% set ctRatepaySnippetId = oView.computopGetRatepayFingerprintSnippetId() %}
+
+{% if ctRatepayToken %}
+    {% capture assign = "fatchip_computop_ratepay_dfp" %}
+        window.di = {
+            t: '{{ ctRatepayToken }}',
+            v: '{{ ctRatepaySnippetId }}',
+            l:'checkout'
+        };
+
+        var diScript = document.createElement('script');
+        diScript.type = 'text/javascript';
+        diScript.src = '//d.ratepay.com/{{ ctRatepaySnippetId }}/di.js';
+        document.getElementsByTagName('head')[0].appendChild(diScript);
+    {% endcapture %}
+    {{ script({ add: fatchip_computop_ratepay_dfp, dynamic: __oxid_include_dynamic }) }}
+    <noscript><link rel="stylesheet" type="text/css" href="https://d.ratepay.com/di.css?t={{ ctRatepayToken }}&v={{ ctRatepaySnippetId }}&l=Checkout"></noscript>
+    {{ oView.computopMarkDfpAsSent() }}
+{% endif %}

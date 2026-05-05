@@ -14,6 +14,7 @@ use Fatchip\ComputopPayments\Model\Method\Easycredit;
 use Fatchip\ComputopPayments\Model\Method\Klarna;
 use Fatchip\ComputopPayments\Model\Method\PayPal;
 use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
+use Fatchip\ComputopPayments\Model\Method\Ratepay\Base;
 use Fatchip\ComputopPayments\Model\Method\RedirectPayment;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
 use Fatchip\CTPayment\CTAddress\CTAddress;
@@ -1036,5 +1037,45 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $sAddressHash .= $oDelAdress->getEncodedDeliveryAddress();
         }
         return $sAddressHash;
+    }
+
+    /**
+     * Get Ratepay device fingerprint token
+     *
+     * @return false|string
+     * @throws Exception
+     */
+    public function computopGetRatepayFingerprintToken()
+    {
+        $oPayment = $this->computopGetPaymentModel();
+        if ($oPayment instanceof Base) {
+            return $oPayment->getToken();
+        }
+        return false;
+    }
+
+    /**
+     * Get Ratepay device fingerprint snippet id
+     *
+     * @return false|string
+     * @throws Exception
+     */
+    public function computopGetRatepayFingerprintSnippetId()
+    {
+        $oPayment = $this->computopGetPaymentModel();
+        if ($oPayment instanceof Base) {
+            return $oPayment->getSnippetId();
+        }
+        return false;
+    }
+
+    /**
+     * Set FatchipComputopDfpSent session flag
+     *
+     * @return void
+     */
+    public function computopMarkDfpAsSent()
+    {
+        Registry::getSession()->setVariable('FatchipComputopDfpSent', true);
     }
 }

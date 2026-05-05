@@ -22,10 +22,13 @@
     {% set payment = oView.getPayment() %}
     {% set creditcardMode = oView.getFatchipComputopShopCreditcardMode() %}
    {{ fatchipComputopConfig['creditCardMode'] }}
+    
     {% if payment.oxpayments__oxid.value == 'fatchip_computop_creditcard' and creditcardMode == 'SILENT'  %}
-
         {% include "@fatchip_computop_payments/payments/fatchip_computop_creditcard_silentmode"%}
     {% else %}
+        {% if payment.oxpayments__oxid.value == 'fatchip_computop_ratepay_invoice' or payment.oxpayments__oxid.value == 'fatchip_computop_ratepay_debit' %}
+            {% include_dynamic "@fatchip_computop_payments/payments/fatchip_computop_ratepay.html.twig" with {type: "computop"} %}
+        {% endif %}
         {{  parent() }}
     {% endif %}
 {% endblock %}
