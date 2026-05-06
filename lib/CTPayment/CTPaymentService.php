@@ -216,30 +216,27 @@ class CTPaymentService extends Encryption
     public function handleDirectPaymentResponse($response)
     {
         Registry::getSession()->setVariable(Constants::CONTROLLER_PREFIX . 'DirectResponse', $response);
-
-        $directRequest = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
         if ($response->getStatus() === null) {
             return CTEnumStatus::OK;
         }
+
+        $directRequest = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'DirectRequest');
         $this->fatchipComputopLogger->logRequestResponse(
             $directRequest,
             $this->fatchipComputopPaymentClass,
             'AUTH',
             $response
         );
-        switch ($response->getStatus()) {
-            case CTEnumStatus::OK:
-            case CTEnumStatus::AUTHORIZED:
-            case CTEnumStatus::AUTHORIZE_REQUEST:
-                return CTEnumStatus::OK;
-            case CTEnumStatus::FAILED:
-                Registry::getSession()->setVariable('FatchipComputopErrorCode', $response->getCode());
-                Registry::getSession()->setVariable('FatchipComputopErrorMessage', $response->getDescription());
-                $sShopUrl = Registry::getConfig()->getShopUrl();
-                $returnUrl = $sShopUrl . 'index.php?cl=payment';
-                Registry::getUtils()->redirect($returnUrl, false, 301);
-                break;
-        }
+
+        if ($response->isSuccessStatus() === true) {
+            return CTEnumStatus::OK;
+        } // else FAILED
+
+        Registry::getSession()->setVariable('FatchipComputopErrorCode', $response->getCode());
+        Registry::getSession()->setVariable('FatchipComputopErrorMessage', $response->getDescription());
+        $sShopUrl = Registry::getConfig()->getShopUrl();
+        $returnUrl = $sShopUrl . 'index.php?cl=payment';
+        Registry::getUtils()->redirect($returnUrl, false, 301);
     }
 
     public function handleRedirectResponse($response)
@@ -259,27 +256,23 @@ class CTPaymentService extends Encryption
             'REDIRECT',
             $response
         );
-        if ( Registry::getSession()->getUser()) {
+        if (Registry::getSession()->getUser()) {
             $encodedDeliveryAdress =  Registry::getSession()->getUser()->getEncodedDeliveryAddress();
-
         }
-        switch ($response->getStatus()) {
-            case CTEnumStatus::OK:
-            case CTEnumStatus::AUTHORIZED:
-            case CTEnumStatus::AUTHORIZE_REQUEST:
-                $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
-                    . 'index.php?cl=order&fnc=ctReentry&action=result&stoken='
-                    . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
-                break;
-            case CTEnumStatus::FAILED:
-                Registry::getSession()->setVariable('FatchipComputopErrorCode', $response->getCode());
-                Registry::getSession()->setVariable('FatchipComputopErrorMessage', $response->getDescription());
-                $sShopUrl = Registry::getConfig()->getShopUrl();
-                $returnUrl = $sShopUrl . 'index.php?cl=payment';
 
-                Registry::getSession()->deleteVariable('sess_challenge');
-                break;
+        if ($response->isSuccessStatus() === true) {
+            $returnUrl = Registry::getConfig()->getCurrentShopUrl(false)
+                . 'index.php?cl=order&fnc=ctReentry&action=result&stoken='
+                . Registry::getSession()->getSessionChallengeToken().'&sDeliveryAddressMD5='.$encodedDeliveryAdress;
+        } else { // FAILED
+            Registry::getSession()->setVariable('FatchipComputopErrorCode', $response->getCode());
+            Registry::getSession()->setVariable('FatchipComputopErrorMessage', $response->getDescription());
+            $sShopUrl = Registry::getConfig()->getShopUrl();
+            $returnUrl = $sShopUrl . 'index.php?cl=payment';
+
+            Registry::getSession()->deleteVariable('sess_challenge');
         }
+
         Registry::getUtils()->redirect($returnUrl, false, 301);
     }
 

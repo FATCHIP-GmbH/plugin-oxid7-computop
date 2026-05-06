@@ -87,7 +87,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         $delAddr  = ($custom && $custom->getDelAdress()) ? $custom->getDelAdress() : '';
         $stoken   = $stoken ?: Registry::getSession()->getVariable('sess_stoken');
 
-        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+        if (!is_object($response) || $response->isSuccessStatus() === false) {
             $queryParams = [
                 'cl'                 => 'payment',
                 'FatchipComputopLen' => $len,
@@ -128,7 +128,7 @@ class FatchipComputopRedirect extends FatchipComputopPayments
         }
         $sShopUrl = Registry::getConfig()->getShopUrl();
         $stoken = $response->getRefNr();
-        if (!is_object($response) || $response->getStatus() === 'FAILED') {
+        if (!is_object($response) || $response->isSuccessStatus() === false) {
             $queryParams = [
                 'cl'                 => 'payment',
                 'FatchipComputopLen' => $len,
