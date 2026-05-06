@@ -12,14 +12,6 @@ class FatchipComputopRedirect extends FatchipComputopPayments
 {
     protected $_sThisTemplate = '@fatchip_computop_payments/payments/fatchip_computop_redirect_return';
 
-    public function init()
-    {
-        // deactivated - throws warnings - not sure if needed
-        #ini_set('session.cookie_samesite', 'None');
-        #ini_set('session.cookie_secure', true);
-        parent::init();
-    }
-
     public function __construct()
     {
         parent::__construct();
