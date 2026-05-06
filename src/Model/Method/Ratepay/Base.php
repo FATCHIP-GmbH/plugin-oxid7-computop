@@ -3,6 +3,7 @@
 namespace Fatchip\ComputopPayments\Model\Method\Ratepay;
 
 use Fatchip\ComputopPayments\Helper\Api;
+use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\ComputopPayments\Model\Method\ServerToServerPayment;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Registry;
@@ -207,6 +208,46 @@ abstract class Base extends ServerToServerPayment
     }
 
     /**
+     * Read snippet_id from config
+     *
+     * @return string
+     */
+    public function getSnippetId()
+    {
+        $snippetId = Config::getInstance()->getConfigParam('ratepaySnippetId');
+        if (empty($snippetId)) {
+            $snippetId = "C9rKgOt";
+        }
+        return $snippetId;
+    }
+
+    /**
+     * Returns device fingerprint token
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        if (Registry::getSession()->getVariable('FatchipComputopDfpSent') !== true) {
+            $dfpSessionToken = Registry::getSession()->getVariable('FatchipComputopDeviceIdentToken');
+            if (empty($dfpSessionToken)) {
+                $dfpSessionToken = $this->createToken();
+                Registry::getSession()->setVariable('FatchipComputopDeviceIdentToken', $dfpSessionToken);
+            }
+            return $dfpSessionToken;
+        }
+        return false;
+    }
+
+    /**
+     * Creates unique token.
+     */
+    protected function createToken()
+    {
+        return md5($this->getSnippetId() . '_' . Registry::getSession()->getId() . '_' . microtime());
+    }
+
+    /**
      * Return parameters specific to this payment type
      *
      * @param  Order|null $order
@@ -222,6 +263,7 @@ abstract class Base extends ServerToServerPayment
             'shoppingBasket' => Api::getInstance()->encodeArray($this->getShoppingBasket($order)),
             'IPAddr' => Registry::getUtilsServer()->getRemoteAddress(),
             'Language' => Registry::getLang()->translateString('FATCHIP_COMPUTOP_LANGUAGE'),
+            'DeviceToken' => Registry::getSession()->getVariable('FatchipComputopDeviceIdentToken'),
         ];
 
         if (empty($order->oxorder__oxbillcompany->value)) {

@@ -106,7 +106,9 @@ $aModule = [
 
         ['group' => 'COMPUTOP_IDEAL',              'name' => 'idealDirektOderUeberSofort',        'type' => 'select',   'value' => 'DIREKT',        'position' => 700, 'constraints' => 'DIREKT|PPRO'],
 
-        ['group' => 'COMPUTOP_RATEPAYDIRECTDEBIT', 'name' => 'ratepayDirectDebitRequestBic',      'type' => 'bool',     'value' => '0',             'position' => 800],
+        ['group' => 'COMPUTOP_RATEPAY',            'name' => 'ratepaySnippetId',                  'type' => 'str',      'value' => '',              'position' => 800],
+
+        ['group' => 'COMPUTOP_RATEPAYDIRECTDEBIT', 'name' => 'ratepayDirectDebitRequestBic',      'type' => 'bool',     'value' => '0',             'position' => 900],
     ],
     'events'      => [
         'onActivate'   => 'Fatchip\ComputopPayments\Core\Events::onActivate',
