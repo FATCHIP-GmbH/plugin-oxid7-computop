@@ -1,3 +1,10 @@
+### 1.2.5
+* Fixed problems with creditcard silent mode
+* Implemented DeviceToken mechanic for Ratepay payment methods
+* Changed success status detection
+* Fixed problem with PayPal Express RefNr
+* Removed ini_set statements
+
 ### 1.2.4
 * security hardening
 * Fixed multiclick problem
