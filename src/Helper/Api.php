@@ -167,4 +167,38 @@ class Api
 
         return $curl;
     }
+
+    /**
+     * Check if given response has a success response
+     *
+     * @param  string $code
+     * @return bool
+     */
+    public function isSuccessCode($code)
+    {
+        $successCodes = [
+            "0", // Ok
+            "6", // Pending/Temporary state
+        ];
+
+        $responseCode = substr($code, 0, 1);
+        if (in_array($responseCode, $successCodes)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if given response has a success response
+     *
+     * @param  array $response
+     * @return bool
+     */
+    public function isSuccessStatus($response)
+    {
+        if(isset($response['Code']) === false) {
+            return false;
+        }
+        return $this->isSuccessCode($response['Code']);
+    }
 }

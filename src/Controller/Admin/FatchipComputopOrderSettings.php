@@ -300,7 +300,7 @@ class FatchipComputopOrderSettings extends AdminDetailsController
 
     protected function handleRefundResponse($oOrder, $response, $amount)
     {
-        if ($response->getStatus() === 'OK') {
+        if ($response->isSuccessStatus() === true) {
             if ($oldAmount = (double)$oOrder->getFieldData('fatchip_computop_amount_refunded') / 100) {
                 $amount = $oldAmount + (double)$amount;
             }
@@ -715,7 +715,6 @@ class FatchipComputopOrderSettings extends AdminDetailsController
             $description = $result->getDescription();
             $this->setErrorMessage('Capture Status: '.$status.' Description: '.$description);
         }
-
     }
 
     /**

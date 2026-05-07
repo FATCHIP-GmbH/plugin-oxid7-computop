@@ -108,7 +108,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
                 $response = $this->fatchipComputopPaymentService->getDecryptedResponse($PostRequestParams);
                 $this->fatchipComputopLogger->logRequestResponse($PostRequestParams, $ctPayment->getLibClassName(), 'AUTHORIZE_REQUEST', $response);
 
-                $status = $response->getStatus();
                 $this->easyCreditHandle($response);
             } else {
                 $dynValue = Registry::getSession()->getVariable('dynvalue');
@@ -250,6 +249,9 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $ctOrder = $this->createCTOrder();
 
         $payment->setBillToCustomer($ctOrder);
+        if ($payment instanceof PaypalStandard) {
+            //   $payment->setPayPalMethod('shortcut');
+        }
 
         $urlParams = CTPaymentParams::getUrlParams($paymentId);
         $redirectParams = $payment->getRedirectUrlParams();
@@ -299,58 +301,59 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
 
         $dynValue = Registry::getSession()->getVariable('dynvalue');
         $status = $response->getStatus();
-        if (CTEnumStatus::AUTHORIZE_REQUEST === $status) {
-            $oUser = $this->getUser();
-            $UrlParams =  CTPaymentParams::getUrlParams($ctPayment->getPaymentId());
-            $payment = $this->getPaymentClassForGatewayAction();
-            $redirectParams = $payment->getRedirectUrlParams();
-            $paymentParams = $this->getPaymentParams($oUser, $dynValue);
-            $customParam = CTPaymentParams::getCustomParam($payment->getTransID(), $ctPayment->getPaymentId());
-            $redirectParams = $payment->getRedirectUrlParams();
-            $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
-            $ctOrder = $this->createCTOrder();
 
-            $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
-                $ctPayment->getLibClassName(),
-                Config::getInstance()->getConnectionConfig(),
-                $ctOrder,
-                '',
-                '',
-                '',
-                'Test',
-                CTPaymentParams::getUserDataParam(),
-                CTEnumEasyCredit::EVENTTOKEN_GET
-            );
-
-            $oBasket = $this->getBasket();
-            $oDelivery = $oBasket->getCosts('oxdelivery');
-            $sDeliveryCosts = $oDelivery === null ? 0.0 : (int)($oDelivery->getBruttoPrice() * 100);
-
-            $sDeliveryCosts = (double)str_replace(
-                ',',
-                '.',
-                $sDeliveryCosts
-            );
-            $amount = ($oBasket->getBruttoSum() * 100)  + ($sDeliveryCosts);
-            $amount = (int)($amount);
-
-            $redirectResponse = Registry::getSession()->getVariable('FatchipComputopRedirectResponse');
-            $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $amount, $oBasket->getBasketCurrency()->name);
-            $mac = $redirectResponse->getMAC();
-            $decisionParams['mac'] = Config::getInstance()->getConfigParam('mac');
-            $responseObject = $this->callComputopService($decisionParams, $payment, 'GET', $payment->getCTCreditCheckURL());
-
-            $decision = json_decode($responseObject->getFinancing(), true);
-
-            if (!($decision['decision']['decisionOutcome'] === 'POSITIVE')) {
-                die(var_dump($decision)); ///@TODO: Needs error handling!
-            } else {
-                $this->addTplParam('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
-                Registry::getSession()->setVariable('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
-                Registry::getSession()->setVariable('fatchipComputopEasyCreditPayId',$responseObject);
-            }
-        } else {
+        if ($response->isSuccessStatus() === false) {
             die(var_dump($response)); ///@TODO: Needs error handling!
+        } // else SUCCESS -> continue
+
+        $oUser = $this->getUser();
+        $UrlParams =  CTPaymentParams::getUrlParams($ctPayment->getPaymentId());
+        $payment = $this->getPaymentClassForGatewayAction();
+        $redirectParams = $payment->getRedirectUrlParams();
+        $paymentParams = $this->getPaymentParams($oUser, $dynValue);
+        $customParam = CTPaymentParams::getCustomParam($payment->getTransID(), $ctPayment->getPaymentId());
+        $redirectParams = $payment->getRedirectUrlParams();
+        $params = array_merge($redirectParams, $paymentParams, $customParam, $UrlParams);
+        $ctOrder = $this->createCTOrder();
+
+        $payment = $this->fatchipComputopPaymentService->getIframePaymentClass(
+            $ctPayment->getLibClassName(),
+            Config::getInstance()->getConnectionConfig(),
+            $ctOrder,
+            '',
+            '',
+            '',
+            'Test',
+            CTPaymentParams::getUserDataParam(),
+            CTEnumEasyCredit::EVENTTOKEN_GET
+        );
+
+        $oBasket = $this->getBasket();
+        $oDelivery = $oBasket->getCosts('oxdelivery');
+        $sDeliveryCosts = $oDelivery === null ? 0.0 : (int)($oDelivery->getBruttoPrice() * 100);
+
+        $sDeliveryCosts = (double)str_replace(
+            ',',
+            '.',
+            $sDeliveryCosts
+        );
+        $amount = ($oBasket->getBruttoSum() * 100)  + ($sDeliveryCosts);
+        $amount = (int)($amount);
+
+        $redirectResponse = Registry::getSession()->getVariable('FatchipComputopRedirectResponse');
+        $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $amount, $oBasket->getBasketCurrency()->name);
+        $mac = $redirectResponse->getMAC();
+        $decisionParams['mac'] = Config::getInstance()->getConfigParam('mac');
+        $responseObject = $this->callComputopService($decisionParams, $payment, 'GET', $payment->getCTCreditCheckURL());
+
+        $decision = json_decode($responseObject->getFinancing(), true);
+
+        if (!($decision['decision']['decisionOutcome'] === 'POSITIVE')) {
+            die(var_dump($decision)); ///@TODO: Needs error handling!
+        } else {
+            $this->addTplParam('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
+            Registry::getSession()->setVariable('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
+            Registry::getSession()->setVariable('fatchipComputopEasyCreditPayId',$responseObject);
         }
     }
 
@@ -586,7 +589,6 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             $ctOrder->setOrderDesc('Test:0000');
         } else {
             $ctOrder->setOrderDesc($orderDesc);
-
         }
         return $ctOrder;
     }
@@ -856,9 +858,7 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         }
 
         $RefNrChangeParams = $payment->getRefNrChangeParams($order->getFieldData('fatchip_computop_payid'), Api::getInstance()->getReferenceNumber($order->getFieldData('oxordernr')));
-
         $RefNrChangeParams['EtiId'] = CTPaymentParams::getUserDataParam();
-
         return $this->callComputopService(
             $RefNrChangeParams,
             $payment,

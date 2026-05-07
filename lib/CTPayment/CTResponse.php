@@ -24,8 +24,11 @@
  * @link       https://www.computop.com
  */
 namespace Fatchip\CTPayment;
+use Fatchip\ComputopPayments\Helper\Api;
+
 /**
  * Class CTResponse
+ *
  * @package Fatchip\CTPayment
  */
 class CTResponse
@@ -591,6 +594,14 @@ class CTResponse
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccessStatus()
+    {
+        return Api::getInstance()->isSuccessCode($this->getCode());
     }
 
     /**

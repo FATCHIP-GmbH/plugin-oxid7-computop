@@ -116,29 +116,24 @@ class FatchipComputopNotify extends FrontendController
         // Custom notify handling specific to payment method
         $ctPayment->handleNotifySpecific($oOrder, $response);
 
-        switch ($response->getStatus()) {
-            case CTEnumStatus::OK:
-            case CTEnumStatus::AUTHORIZED:
-            case CTEnumStatus::AUTHORIZE_REQUEST:
-                $orderOxId = $response->getOrderid();
-                $order = oxNew(Order::class);
-                if ($order->load($orderOxId)) {
-                    $order->updateOrderAttributes($response);
-                    // $order->customizeOrdernumber($response);
-                    // $responseRefNr =  $this->updateRefNrWithComputop($order);
-                    // $order->autoCapture();
-                }
-                /* $this->inquireAndupdatePaymentStatus(
-                        $order,
-                        $paymentName,
-                        json_decode($response->getOrderVars(), true)
-                    );
-                }
-                */
-                break;
-            default:
-                exit(0);
+        if ($response->isSuccessStatus() === true) {
+            $orderOxId = $response->getOrderid();
+            $order = oxNew(Order::class);
+            if ($order->load($orderOxId)) {
+                $order->updateOrderAttributes($response);
+                // $order->customizeOrdernumber($response);
+                // $responseRefNr =  $this->updateRefNrWithComputop($order);
+                // $order->autoCapture();
+            }
+            /* $this->inquireAndupdatePaymentStatus(
+                    $order,
+                    $paymentName,
+                    json_decode($response->getOrderVars(), true)
+                );
+            }
+            */
         }
+
         exit(0);
     }
 
@@ -174,7 +169,6 @@ class FatchipComputopNotify extends FrontendController
 
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getFieldData('oxordernr'));
         $RefNrChangeParams['EtiId'] = $this->getUserDataParam($config);
-
         return $order->callComputopService(
             $RefNrChangeParams,
             $payment,
