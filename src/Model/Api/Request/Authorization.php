@@ -36,7 +36,7 @@ class Authorization extends Base
         $this->addParameter('ReqId', Api::getInstance()->getRequestId());
         $this->addParameter('EtiID', Api::getInstance()->getIdentString());
 
-        $this->addParameter('RefNr', $refNr);
+        $this->addParameter('RefNr', Api::getInstance()->getReferenceNumber($refNr));
 
         $this->addParameter('URLSuccess', $methodInstance->getSuccessUrl());
         $this->addParameter('URLFailure', $methodInstance->getFailureUrl());
