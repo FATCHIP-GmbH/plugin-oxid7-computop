@@ -4,6 +4,7 @@
 * Changed success status detection
 * Fixed problem with PayPal Express RefNr
 * Removed ini_set statements
+* Fixed problem with creditcard payment page error handling
 
 ### 1.2.4
 * security hardening

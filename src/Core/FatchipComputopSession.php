@@ -26,8 +26,12 @@ class FatchipComputopSession extends FatchipComputopSession_parent
     {
         $len = Registry::getRequest()->getRequestParameter('Len');
         $data = Registry::getRequest()->getRequestParameter('Data');
-        $paymentClass = Registry::getRequest()->getRequestParameter('cl');
-        if (!empty($len) && !empty($data) && $paymentClass === 'fatchip_computop_redirect' && $_SERVER['HTTP_REFERER'] === 'https://www.computop-paygate.com/') {
+
+        $aNoSessionStartControllers = [
+            'fatchip_computop_redirect',
+            'fatchip_computop_cancel',
+        ];
+        if (!empty($len) && !empty($data) && in_array(Registry::getRequest()->getRequestParameter('cl'), $aNoSessionStartControllers) && $_SERVER['HTTP_REFERER'] === 'https://www.computop-paygate.com/') {
             $this->fatchipComputopPaymentService = new CTPaymentService(Config::getInstance()->getConnectionConfig());
             $response = $this->fatchipComputopPaymentService->getRequest();
             if ($response && $response->getSessionId()) {
