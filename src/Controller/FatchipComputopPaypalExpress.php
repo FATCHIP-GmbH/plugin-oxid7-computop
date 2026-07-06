@@ -48,6 +48,7 @@ use OxidEsales\Eshop\Core\Exception\NoArticleException;
 use OxidEsales\Eshop\Core\Exception\OutOfStockException;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Core\Price;
 use VIISON\AddressSplitter\AddressSplitter;
 
 class FatchipComputopPayPalExpress extends FrontendController
@@ -520,6 +521,13 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oBasket = $oSession->getBasket();
         $oBasket->setPayment(\Fatchip\ComputopPayments\Model\Method\PayPalExpress::ID);
         $oBasket->setShipping('oxidstandard'); //TODO: make it configurable
+        // override PayPal Express deliveryCosts with admin configured value
+        $oShippingPrice = oxNew(Price::class);
+        $oShippingPrice->setPrice($this->getPaypalExpressShippingCosts());
+        $oBasket->setDeliveryPrice($oShippingPrice);
+        $oOrder->oxorder__oxdelcost = new Field($this->getPaypalExpressShippingCosts());
+
+        $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
@@ -602,5 +610,14 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
 
         exit;
+    }
+
+    public function getPaypalExpressShippingCosts(): float
+    {
+        $sValue = str_replace(',', '.', Config::getInstance()->getConfigParam('paypalExpressShippingCosts'));
+        if (!empty($sValue) && is_numeric($sValue)) {
+            return floatval($sValue);
+        }
+        return 0.0;
     }
 }

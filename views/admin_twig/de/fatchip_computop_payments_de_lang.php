@@ -56,6 +56,7 @@ $aLang = [
     'SHOP_MODULE_paypalExpressClientID'                     => 'PayPal Express - Client-ID',
     'SHOP_MODULE_paypalExpressMerchantID'                   => 'PayPal Express - Merchant-ID',
     'SHOP_MODULE_paypalExpressPartnerAttributionID'         => 'Computop - Partner-Attribution-ID',
+    'SHOP_MODULE_paypalExpressShippingCosts'                => 'PayPal Express - Default Versandkosten',
 
     'SHOP_MODULE_lastschriftCaption'                        => 'Lastschrift - Capture Modus',
     'SHOP_MODULE_lastschriftCaption_AUTO'                   => 'Automatisch',

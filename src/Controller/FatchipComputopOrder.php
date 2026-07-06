@@ -34,6 +34,7 @@ use Fatchip\ComputopPayments\Core\Constants;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
+use OxidEsales\EshopCommunity\Core\Price;
 
 /**
  * Class OrderController
@@ -90,6 +91,16 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
         $paymentId = $this->getBasket()->getPaymentId();
         if (Payment::getInstance()->isComputopPaymentMethod($paymentId) === false) {
             return parent::render();
+        }
+
+        // override PayPal Express deliveryCosts with admin configured value
+        if ($paymentId === PayPalExpress::ID) {
+            $oSession = Registry::getSession();
+            $oBasket = $oSession->getBasket();
+            $oBasket->setShipping('oxidstandard'); //TODO: make it configuraables
+            $oShippingPrice = oxNew(Price::class);
+            $oShippingPrice->setPrice($this->getPaypalExpressShippingCosts());
+            $oBasket->setDeliveryPrice($oShippingPrice);
         }
 
         if ($this->canKillSessionEarly($paymentId) === true) {
@@ -1077,5 +1088,14 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
     public function computopMarkDfpAsSent()
     {
         Registry::getSession()->setVariable('FatchipComputopDfpSent', true);
+    }
+
+    public function getPaypalExpressShippingCosts(): float
+    {
+        $sValue = str_replace(',', '.', Config::getInstance()->getConfigParam('paypalExpressShippingCosts'));
+        if (!empty($sValue) && is_numeric($sValue)) {
+            return floatval($sValue);
+        }
+        return 0.0;
     }
 }

@@ -92,6 +92,7 @@ $aModule = [
         ['group' => 'COMPUTOP_PAYPALEXPRESS',      'name' => 'paypalExpressClientID',             'type' => 'str',      'value' => '',              'position' => 320],
         ['group' => 'COMPUTOP_PAYPALEXPRESS',      'name' => 'paypalExpressMerchantID',           'type' => 'str',      'value' => '',              'position' => 330],
         ['group' => 'COMPUTOP_PAYPALEXPRESS',      'name' => 'paypalExpressPartnerAttributionID', 'type' => 'str',      'value' => '',              'position' => 340],
+        ['group' => 'COMPUTOP_PAYPALEXPRESS',      'name' => 'paypalExpressShippingCosts',        'type' => 'str',      'value' => '0.00',          'position' => 350],
 
         ['group' => 'COMPUTOP_DIRECTDEBIT',        'name' => 'lastschriftCaption',                'type' => 'select',   'value' => 'AUTO',          'position' => 400, 'constraints' => 'AUTO|MANUAL'],
 
