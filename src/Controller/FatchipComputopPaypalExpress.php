@@ -48,7 +48,6 @@ use OxidEsales\Eshop\Core\Exception\NoArticleException;
 use OxidEsales\Eshop\Core\Exception\OutOfStockException;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\EshopCommunity\Core\Price;
 use VIISON\AddressSplitter\AddressSplitter;
 
 class FatchipComputopPayPalExpress extends FrontendController
@@ -521,13 +520,6 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oBasket = $oSession->getBasket();
         $oBasket->setPayment(\Fatchip\ComputopPayments\Model\Method\PayPalExpress::ID);
         $oBasket->setShipping('oxidstandard'); //TODO: make it configurable
-        // override PayPal Express deliveryCosts with admin configured value
-        $oShippingPrice = oxNew(Price::class);
-        $oShippingPrice->setPrice($this->getPaypalExpressShippingCosts());
-        $oBasket->setDeliveryPrice($oShippingPrice);
-        $oOrder->oxorder__oxdelcost = new Field($this->getPaypalExpressShippingCosts());
-
-        $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
@@ -536,6 +528,7 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         $oUser = oxNew(User::class);
         $isLoaded = $oUser->loadActiveUser(); // load user in case one is logged in
+        $flBasketWithShippingCosts = $oBasket->getBruttoSum();
         if (!$isLoaded) {
             //create a temp user [paypal_guest]
             $oUser->oxuser__oxusername = new Field('PAYPAL_TMP_USER_' . $oSession->getId());
@@ -564,6 +557,8 @@ class FatchipComputopPayPalExpress extends FrontendController
             $oDeliveryAddress = $oOrder->getDelAddressInfo();
             if ($oDeliveryAddress) {
                 $encodedDeliveryAdress .= $oDeliveryAddress->getEncodedDeliveryAddress();
+            } else {
+                $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
@@ -574,8 +569,6 @@ class FatchipComputopPayPalExpress extends FrontendController
              */
             if ($iOrderfinalizationState === 0 || $iOrderfinalizationState === 1) {
                 $oOrder->oxorder__oxtransstatus = new Field('NOT_FINISHED');
-                $oOrder->oxorder__oxtotalordersum = new Field($flBasketWithShippingCosts);
-                $oOrder->oxorder__oxdelcost = new Field($this->getPaypalExpressShippingCosts());
                 $oOrder->save();
 
                 $authRequest = new Authorization();
