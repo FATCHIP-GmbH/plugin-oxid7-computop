@@ -574,10 +574,12 @@ class FatchipComputopPayPalExpress extends FrontendController
              */
             if ($iOrderfinalizationState === 0 || $iOrderfinalizationState === 1) {
                 $oOrder->oxorder__oxtransstatus = new Field('NOT_FINISHED');
+                $oOrder->oxorder__oxtotalordersum = new Field($flBasketWithShippingCosts);
+                $oOrder->oxorder__oxdelcost = new Field($this->getPaypalExpressShippingCosts());
                 $oOrder->save();
 
                 $authRequest = new Authorization();
-                $response = $authRequest->sendRequest($oOrder, $oBasket->getPrice()->getBruttoPrice());
+                $response = $authRequest->sendRequest($oOrder, $flBasketWithShippingCosts);
 
                 if (!empty($response)) {
                     $oOrder->oxorder__fatchip_computop_transid = new Field($response['TransID'] ?? '');
