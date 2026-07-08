@@ -408,6 +408,7 @@ class FatchipComputopPayPalExpress extends FrontendController
         $basket = Registry::getSession()->getBasket();
         $basket->setUser($oUser);
         $basket->setPayment($paymentType->getFieldData("oxuserpayments__oxpaymentsid"));
+        $oOrder->recalculateOrder();
         Registry::getSession()->setUser($oUser);
         if ($oUser->hasAccount() === false) {
             $oUser->login($oResponse->getEMail(), '', true);
@@ -519,7 +520,7 @@ class FatchipComputopPayPalExpress extends FrontendController
         $oSession = Registry::getSession();
         $oBasket = $oSession->getBasket();
         $oBasket->setPayment(\Fatchip\ComputopPayments\Model\Method\PayPalExpress::ID);
-        // $oBasket->setShipping('oxidstandard'); //TODO: make it configurable
+        $oBasket->setShipping('oxidstandard'); //TODO: make it configurable
 
         if (!$oBasket->getProductsCount()) {
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR');
@@ -553,7 +554,6 @@ class FatchipComputopPayPalExpress extends FrontendController
 
         try {
             $flBasketWithShippingCosts = $oBasket->getPrice()->getBruttoPrice();
-            $oBasket->setBruttoSum($flBasketWithShippingCosts);
 
             $encodedDeliveryAdress = $oUser->getEncodedDeliveryAddress();
             $oDeliveryAddress = $oOrder->getDelAddressInfo();
@@ -562,15 +562,9 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $encodedDeliveryAdress .= $oDeliveryAddress->getEncodedDeliveryAddress();
             }
             if (($oDeliveryCost && $oDeliveryCost->getBruttoPrice() > 0)) {
-                $oBasket->setDeliveryPrice($oDeliveryCost);
-                $oBasket->calculateBasket(true);
+                // do nothing
             } else {
                 $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
-                $oDeliveryCost = oxNew('oxprice');
-                $oDeliveryCost->setPrice($this->getPaypalExpressShippingCosts());
-                $oDeliveryCost->setVat($oOrder->oxorder__oxartvat1);
-                $oBasket->setDeliveryPrice($oDeliveryCost);
-                $oBasket->calculateBasket(true);
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
