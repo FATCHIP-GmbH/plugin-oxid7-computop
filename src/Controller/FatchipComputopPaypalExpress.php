@@ -408,6 +408,7 @@ class FatchipComputopPayPalExpress extends FrontendController
         $basket = Registry::getSession()->getBasket();
         $basket->setUser($oUser);
         $basket->setPayment($paymentType->getFieldData("oxuserpayments__oxpaymentsid"));
+        $oOrder->recalculateOrder();
         Registry::getSession()->setUser($oUser);
         if ($oUser->hasAccount() === false) {
             $oUser->login($oResponse->getEMail(), '', true);
@@ -552,10 +553,18 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
 
         try {
+            $flBasketWithShippingCosts = $oBasket->getPrice()->getBruttoPrice();
+
             $encodedDeliveryAdress = $oUser->getEncodedDeliveryAddress();
             $oDeliveryAddress = $oOrder->getDelAddressInfo();
+            $oDeliveryCost = $oBasket->getCosts('oxdelivery');
             if ($oDeliveryAddress) {
                 $encodedDeliveryAdress .= $oDeliveryAddress->getEncodedDeliveryAddress();
+            }
+            if (($oDeliveryCost && $oDeliveryCost->getBruttoPrice() > 0)) {
+                // do nothing
+            } else {
+                $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
@@ -569,7 +578,7 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $oOrder->save();
 
                 $authRequest = new Authorization();
-                $response = $authRequest->sendRequest($oOrder, $oBasket->getPrice()->getBruttoPrice());
+                $response = $authRequest->sendRequest($oOrder, $flBasketWithShippingCosts);
 
                 if (!empty($response)) {
                     $oOrder->oxorder__fatchip_computop_transid = new Field($response['TransID'] ?? '');
@@ -602,5 +611,14 @@ class FatchipComputopPayPalExpress extends FrontendController
         }
 
         exit;
+    }
+
+    public function getPaypalExpressShippingCosts(): float
+    {
+        $sValue = str_replace(',', '.', Config::getInstance()->getConfigParam('paypalExpressShippingCosts'));
+        if (!empty($sValue) && is_numeric($sValue)) {
+            return floatval($sValue);
+        }
+        return 0.0;
     }
 }
