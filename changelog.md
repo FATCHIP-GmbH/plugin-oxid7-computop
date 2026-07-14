@@ -1,3 +1,6 @@
+### 1.2.6
+* Fixed delivery costs calculation for PayPal Express
+
 ### 1.2.5
 * Fixed problems with creditcard silent mode
 * Implemented DeviceToken mechanic for Ratepay payment methods
