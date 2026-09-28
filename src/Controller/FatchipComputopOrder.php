@@ -92,6 +92,27 @@ class FatchipComputopOrder extends FatchipComputopOrder_parent
             return parent::render();
         }
 
+        /* prevents customer from paying order twice due to networkissues */
+        $orderId = Registry::getSession()->getVariable('sess_challenge');
+        if ($orderId) {
+            $oOrder = oxNew(Order::class);
+            $oOrder->load($orderId);
+            if (
+                /* special case for PPe: dont cleanup PPe order attempts */
+                $oOrder->oxorder__oxpaymenttype->value != PayPalExpress::ID
+                && !empty($oOrder->oxorder__fatchip_computop_transid->value)
+                && $oOrder->oxorder__oxstorno->value == 0
+                && ($oOrder->oxorder__oxtransstatus->value == 'NOT_FINISHED' || $oOrder->oxorder__oxtransstatus->value == 'OK')
+            ) {
+                $oBasket = $this->getBasket();
+                $oBasket->deleteBasket();
+                $sUrl = $_SERVER['HTTP_REFERER'];
+                Registry::getSession()->deleteVariable('sess_challenge');
+                Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ORDER_ALREADY_EXISTS');
+                Registry::getUtils()->redirect($sUrl, false);
+            }
+        }
+
         if ($this->canKillSessionEarly($paymentId) === true) {
             Registry::getSession()->handlePaymentSession();
         }

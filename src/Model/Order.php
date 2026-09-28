@@ -44,6 +44,7 @@ use Fatchip\ComputopPayments\Model\Method\Ratepay\Base;
 use Fatchip\ComputopPayments\Model\Method\RedirectPayment;
 use Fatchip\ComputopPayments\Model\Method\ServerToServerPayment;
 use Fatchip\ComputopPayments\Repository\ApiLogRepository;
+use Fatchip\ComputopPayments\Model\Api\Request\Inquire;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
@@ -196,15 +197,20 @@ class Order extends Order_parent
             // $this->customizeOrdernumber($response);
             $this->updateOrderAttributes($response);
 
-            if ($ctPayment->isRefNrUpdateNeeded() === true) {
-                $this->updateRefNrWithComputop();
-            }
-
-            $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
-            $this->autoCapture($oUser, false);
+            $this->computopHandleUserReturning($oUser, $ctPayment);
         }
 
         return $ret;
+    }
+
+    protected function computopHandleUserReturning($oUser, $ctPayment)
+    {
+        if ($ctPayment->isRefNrUpdateNeeded() === true) {
+            $this->updateRefNrWithComputop();
+        }
+
+        $this->updateComputopFatchipOrderStatus(Constants::PAYMENTSTATUSRESERVED);
+        $this->autoCapture($oUser, false);
     }
 
     /**
@@ -333,6 +339,83 @@ class Order extends Order_parent
         foreach ($oBasket->getContents() as $key => $oContent) {
             $oProd = $oContent->getArticle(false);
         }
+    }
+
+    /**
+     * Only use this on a fresh unused order object
+     *
+     * @return string
+     */
+    public function computopGetDefaultFolder()
+    {
+        $this->setFolder();
+        return $this->oxorder__oxfolder->value;
+    }
+
+    /**
+     * @return null
+     */
+    public function computopInquireOrderStatus()
+    {
+        if (empty($this->oxorder__fatchip_computop_payid->value) || empty($this->oxorder__fatchip_computop_transid->value)) {
+            return null;
+        }
+
+        $oInquire = oxNew(Inquire::class);
+        return $oInquire->getPaymentStatus($this->oxorder__fatchip_computop_payid->value, $this->oxorder__fatchip_computop_transid->value);
+
+    }
+
+    /**
+     * @return Basket
+     */
+    protected function computopRecreateBasket()
+    {
+        $oBasket = $this->getOrderBasket(false);
+
+        $this->addOrderArticlesToBasket($oBasket, $this->getOrderArticles(true));
+
+        $oBasket->calculateBasket(true);
+
+        Registry::getSession()->setVariable('sess_challenge', $this->getId());
+        Registry::getSession()->setVariable('paymentid', $this->oxorder__oxpaymenttype->value);
+        Registry::getSession()->setBasket($oBasket);
+
+        return $oBasket;
+    }
+
+    /**
+     * @return bool
+     */
+    public function computopFinalizeOrder()
+    {
+        $oBasket = $this->computopRecreateBasket();
+
+        foreach ($oBasket->getContents() as $item) {
+            $item->computopUnsetArticle();
+        }
+
+        $oUser = $this->getOrderUser();
+
+        $iFinalizeReturn = $this->finalizeRedirectOrder($oBasket, $oUser);
+
+        $this->computopHandleUserReturning($oUser, $this->computopGetPaymentModel());
+
+        return $iFinalizeReturn;
+    }
+
+    /**
+     * @return bool
+     */
+    public function computopIsOrderUnfinalized()
+    {
+        if ($this->oxorder__oxtransstatus->value == "NOT_FINISHED") {
+            $aStatus = $this->computopInquireOrderStatus();
+            if (!empty($aStatus['Status']) && in_array($aStatus['Status'], ['OK', 'AUTHORIZED'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function updateComputopFatchipOrderStatus(string $orderStatus, array $data = [])

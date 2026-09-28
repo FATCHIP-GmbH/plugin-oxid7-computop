@@ -38,6 +38,7 @@ $aModule = [
         \OxidEsales\Eshop\Application\Model\PaymentGateway::class => \Fatchip\ComputopPayments\Model\PaymentGateway::class,
         \OxidEsales\Eshop\Application\Model\Order::class => \Fatchip\ComputopPayments\Model\Order::class,
         \OxidEsales\Eshop\Application\Model\Payment::class => \Fatchip\ComputopPayments\Model\Payment::class,
+        \OxidEsales\Eshop\Application\Model\BasketItem::class => \Fatchip\ComputopPayments\Model\BasketItem::class,
         \OxidEsales\Eshop\Core\ViewConfig::class => \Fatchip\ComputopPayments\Core\ViewConfig::class,
         \OxidEsales\Eshop\Core\Session::class => \Fatchip\ComputopPayments\Core\FatchipComputopSession::class,
     ],
@@ -75,6 +76,9 @@ $aModule = [
         ['group' => 'COMPUTOP_GENERAL',            'name' => 'encryption',                        'type' => 'select',   'value' => 'blowfish',      'position' => 50,  'constraints' => 'blowfish|aes'],
         ['group' => 'COMPUTOP_GENERAL',            'name' => 'refnr_prefix',                      'type' => 'str',      'value' => '',              'position' => 60],
         ['group' => 'COMPUTOP_GENERAL',            'name' => 'refnr_suffix',                      'type' => 'str',      'value' => '',              'position' => 70],
+
+        ['group' => 'COMPUTOP_CRONJOBS',           'name' => 'cronFinalizeOrdersActive',          'type' => 'bool',     'value' => '0',             'position' => 80],
+        ['group' => 'COMPUTOP_CRONJOBS',           'name' => 'cronFinalizeOrdersDays',            'type' => 'select',   'value' => '14',            'position' => 82],
 
         ['group' => 'COMPUTOP_CREDITCARD',         'name' => 'creditCardMode',                    'type' => 'select',   'value' => 'IFRAME',        'position' => 100, 'constraints' => 'IFRAME|SILENT|PAYMENTPAGE'],
         ['group' => 'COMPUTOP_CREDITCARD',         'name' => 'creditCardTestMode',                'type' => 'bool',     'value' => '0',             'position' => 110],

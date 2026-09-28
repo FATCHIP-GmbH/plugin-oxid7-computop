@@ -5,6 +5,7 @@ $aLang = [
     'charset'                          => 'UTF-8',
 
     'SHOP_MODULE_GROUP_COMPUTOP_GENERAL'                    => 'General',
+    'SHOP_MODULE_GROUP_COMPUTOP_CRONJOBS'                   => 'Cronjobs',
     'SHOP_MODULE_GROUP_COMPUTOP_CREDITCARD'                 => 'Kreditkarte',
     'SHOP_MODULE_GROUP_COMPUTOP_PAYPAL'                     => 'PayPal',
     'SHOP_MODULE_GROUP_COMPUTOP_PAYPALEXPRESS'              => 'PayPal Express',
@@ -27,6 +28,9 @@ $aLang = [
     'SHOP_MODULE_encryption_aes'                            => 'AES Verschlüsselung',
     'SHOP_MODULE_refnr_prefix'                              => 'Referenznummer Pr&auml;fix',
     'SHOP_MODULE_refnr_suffix'                              => 'Referenznummer Suffix',
+
+    'SHOP_MODULE_cronFinalizeOrdersActive'                    => 'Cronjob "Finalisierung von bezahlten/autorisierten aber nicht vollendeten Bestellungen" aktiv',
+    'SHOP_MODULE_cronFinalizeOrdersDays'                      => 'Zeitfenster über das versucht wird bezahlte/autorisierte aber nicht vollendete Bestellungen zu finalisieren',
 
     'SHOP_MODULE_creditCardMode'                            => 'Kreditkarte - Modus',
     'SHOP_MODULE_creditCardMode_IFRAME'                     => 'IFrame',
@@ -89,11 +93,12 @@ $aLang = [
 
     'SHOP_MODULE_ratepayDirectDebitRequestBic'              => 'BIC abfragen',
 
-    'HELP_SHOP_MODULE_blMollieShowIcons'                    => 'Ihre Merchant Id (Benutzername)',
     'HELP_SHOP_MODULE_mac'                                  => 'Ihr HMAC-Key',
     'HELP_SHOP_MODULE_blowfishPassword'                     => 'Ihr Verschlüsselungs-Passwort',
     'HELP_SHOP_MODULE_debuglog'                             => 'Erzeugt eine Log Datei "FatchipCTPayment_.log" mit Debug Ausgaben im Oxid Protokollverzeichnis.',
     'HELP_SHOP_MODULE_encryption'                           => 'Art der verwendeten Verschlüsselung.<br>Blowfish Verschlüsselung wird vom Computop Support als Standard eingerichtet.<br>Sollte die Blowfish Verschlüsselung (bf-cbc) bei Ihrem Hoster nicht verfügbar sein, wenden Sie sich bitte an den Computop Support und lassen Sie AES aufschalten.<br>Wenn seitens Computop AES aktiviert wurde, stellen Sie auf AES um.',
+
+    'HELP_SHOP_MODULE_cronFinalizeOrdersActive'             => 'Dieser Cronjob hat zur Aufgabe Bestellungen finalisieren, bei denen der Kunde erfolgreich bezahlt hat, aber scheinbar nicht wieder in den Shop zurückgekehrt ist für den Abschluss des Bestellvorgangs. Der Cronjob finalisiert nur Bestellungen aus dem im Config-Feld "Zeitfenster über das versucht wird bezahlte/autorisierte aber nicht vollendete Bestellungen zu finalisieren" konfigurierten Zeitraum.<br><br>Damit dieser Cronjob arbeitet, m&uuml;ssen Sie zus&auml;tzlich zu dieser Checkbox noch sicherstellen dass der Cronjob eingerichtet ist. Mehr dazu erfahren Sie in der README.md Datei des Moduls.',
 
     'HELP_SHOP_MODULE_creditCardMode'                       => '<b>IFrame</b>: The creditcard form will be displayed after clicking "confirm payment" in an iframe<BR><b>Silent Mode</b>: The creditcard form will be displayed on the "complete order" page.<BR><b>Payment Page</b>: Credit card details are entered in a blank page after clicking on "Order payment".',
     'HELP_SHOP_MODULE_creditCardCaption'                    => '<b>AUTO</b>: Reserved amounts will be captured automatically.<BR><b>MANUAL</b>: Reserverd amounts have to be captured manuelly in the shop backend.</p>',
@@ -170,4 +175,6 @@ $aLang = [
     'FATCHIP_COMPUTOP_REFUND' => 'Gutschrift:',
     'FATCHIP_COMPUTOP_REFUND_ALL' => 'Gutschrift komplett:',
     'FATCHIP_COMPUTOP_PAYMENTS_APILOG_MAIN' => 'API Logs Details',
+    'FATCHIP_COMPUTOP_DAY' => 'Tag',
+    'FATCHIP_COMPUTOP_DAYS' => 'Tage',
 ];

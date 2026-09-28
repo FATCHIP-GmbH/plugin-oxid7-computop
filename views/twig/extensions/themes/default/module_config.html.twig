@@ -1,0 +1,21 @@
+{% extends "module_config.html.twig" %}
+
+{% block admin_module_config_var %}
+    {% if module_var == 'cronFinalizeOrdersDays' %}
+        <dl>
+            <dt>
+                <select class="select" name="confselects[{{ module_var }}]" {{ readonly }}>
+                    {% for iDay in 1..28 %}
+                        <option value="{{ iDay }}" {% if confselects[module_var] == iDay %}selected{% endif %}>{{ iDay }}&nbsp;{% if iDay == 1 %}{{ translate({ ident: "FATCHIP_COMPUTOP_DAY" }) }}{% else %}{{ translate({ ident: "FATCHIP_COMPUTOP_DAYS" }) }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+                {% include "inputhelp.html.twig" with {'sHelpId': help_id("HELP_SHOP_MODULE_" ~ module_var), 'sHelpText': help_text("HELP_SHOP_MODULE_" ~ module_var)} %}
+            </dt>
+            <dd>
+                {{ translate({ ident: "SHOP_MODULE_" ~ module_var }) }}
+            </dd>
+        </dl>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
