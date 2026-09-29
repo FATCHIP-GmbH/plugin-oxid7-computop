@@ -1,3 +1,7 @@
+### 1.3.0
+* Added cronjob for finalizing orders
+* fix problem with remaining basket, after paid order but no successful redirect
+
 ### 1.2.6
 * Fixed delivery costs calculation for PayPal Express
 
