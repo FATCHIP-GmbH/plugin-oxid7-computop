@@ -74,6 +74,7 @@ class FinalizeOrder extends Base
                     WHERE 
                         oxstorno = 0 AND 
                         oxpaymenttype LIKE '%computop%' AND 
+                        oxpaymenttype != 'fatchip_computop_paypal_express' AND 
                         fatchip_computop_transid != '' AND
                         fatchip_computop_payid != '' AND
                         oxorderdate > ? AND 
