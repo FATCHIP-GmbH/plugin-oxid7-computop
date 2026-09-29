@@ -1,0 +1,5 @@
+table_storage:
+  table_name: oxmigrations_computop
+
+migrations_paths:
+  'Fatchip\ComputopPayments\Migrations': './data'

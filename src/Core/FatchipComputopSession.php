@@ -5,6 +5,7 @@ namespace Fatchip\ComputopPayments\Core;
 use Fatchip\ComputopPayments\Helper\Config;
 use Fatchip\CTPayment\CTPaymentService;
 use OxidEsales\Eshop\Application\Model\Order;
+use Fatchip\ComputopPayments\Model\Method\PayPalExpress;
 use OxidEsales\Eshop\Core\Registry;
 
 class FatchipComputopSession extends FatchipComputopSession_parent
@@ -66,13 +67,20 @@ class FatchipComputopSession extends FatchipComputopSession_parent
         }
     }
 
-    public function cleanUpPPEOrder()
+    public function cleanUpTmpOrder()
     {
         $orderId = $this->getVariable('sess_challenge');
 
         if ($orderId) {
             $oOrder = oxNew(Order::class);
-            $oOrder->delete($orderId);
+            $oOrder->load($orderId);
+            if (
+                ($oOrder->oxorder__oxtransstatus->value != 'OK' && empty($oOrder->oxorder__fatchip_computop_transid->value))
+                /* special case for PPe: older order attempts have to be deleted to ensure actual PPe Payment Session for Order */
+                || $oOrder->oxorder__oxpaymenttype->value === PayPalExpress::ID
+            ) {
+                $oOrder->delete($orderId);
+            }
         }
 
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
@@ -136,12 +144,12 @@ class FatchipComputopSession extends FatchipComputopSession_parent
         }
 
         if ($ppeFinished === 0 && !empty($ppeOnGoing) && $redirected === "0") {
-            $this->cleanUpPPEOrder();
+            $this->cleanUpTmpOrder();
             $this->unsetSessionVars();
             Registry::getUtilsView()->addErrorToDisplay('FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL');
         }
         if ($this->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl')  ) {
-            $this->cleanUpPPEOrder();
+            $this->cleanUpTmpOrder();
             $this->unsetSessionVars();
         }
 

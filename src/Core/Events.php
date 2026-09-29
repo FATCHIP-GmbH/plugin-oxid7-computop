@@ -65,6 +65,7 @@ class Events
      */
     public static function onActivate()
     {
+        self::executeModuleMigrations();
         self::addFatchipComputopPaymentMethods();
         self::createFatchipComputopApiLogTable();
         self::updateFatchipComputopOrderAttributes();
@@ -76,6 +77,24 @@ class Events
 
         $dbMetaDataHandler = oxNew(DbMetaDataHandler::class);
         $dbMetaDataHandler->updateViews();
+    }
+
+    /**
+     * Executes module migrations
+     *
+     * @return void
+     */
+    protected static function executeModuleMigrations()
+    {
+        $oMigrations = (new \OxidEsales\DoctrineMigrationWrapper\MigrationsBuilder())->build();
+
+        $oOutput = new \Symfony\Component\Console\Output\BufferedOutput();
+        $oMigrations->setOutput($oOutput);
+        $blNeedsUpdate = $oMigrations->execute('migrations:up-to-date', 'fatchip_computop_payments');
+
+        if ($blNeedsUpdate) {
+            $oMigrations->execute('migrations:migrate', 'fatchip_computop_payments');
+        }
     }
 
     protected static function addFatchipComputopPayPalExpressSeoHooks()

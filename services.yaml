@@ -2,3 +2,7 @@ services:
   _defaults:
     public: false
     autowire: true
+  Fatchip\ComputopPayments\Command\CronjobHandler:
+    class: Fatchip\ComputopPayments\Command\CronjobHandlerCommand
+    tags:
+      - { name: 'console.command' }

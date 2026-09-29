@@ -16,6 +16,7 @@ $aLang = [
     'CREDITCARD_CVC' => 'CVC Code',
     'FATCHIP_COMPUTOP_CONF_VALID' => 'Konfiguration korrekt',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL' => 'Sie haben die Zahlung abgebrochen.',
+    'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ORDER_ALREADY_EXISTS' => 'Ihre Bestellung wurde bereits abgeschlossen. Der Warenkorb wurde automatisch entfernt.',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_NOT_COMPUTOP' => 'Die gewählte Zahlart ist keine Computop Zahlart',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR_ADDRESS' => 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten',
     'FATCHIP_COMPUTOP_EASYCREDIT_INFORMATION' => 'Easycredit Konditionen',

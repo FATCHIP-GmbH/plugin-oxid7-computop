@@ -11,6 +11,7 @@ $aLang = [
     'CREDITCARD_CVC' => 'CVC Code',
     'FATCHIP_COMPUTOP_CONF_VALID' => 'Correct Configuration',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_CANCEL' => 'You canceled the payment.',
+    'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ORDER_ALREADY_EXISTS' => 'Your order has already been completed. The shopping cart has been automatically removed.',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_NOT_COMPUTOP' => 'The chosen payment method in not a computop payment',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR_ADDRESS' => 'An error occured setting your address',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR' => 'Oops, something went wrong.',
