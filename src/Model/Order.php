@@ -142,6 +142,10 @@ class Order extends Order_parent
     {
         $ret = parent::finalizeOrder($oBasket, $oUser, $blRecalculatingOrder);
 
+        if ($blRecalculatingOrder && $ret === self::ORDER_STATE_ORDEREXISTS) {
+            return $ret;
+        }
+
         if ($ret === self::ORDER_STATE_ORDEREXISTS) { // order already exists - probably a multiple clicks on "buy" button case
             $sRedirectUrl = Registry::getSession()->getVariable(Constants::CONTROLLER_PREFIX . 'RedirectUrl');
             if (!empty($sRedirectUrl)) {

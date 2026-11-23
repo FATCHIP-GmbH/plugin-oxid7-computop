@@ -64,7 +64,9 @@ class FatchipComputopPayment extends FatchipComputopPayment_parent
      */
     public function render()
     {
-        Registry::getSession()->handlePaymentSession();
+        $session = Registry::getSession();
+        $session->cleanUpUnfinishedPpeOrder();
+        $session->handlePaymentSession();
         return parent::render();
     }
 

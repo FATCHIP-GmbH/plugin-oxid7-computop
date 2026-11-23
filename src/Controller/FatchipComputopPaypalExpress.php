@@ -567,6 +567,8 @@ class FatchipComputopPayPalExpress extends FrontendController
                 $flBasketWithShippingCosts = $oBasket->getBruttoSum() + $this->getPaypalExpressShippingCosts();
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
+            $oSession->cleanUpUnfinishedPpeOrder();
+            $oSession->setVariable('sess_challenge', Registry::getUtilsObject()->generateUId());
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
             //TODO: account for the possible error states
             /**
