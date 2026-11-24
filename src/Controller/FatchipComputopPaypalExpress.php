@@ -226,7 +226,9 @@ class FatchipComputopPayPalExpress extends FrontendController
             $aLog['response_details'] = json_encode($aRequestParams);
             $aLog['trans_id'] = $oResponse->getTransID();
             $aLog['pay_id'] = $oResponse->getPayID();
-            if ($oOrder->load($oResponse->getTransID()) || $oOrder->load(Registry::getSession()->getId())) {
+            if ($oOrder->loadByTransId((string)$oResponse->getTransID())
+                || $oOrder->load((string)Registry::getSession()->getVariable('sess_challenge'))
+            ) {
                 $oOrder->oxorder__oxstorno = new Field(1);
                 $oOrder->oxorder__oxtransstatus = new Field('ERROR');
                 $oOrder->save();
@@ -568,6 +570,10 @@ class FatchipComputopPayPalExpress extends FrontendController
             }
             $_POST['sDeliveryAddressMD5'] = $encodedDeliveryAdress;
             $oSession->cleanUpUnfinishedPpeOrder();
+            // reset leftovers of a previously finished PPE checkout in the same session
+            $oSession->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
+            $oSession->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished');
+            $oSession->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
             $oSession->setVariable('sess_challenge', Registry::getUtilsObject()->generateUId());
             $iOrderfinalizationState = $oOrder->finalizeOrder($oBasket, $oUser);
             //TODO: account for the possible error states
