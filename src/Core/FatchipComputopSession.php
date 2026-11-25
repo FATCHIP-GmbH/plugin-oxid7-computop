@@ -111,6 +111,7 @@ class FatchipComputopSession extends FatchipComputopSession_parent
         $this->deleteVariable('sess_challenge');
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
         $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished');
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
 
         return true;
     }
