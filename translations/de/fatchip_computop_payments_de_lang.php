@@ -22,6 +22,7 @@ $aLang = [
     'FATCHIP_COMPUTOP_EASYCREDIT_INFORMATION' => 'Easycredit Konditionen',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_FATAL_ERROR' => 'Hoppla, da ist etwas schiefgelaufen.',
     'FATCHIP_COMPUTOP_PAYMENTS_PAYMENT_ERROR' => 'Hoppla, da ist etwas schiefgelaufen.',
+    'FATCHIP_COMPUTOP_PAYMENTS_PAYPAL_EXPRESS_ERROR' => 'Die Zahlungsart steht aktuell nicht zur Verfügung. Bitte wählen Sie eine andere Zahlungsart.',
     'FATCHIP_COMPUTOP_BIRTHDAY_PLEASE_ENTER' => 'Bitte Geburtstag angeben',
 
     'FATCHIP_COMPUTOP_LANGUAGE' => 'de',

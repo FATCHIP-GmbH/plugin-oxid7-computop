@@ -87,6 +87,36 @@ class FatchipComputopSession extends FatchipComputopSession_parent
     }
 
     /**
+     * Deletes an unfinished PayPal Express order and clears its session state.
+     *
+     * @return bool
+     */
+    public function cleanUpUnfinishedPpeOrder(): bool
+    {
+        $orderId = $this->getVariable('sess_challenge');
+        if (!$orderId) {
+            return false;
+        }
+
+        $oOrder = oxNew(Order::class);
+        if (
+            !$oOrder->load($orderId)
+            || $oOrder->oxorder__oxpaymenttype->value !== PayPalExpress::ID
+            || $oOrder->oxorder__oxtransstatus->value === 'OK'
+        ) {
+            return false;
+        }
+
+        $oOrder->delete($orderId);
+        $this->deleteVariable('sess_challenge');
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeOngoing');
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'PpeFinished');
+        $this->deleteVariable(Constants::CONTROLLER_PREFIX . 'RedirectResponse');
+
+        return true;
+    }
+
+    /**
      * @return void
      */
     protected function logRedirectToPayment()
